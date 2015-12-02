@@ -24,7 +24,7 @@ git reverse ( annuler le commit )
 Création : 
 
 1. git checkout master 
-2. git pull origin master
+2. git pull origin staging
 3. git checkout -b NOM_BRANCHE
 4. git checkout  (vérifier si bonne branche)
 
