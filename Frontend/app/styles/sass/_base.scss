@@ -1,0 +1,320 @@
+/* Functions
+******************************************************************************/
+@function columns-width($num-columns, $total-width, $total-columns: 6, $gutter-width: $gutter-width) {
+	$column-width: ( $total-width - ( $gutter-width *  2 * $total-columns ) ) / $total-columns;
+	@return ($column-width * $num-columns) + (($gutter-width * 2) * ($num-columns - 1));
+}
+
+/* Fonts
+******************************************************************************/
+$main-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$primary-font-size: 15px;
+$primary-line-height: 18px;
+$secondary-font-size: 13px;
+$secondary-line-height: 15px;
+$legal-font-size: 11px;
+$legal-line-height: 14px;
+$page-header-font-size: 25px;
+$page-header-font-size-large: 30px;
+$page-header-line-height: 30px;
+$page-header-line-height-large: 35px;
+$module-header-font-size: 24px;
+$module-header-line-height: 29px;
+$subsection-header-font-size: 18px;
+$subsection-header-line-height: 24px;
+$subsub-header-font-size: 11px;
+$subsub-header-line-height: 14px;
+$button-font-size: 18px;
+$button-line-height: 22px;
+$list-item-font-size: 15px;
+$list-item-line-height: 18px;
+$mobile-list-item-font-size: 18px;
+$mobile-list-item-line-height: 21px;
+$search-result-item-font-size: $mobile-list-item-font-size;
+$search-result-item-line-height: $mobile-list-item-line-height;
+$homepage-text-font-size-mobile: 20px;
+$homepage-text-line-height-mobile: 26px;
+$homepage-text-font-size-desktop: 24px;
+$homepage-text-line-height-desktop: 40px;
+$memberpage-text-font-size-tablet: 24px;
+$memberpage-text-line-height-tablet: 40px;
+$memberpage-text-font-size-desktop: 28px;
+$memberpage-text-line-height-desktop: 40px;
+$memberpage-text-font-size-mobile: 18px;
+
+
+
+/* Colors
+******************************************************************************/
+/* Palette */
+$primary-color: #3b598a;
+$primary-color-lighter: #6886aa;
+$primary-color-darker: #1f3a60;
+$action-color: #e86a15;
+$secondary-action-color: $primary-color-lighter;
+$disabled-color: #cccccc;
+$neutral-color: #dadada;
+$border-color: #cccccc;
+$alert-color: #ffc60b;
+$error-color: #b71d30;
+$callout-green: #11a962;
+
+
+/* Text */
+$primary-text-color: #333333;
+$secondary-text-color: #666666;
+$inactive-text-color: #cccccc;
+$legal-text-color: #999999;
+$link-color: $primary-color-lighter;
+$footer-links-color: #999999;
+$placeholder-text-color: #666666;
+$page-header-text-color: $primary-text-color;
+$module-header-text-color: $primary-color;
+$subsection-header-text-color: $primary-text-color;
+$inactive-icon-color: #aaaaaa;
+$active-icon-color: $primary-color;
+
+/* Contrasting text colors */
+$primary-text-color-contrast: #ffffff;
+$secondary-text-color-contrast: #ffffff;
+$legal-text-color-contrast: #cccccc;
+$link-color-contrast: #ffffff;
+
+/* buttons */
+$primary-button-color: $action-color;
+$primary-button-shadow-color: scale-color($action-color, $lightness: -28%);
+$primary-button-hover-color: scale-color($action-color, $lightness: 5%);
+$secondary-button-color: $secondary-action-color;
+$secondary-button-shadow-color: $primary-color;
+$secondary-button-hover-color: scale-color($secondary-action-color, $lightness: 5%);
+
+/* Backgrounds */
+$site-background: #eeeeee;
+$content-overlay-background: rgba(#333333, .8);
+$header-background: $primary-color;
+$footer-background: #8a8a8a;
+$footer-legal-background: #9e9e9e;
+$footer-links-background: #fafafa;
+$module-background: #ffffff;
+$cta-bar-background: rgba(#333333, .9);
+$tab-inactive-background: rgba(#000000, .4);
+$tab-active-background: $site-background;
+$tab-hover-background: rgba(#000000, .6);
+$tab-active-background-home: rgba(#000000, .7);
+
+/* Account nav */
+$account-nav-background: $primary-color-darker;
+$account-nav-divider-color: $primary-color-lighter;
+
+/* main nav */
+$main-nav-background: #333333;
+$main-nav-divider-color: #1e1e1e;
+$main-nav-header-background-color: #1e1e1e;
+$main-nav-header-border-color: $primary-color;
+
+/* lists */
+$list-item-border-color: #d9d9d9;
+$selected-item-background: #ebeef3;
+
+/* tabs */
+$tab-inactive-background-color: #f8f8f8;
+$tab-border-color: #999999;
+
+/* search results */
+$search-results-discount-color: #11a962;
+$search-results-item-hover-color: rgba($action-color, .1);
+$search-results-closed-text-color: #999999;
+$search-results-verticals-bar-background: #3b3b3b;
+$search-results-sorting-bar-background: #333;
+
+/* forms */
+$desktop-field-background: #ffffff;
+
+/* menu */
+$menu-item-price-color: #999999;
+$menu-unavailable-top-border-color: #999999;
+$spinner-control-color: #999999;
+$order-time-edit-icon-color: #AAA;
+$module-top-border-color: $primary-color;
+
+/* checkout */
+$checkout-breadcrumb-background: #353535;
+$checkout-breadcrumb-separator-color: #ffffff;
+$checkout-breadcrumb-active-color: $primary-color-lighter;
+
+/* order details */
+$order-details-border-color: #e6e6e6;
+$order-favoriting-icon: #11a962;
+
+/* tellafriend */
+$taf-banner-background: #333333;
+$taf-border-top-color: #3B598B;
+
+/* seo pages */
+$seo-page-link-color: #333333;
+$seo-page-list-background: #d0d0d0;
+$seo-page-list-border-color: #d9d9d9;
+
+/* misc */
+$rating-star-color: #ffc60b;
+$rating-star-grey-color: #cccccc;
+$new-merchant-text-color: #11a962;
+$light-horizontal-rule : #EEEEEE;
+
+/*** filters ***/
+$filters-selected-background: rgba(#708cae, .1);
+$filters-hover-background: rgba($action-color, .1);
+$filters-border-color: #666;
+
+/**** Sort by ****/
+$sortby-normal-background: rgba(#000000, .8);
+$sortby-hover-background: #000000;
+
+
+/* Layout
+******************************************************************************/
+/* six column layout */
+$gutter-width: 10px;
+$site-width-mobile: 320px;
+$site-width-mobile-large: 568px; //iphone 5 in landscape
+$site-width-small: 960px; // tablets and older laptops
+$site-width-small-portrait: 768px; // tablets in portrait and 7 inch class tablets
+$site-width-medium: 1200px;
+
+$site-num-columns: 6;
+
+$header-height: 50px;
+$header-height-large: 80px;
+$main-aside-width: $site-width-mobile - 40px;
+
+/* Sizes
+******************************************************************************/
+$logo-height: 54px;
+
+$button-height: 40px;
+$button-padding-horizontal: 40px;
+
+$input-height: 40px;
+
+$right-column-site-small-width: columns-width(4, $site-width-small);
+$right-column-site-medium-width: 860px;
+
+$list-item-height: 50px;
+$list-item-border-width: 1px;
+$list-item-vertical-padding: (($list-item-height - $list-item-line-height - $list-item-border-width) / 2);
+
+$list-header-top-border-width: 3px;
+
+// padding applied to #main-content to allow space for fixed position cta
+// button plus cta bar padding plus more padding between bar and content
+$fixed-cta-padding: $button-height + (3 * $gutter-width);
+
+$filters-row-height: 40px;
+$filters-width-mobile: 303%; //width of the filters dropdown for mobile screen size
+$filters-width-tablet: 205%; //width of the filters dropdown for tablet screen size
+$filters-width-desktop: columns-width(2, $site-width-small); //width of the filters dropdown for desktop screen size
+
+$dropdown-icon-width: 30px;
+$search-result-item-height: 50px;
+$search-icon-width-mobile: 40px;
+
+$button-shadow-height: 3px;
+
+$tab-border-width: 1px;
+
+$tab-width-mobile-home: 32.9%;
+$tab-width-mobile-large-home: 32.8%;
+$tab-width-mobile: 19.9%;
+$tab-width-mobile-large: 19.8%;
+$tab-width-tablet-desktop: 120px;
+$tab-width-tablet-desktop-home: 150px;
+$tab-width-desktop-home: 190px;
+$tab-height-mobile: 60px;
+$tab-height-tablet-desktop: 80px;
+
+
+
+/* Z-indices
+******************************************************************************/
+$z-index-account-nav: 100;
+$z-index-fixed-cta: 100;
+$z-index-slide-nav: 200;
+
+
+
+/* Mixins
+******************************************************************************/
+@mixin primary-text {
+	color: $primary-text-color;
+	font-size: $primary-font-size;
+	line-height: $primary-line-height
+}
+@mixin secondary-text {
+	color: $secondary-text-color;
+	font-size: $secondary-font-size;
+	line-height: $secondary-line-height
+}
+@mixin legal-text {
+	color: $legal-text-color;
+	font-size: $legal-font-size;
+	line-height: $legal-line-height;
+}
+
+@mixin ellipsis{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@mixin subnav-link($type) {
+	@if $type =='active' {
+		font-weight: bold;
+		a{
+			color: $primary-color;
+			cursor: default;
+		}
+	}
+
+	@if $type =='normal' {
+		a:hover{
+			color: $primary-color;
+		}
+	}
+
+	@if $type =='disabled' {
+		a{
+			cursor: default;
+		}
+		a:hover{
+			color: $primary-text-color;
+		}
+	}
+}
+
+@mixin multiline-format {
+	white-space: pre-wrap;
+}
+
+/* Placeholders
+******************************************************************************/
+/* lists */
+%list-item {
+	display: block;
+	padding: $list-item-vertical-padding $gutter-width;
+	border-bottom: $list-item-border-width solid $list-item-border-color;
+	border-left: $list-item-border-width solid $list-item-border-color;
+	border-right: $list-item-border-width solid $list-item-border-color;
+	background-color: $module-background;
+	font-size: $list-item-font-size;
+	line-height: $list-item-line-height;
+}
+%list-header {
+	@extend %list-item;
+
+	border-top: $list-header-top-border-width solid $primary-color;
+	background-color: $module-background;
+
+	h3 {
+		margin: 0;
+	}
+}

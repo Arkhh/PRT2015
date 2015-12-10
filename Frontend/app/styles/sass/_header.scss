@@ -1,0 +1,206 @@
+#site-header-wrapper {
+	background: $header-background;
+}
+
+#site-header {
+	@include pie-clearfix;
+	
+	position: relative;
+	height: $header-height;
+	padding: 0 400px;
+	margin: 0 auto;
+	color: $primary-text-color-contrast;
+
+	@media (min-width: $site-width-small) {
+		height: $header-height-large;
+		padding: 0 $gutter-width;
+	}
+
+	input {
+		border: 0px !important;
+	}
+	a {
+		color: $primary-text-color-contrast;
+	}
+	a:hover {
+		text-decoration: none;
+	}
+	.logo {
+		width: 120px;
+		height: $header-height;
+		margin: 0 auto;
+		font-size: 36px;
+		overflow: hidden;
+
+		a {
+			@extend [class^="icon-"];
+			@extend .icon-delivery-logo;
+
+			&:before {
+				display: block;
+				line-height: $header-height;
+			}
+			&.with-tagline {
+				// because we can't @extend from within a media query
+				@extend .icon-delivery-logo-with-tagline;
+			}
+		}
+
+		@media (min-width: $site-width-small) {
+			$logo-height: $header-height-large - ($gutter-width * 2);
+
+			width: 205px;
+			height: $logo-height;
+			padding: $gutter-width 0;
+			margin: 0;
+			font-size: $logo-height;
+
+			a {
+				&:before {
+					line-height: $logo-height;
+				}
+			}
+		}
+	}
+	.burger {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 20px;
+		padding: ($header-height - 20px) / 2;
+		cursor: pointer;
+		font-size: 20px;
+
+		span {
+			color: $primary-color-lighter;
+
+			&:hover {
+				color: $primary-text-color-contrast;
+			}
+		}
+	}
+	.back {
+		position: absolute;
+		top: $gutter-width;
+		left: $gutter-width;
+		font-size: 30px;
+
+		a {
+			color: $primary-color-lighter;
+
+			&:hover {
+				color: $primary-text-color-contrast;
+			}
+		}
+	}
+
+	.account-nav-toggle {
+		position: absolute;
+		right: 0;
+		top: 0;
+		height: $header-height;
+		padding: 0 $gutter-width;
+		color: $primary-color-lighter;
+		cursor: pointer;
+		font-size: 0;
+		line-height: $header-height;
+		overflow: hidden;
+
+		&:hover,
+		&.active {
+			color: $primary-text-color-contrast;
+		}
+		&:before {
+			display: block;
+			font-size: 25px;
+		}
+
+		&.active {
+			background-color: $account-nav-background;
+		}
+
+		@media (min-width: $site-width-small) {
+			@include primary-text;
+
+			right: $gutter-width;
+			height: $header-height-large - ($gutter-width * 2);
+			width: 120px;
+			padding: $gutter-width;
+			border-left: 1px solid $primary-color-lighter;
+			border-right: 1px solid $primary-color-lighter;
+			color: $primary-text-color-contrast;
+			text-align: center;
+
+			.status {
+				display: table-cell;
+				height: $header-height-large - ($gutter-width * 2);
+				width: 120px;
+				vertical-align: middle;
+			}
+		}
+	}
+
+	.account-nav {
+		position: absolute;
+		right: 0;
+		top: 100%;
+		background-color: $account-nav-background;
+		line-height: 50px;
+		z-index: $z-index-account-nav;
+
+		ul {
+			padding: 0;
+			margin: 0;
+		}
+		li {
+			border-bottom: 1px solid $account-nav-divider-color;
+
+			a {
+				height: 50px;
+				padding: 0 $gutter-width;
+				display: block;
+				min-width: 120px
+			}
+		}
+
+		@media (min-width: $site-width-small) {
+			margin: 0 $gutter-width;
+			text-align: center;
+
+			li {
+				display: inline-block;
+				border-bottom: none;
+			}	
+		}
+	}
+
+	.header-action {
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 20px;
+		height: $header-height - ($gutter-width * 2);
+		padding: $gutter-width;
+		cursor: pointer;
+	}
+	.icon-search {
+		display: block;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 20px;
+		height: 20px;
+		margin: auto;
+		overflow: hidden;
+		color: $primary-text-color-contrast;
+		font-size: 20px;
+		line-height: 20px;
+	}
+	.search-field {
+		font-weight: normal;
+		font-size: 18px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+}
