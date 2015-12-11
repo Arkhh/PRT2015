@@ -15,7 +15,15 @@
     "karma-jasmine": "^0.3.5",
     "karma-junit-reporter": "^0.2.2",
     "protractor": "^2.1.0",
-    "shelljs": "^0.2.6"
+    "shelljs": "^0.2.6",
+	"grunt-contrib-jshint",
+	"grunt-contrib-compass",
+	"grunt-cli",
+	"grunt",
+	"grunt-karma",
+	"runt-contrib-watch",
+	"grunt-contrib-jshint",
+	"jshint-stylish"	
   },
   "scripts": {
     "postinstall": "bower install",
