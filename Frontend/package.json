@@ -22,7 +22,6 @@
 	"grunt",
 	"grunt-karma",
 	"runt-contrib-watch",
-	"grunt-contrib-jshint",
 	"jshint-stylish"	
   },
   "scripts": {
