@@ -21,7 +21,7 @@
 	"grunt-cli": "*",
 	"grunt": "*",
 	"grunt-karma": "*",
-	"runt-contrib-watch": "*",
+	"grunt-contrib-watch": "*",
 	"jshint-stylish": "*"	
   },
   "scripts": {
