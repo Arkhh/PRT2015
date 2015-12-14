@@ -1,0 +1,44 @@
+@import "compass/layout/stretching";
+@import "compass/utilities";
+@import "compass/utilities/general/clearfix";
+@import "compass/css3/";
+
+//@import "normalize";
+//@import "bootstrap";
+
+/*!
+ * PRT2015
+ */
+@import "base";
+
+// Basic styles
+@import "default";
+//@import "buttons";
+@import "icons";
+
+@import "header";
+@import "footer";
+//@import "mainNav";
+//@import "menus";
+//@import "cart";
+
+// pages
+//@import "pages/about";
+//@import "pages/addAddress";
+//@import "pages/addCard";
+//@import "pages/merchants";
+//@import "pages/merchantDetails";
+//@import "pages/checkout";
+//@import "pages/home";
+//@import "pages/listAddresses";
+//@import "pages/listCards";
+//@import "pages/login";
+//@import "pages/merchantGroceries";
+//@import "pages/merchantRestaurant";
+//@import "pages/noConnection";
+//@import "pages/register";
+//@import "pages/orderHistory";
+//@import "pages/orderDetails";
+//@import "pages/promoSignUp";
+//@import "pages/tellafriend";
+
