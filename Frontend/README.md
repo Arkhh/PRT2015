@@ -113,7 +113,7 @@ There are two kinds of tests in the angular-seed application: Unit tests and End
 ### Running Unit Tests
 
 The angular-seed app comes preconfigured with unit tests. These are written in
-[Jasmine][jasmine], which we run with the [Karma Test Runner][karma]. We provide a Karma
+[Jasmine][jasmine], which we run with the [Karma Test.js Runner][karma]. We provide a Karma
 configuration file to run them.
 
 * the configuration is found at `karma.conf.js`
