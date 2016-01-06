@@ -1,37 +1,24 @@
 var request = require("request");
 var neo4j = require('node-neo4j');
 
-var host = 'localhost';
- port = 7474;
-var type;
-
-db = new neo4j('http://localhost:7474');
-
-var httpUrlForTransaction = 'http://' + host + ':' + port + '/db/data/transaction/commit';
-
 var URL_API_BASE = "http://178.62.87.171:7474/db/data/cypher";
 var METHOD = {method: "POST"};
-
+// Headers d'authenfication pour le serveur de DB neo4j
 var AUTH =  { headers:
                 {
                     'Authorization': 'Basic bmVvNGo6bWFmcmFqMjAxNQ==',
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 }
 };
 
 
-
-
 function testCallback(error, response, body) {
-    console.log(response.body);
     if (!error && response.statusCode == 200) {
         var info = JSON.parse(response.body);
-        console.log(info);
+        console.log(info.data[0][0].data.Type);
     }
     if(error){
         console.log(error);
-
-
     }
 }
 
@@ -46,8 +33,7 @@ function prepareQuery(query,callback) {
         url: URL_API_BASE,
         method: METHOD.method,
         headers: AUTH.headers,
-        query: query,
-        params: {query: query}
+        form:{query:query}
     };
 
     runCypherQuery(options,callback);
@@ -59,6 +45,12 @@ function runCypherQuery(options,callback) {
 }
 
 
+function zamel ( param1, param2, param3){
+
+    var query = " SELECT BOP FROM ZAMEL WHERE COL1 ="+param1+"";
+
+    prepareQuery(query,callbacKzamel);
+}
 
 
 
