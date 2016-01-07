@@ -35,10 +35,13 @@ router.post('/login',function(req,res){
         return;
     }
 
-    var resul = controller.login(username,password,res);
-    res.json({err:{message:$err},
-        data:resul
-        });
+   controller.login(username,password,res);
+   /* res.json({err:{message:$err}
+        //data:result.data
+    });
+*/
+    /*
+ */
 
     });
 

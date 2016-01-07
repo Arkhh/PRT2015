@@ -1,6 +1,5 @@
 var request = require("request");
 var neo4j = require('node-neo4j');
-
 var URL_API_BASE = "http://178.62.87.171:7474/db/data/cypher";
 var METHOD = {method: "POST"};
 // Headers d'authenfication pour le serveur de DB neo4j

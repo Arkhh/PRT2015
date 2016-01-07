@@ -1,11 +1,15 @@
-
 var service=require('./../Service/db_connexion');
 
 exports.login =function (username,password,res){
-    //fonction bdd
-    var query = "MATCH (n:Personne) WHERE n.username = '" + username + "' AND n.password = '" + password + "' RETURN id(n)";
-   // console.log(query);
-    service.prepareQuery(query);
+    var query = "MATCH (n:Personne)  RETURN id(n)";
+   service.executeQuery(query)
+           .then(function (bop) {
+           var result = JSON.parse(bop.getBody('utf8'));
+           console.log(result.data);
+           res.json({err:{message:$err},
+               data:result.data
+           });
+       });
 
 };
 
