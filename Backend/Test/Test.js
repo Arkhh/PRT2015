@@ -1,6 +1,5 @@
 var request = require("request");
 var neo4j = require('node-neo4j');
-
 var URL_API_BASE = "http://178.62.87.171:7474/db/data/cypher";
 var METHOD = {method: "POST"};
 // Headers d'authenfication pour le serveur de DB neo4j
@@ -26,6 +25,15 @@ prepareQuery("MATCH (n:TypeDeJoueur)RETURN n",testCallback);
 
 
 
+
+
+function zamel ( param1, param2, param3){
+
+    var query = " SELECT BOP FROM ZAMEL WHERE COL1 ="+param1+"";
+
+    prepareQuery(query,callbacKzamel);
+}
+
 function prepareQuery(query,callback) {
 
 
@@ -45,14 +53,24 @@ function runCypherQuery(options,callback) {
 }
 
 
-function zamel ( param1, param2, param3){
+function connexion(username, password){
 
-    var query = " SELECT BOP FROM ZAMEL WHERE COL1 ="+param1+"";
-
-    prepareQuery(query,callbacKzamel);
+    var query = "MATCH (n:Personne) WHERE n.username = '" + username + "' AND n.password = '" + password + "' RETURN id(n)";
+    console.log(query);
+    prepareQuery(query,callbackConnexion);
 }
 
-
+function callbackConnexion(error, response, body){
+    if (!error && response.statusCode == 200) {
+        //var info = JSON.parse(response.body);
+        //console.log(response.body);
+        var test = JSON.parse(response.body);
+        console.log(test.data[0][0]);
+    }
+    if(error){
+        console.log(error);
+    }
+}
 
 /*db.cypherQuery("MATCH (n:TypeDeJoueur)RETURN n", function (err, result) {
  if (err) throw err;

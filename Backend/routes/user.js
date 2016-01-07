@@ -1,36 +1,53 @@
 var express = require('express');
 var router = express.Router();
+var controller=require('./../Controller/userController');
 var $err=[];
 
 
 
 //connexion
 // Inpout :username; password
-router.post('/auth',function(req,res){
+router.post('/login',function(req,res){
     $err=[];
-    if (typeof req.body['username'] === 'undefined' ) {
+    var username=req.body['username'];
+    var password=req.body['password'];
+    if ( username.length===0 ) {
         $err.push('Username manquant');
-
     }
-    if (typeof req.body['password']=== 'undefined'){
+    if (password.length===0){
         $err.push('Mot de passe manquant');
-
     }
     if ($err.length>0){
         res.json({err:{message:$err}});
+        return;
     }
-    //traitement
-    var $db_res='erzrzrz'; //appel bdd
-    //si le résultat est null
-    if ($db_res.length === 0){
-        $err.push('Inconu');
+
+   // console.log(typeof username);
+    //console.log(typeof password);
+    if (typeof username !== 'string' ) {
+        $err.push('Username must be string');
+    }
+    if (typeof password !== 'string'){
+        $err.push('Mot de passe must be string');
+    }
+    if ($err.length>0){
         res.json({err:{message:$err}});
+        return;
     }
-    res.json({err:{message:$err},
-            data:{user_id:'0'}
-        });
+
+   controller.login(username,password,res);
+   /* res.json({err:{message:$err}
+        //data:result.data
+    });
+*/
+    /*
+ */
 
     });
+
+
+
+
 
 //modification des infos
 router.put('/auth',function(req,res){
