@@ -1,9 +1,4 @@
-var express = require('express');
-var router = express.Router();
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.send('ici index');
-});
-
-module.exports = router;
+// Convenience wrapper around all other files:
+exports.site = require('./site');
+exports.users = require('./users');
+exports.pieces = require('./pieces');
