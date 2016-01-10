@@ -46,6 +46,14 @@ app.get('/pieces/:id',routes.pieces.show);
 app.post('/pieces',routes.pieces.create);
 app.post('/pieces/:username',routes.pieces.edit);
 
+app.get('/events',routes.events.list);
+app.get('/events/:id',routes.events.show);
+app.post('/events',routes.events.create);
+app.post('/events/:id',routes.events.edit);
+app.del('/events/:id', routes.events.del);
+
+
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));
