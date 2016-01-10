@@ -36,15 +36,15 @@ app.get('/', routes.site.index);
 
 app.get('/users', routes.users.list);
 app.post('/users', routes.users.create);
-app.get('/users/:username', routes.users.show);
-app.post('/users/:username', routes.users.edit);
-app.del('/users/:username', routes.users.del);
+app.get('/users/:id', routes.users.show);
+app.post('/users/:id', routes.users.edit);
+app.delete('/users/:id', routes.users.del);
 
 
 app.get('/pieces',routes.pieces.list);
 app.get('/pieces/:id',routes.pieces.show);
 app.post('/pieces',routes.pieces.create);
-app.post('/pieces/:username',routes.pieces.edit);
+app.post('/pieces/:id',routes.pieces.edit);
 
 app.get('/events',routes.events.list);
 app.get('/events/:id',routes.events.show);

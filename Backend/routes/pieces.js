@@ -50,7 +50,7 @@ exports.create = function (req, res, next) {
                         name: req.body.name,
                         quantity:req.body.quantity,
                         limit:req.body.limit,
-                        error: err.message,
+                        error: err.message
                     },
                 }));
             } else {

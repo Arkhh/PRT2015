@@ -42,11 +42,14 @@ User.VALIDATION_INFO = {
 // Public instance properties:
 
 // The user's username, e.g. 'aseemk'.
-Object.defineProperty(User.prototype, 'username', {
-    get: function () { return this._node.properties['username']; }
+Object.defineProperty(User.prototype, 'id', {
+    get: function () { return this._node._id; }
 });
 Object.defineProperty(User.prototype, 'password', {
     get: function () { return this._node.properties['password']; }
+});
+Object.defineProperty(User.prototype, 'username', {
+    get: function () { return this._node.properties['username']; }
 });
 
 // Private helpers:
@@ -171,13 +174,13 @@ User.prototype.del = function (callback) {
     // (Note that this'll still fail if there are any relationships attached
     // of any other types, which is good because we don't expect any.)
     var query = [
-        'MATCH (user:User {username: {username}})',
-        'OPTIONAL MATCH (user) -[rel:follows]- (other)',
-        'DELETE user, rel',
-    ].join('\n')
+        'MATCH (user:User)',
+        'WHERE id(user) = {id}',
+        'DETACH DELETE user'
+    ].join('\n');
 
     var params = {
-        username: this.username
+        id: this.id
     };
 
     db.cypher({
@@ -201,8 +204,7 @@ User.create = function (props, callback) {
     testProps=validate(props);
     if(testProps.error){
         errorTab.push( new errors.PropertyError(testProps.error));
-        err = {error: errorTab};
-        return callback(err);
+        return callback(errorTab);
     }
 
     var params = {
@@ -231,14 +233,20 @@ User.create = function (props, callback) {
 
 
 
-User.get = function (username, callback) {
+User.get = function (id, callback) {
+
+    var idInt=parseInt(id);
+
+
     var query = [
-        'MATCH (user:User {username: {username}})',
+        'MATCH (user:User)',
+        'WHERE id(user) = {id}',
         'RETURN user',
-    ].join('\n')
+    ].join('\n');
+
 
     var params = {
-        username: username
+        id: idInt
     };
 
     db.cypher({
@@ -247,13 +255,16 @@ User.get = function (username, callback) {
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            err = new Error('No such user with username: ' + username);
+            var err=[];
+            var error=new errors.PropertyError('No such user with ID: ' + id)
+            err.push(error);
             return callback(err);
         }
         var user = new User(results[0]['user']);
         callback(null, user);
     });
 };
+
 
 User.getAll = function (callback) {
     var query = [
