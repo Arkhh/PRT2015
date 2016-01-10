@@ -13,13 +13,13 @@ function getUserURL(user) {
 /**
  * GET /users
  */
-exports.list = function (req, res, next) {
+exports.list = function (req, res) {
     User.getAll(function (err, users) {
-        if (err) return next(err);
-        res.json('users', {
+        if (err) return res.json(err);
+        return res.json('users', {
             User: User,
             users: users,
-            username: req.query.username,   // Support pre-filling create form
+            id: req.query.id,   // Support pre-filling create form
             error: req.query.error     // Errors creating; see create route
         });
     });
@@ -28,9 +28,9 @@ exports.list = function (req, res, next) {
 /**
  * POST /users {username, ...}
  */
-exports.create = function (req, res, next) {
+exports.create = function (req, res) {
     User.create({
-        username: req.body.username,
+        id: req.body.id,
         password: req.body.password
     }, function (err, user) {
         if (err) {
@@ -39,58 +39,45 @@ exports.create = function (req, res, next) {
                 error: err
             });
         }
+        return res.json(user);
+    });
+};
+
+
+
+/**
+ * GET /users/:id
+ */
+exports.show = function (req, res) {
+    User.get(req.params.id, function (err, user) {
+        if (err)
+        {
+            return res.json({
+                pathname: '/users/:id',
+                error: err
+            });
+        }
         res.json(user);
     });
 };
 
-
-
 /**
- * GET /users/:username
+ * POST /users/:id {username, ...}
  */
-exports.show = function (req, res, next) {
-    User.get(req.params.username, function (err, user) {
-        // TODO: Gracefully "no such user" error. E.g. 404 page.
-        if (err) return res.json(err);
-        // TODO: Also fetch and show followers? (Not just follow*ing*.)
-        user.getFollowingAndOthers(function (err, following, others) {
-            if (err) return res.json(err);
-            res.json('user', {
-                User: User,
-                user: user,
-                username: req.query.username,   // Support pre-filling edit form
-                error: req.query.error,   // Errors editing; see edit route
-            });
-        });
-    });
-};
-
-/**
- * POST /users/:username {username, ...}
- */
-exports.edit = function (req, res, next) {
-    User.get(req.params.username, function (err, user) {
-        // TODO: Gracefully "no such user" error. E.g. 404 page.
-        if (err) return next(err);
+exports.edit = function (req, res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.json( {error:err});
         user.patch(req.body, function (err) {
             if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
-                    // Return to the edit form and show the error message.
-                    // TODO: Assuming username is the issue; hardcoding for that
-                    // being the only input right now.
-                    // TODO: It'd be better to use a cookie to "remember" this
-                    // info, e.g. using a flash session.
                     return res.json({
-                        pathname: getUserURL(user),
-                        query: {
-                            error: err.message
-                        }
+                            error: err
                     });
                 } else {
-                    return next(err);
+                    return res.json(err);
                 }
             }
-            res.redirect(getUserURL(user));
+            return res.json(user);
         });
     });
 };
@@ -98,14 +85,12 @@ exports.edit = function (req, res, next) {
 /**
  * DELETE /users/:username
  */
-exports.del = function (req, res, next) {
-    User.get(req.params.username, function (err, user) {
-        // TODO: Gracefully handle "no such user" error somehow.
-        // E.g. redirect back to /users with an info message?
-        if (err) return next(err);
+exports.del = function (req, res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.json(err);
         user.del(function (err) {
-            if (err) return next(err);
-            res.redirect('/users');
+            if (err) return res.json(err);
+            res.json({deleted:'ok', user: user});
         });
     });
 };

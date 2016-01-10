@@ -124,7 +124,7 @@ Event.getAll = function (callback) {
     ].join('\n');
 
     db.cypher({
-        query: query,
+        query: query
     }, function (err, results) {
         if (err) return callback(err);
         var events = results.map(function (result) {
@@ -152,7 +152,7 @@ Event.create = function (props, callback) {
 
     db.cypher({
         query: query,
-        params: params,
+        params: params
     }, function (err, results) {
         /*if (isConstraintViolation(err)) {
             // TODO: This assumes username is the only relevant constraint.
@@ -175,20 +175,18 @@ Event.prototype.del = function (callback) {
     // (Note that this'll still fail if there are any relationships attached
     // of any other types, which is good because we don't expect any.)
     var query = [
-        'MATCH (event:Evenement)' +
+        'MATCH (event:Evenement)',
         'WHERE id(event) = {id}',
-        'DETACH DELETE event',
-    ].join('\n')
+        'DETACH DELETE event'
+    ].join('\n');
 
-    console.log("NODE");
-    console.log(this.id);
     var params = {
-        id: this.id,
+        id: this.id
     };
 
     db.cypher({
         query: query,
-        params: params,
+        params: params
     }, function (err) {
         callback(err);
     });
@@ -200,16 +198,16 @@ Event.get = function (id, callback) {
     var query = [
         'MATCH (event:Evenement)' +
         'WHERE id(event) = {id} ' +
-        'RETURN event',
-    ].join('\n')
+        'RETURN event'
+    ].join('\n');
 
     var params = {
-        id: idInt,
+        id: idInt
     };
 
     db.cypher({
         query: query,
-        params: params,
+        params: params
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
@@ -235,19 +233,14 @@ Event.prototype.patch = function (props, callback) {
 
     var params = {
         id: idInt,
-        props: safeProps,
+        props: safeProps
     };
 
     var self = this;
 
-    console.log("query");
-    console.log(query);
-    console.log("params");
-    console.log(params);
-
     db.cypher({
         query: query,
-        params: params,
+        params: params
     }, function (err, results) {
         if (isConstraintViolation(err)) {
             // TODO: This assumes username is the only relevant constraint.
