@@ -44,7 +44,8 @@ app.del('/users/:username', routes.users.del);
 app.get('/pieces',routes.pieces.list);
 app.get('/pieces/:id',routes.pieces.show);
 app.post('/pieces',routes.pieces.create);
-app.post('/pieces/:username',routes.pieces.edit);
+app.post('/pieces/:id',routes.pieces.edit);
+app.del('/pieces/:id',routes.pieces.del);
 
 app.get('/events',routes.events.list);
 app.get('/events/:id',routes.events.show);
