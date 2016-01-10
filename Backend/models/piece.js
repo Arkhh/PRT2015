@@ -9,7 +9,7 @@ var db = new neo4j.GraphDatabase({
     // but assume Neo4j installation defaults.
     url: process.env['NEO4J_URL'] || process.env['GRAPHENEDB_URL'] ||
    // 'http://neo4j:mafraj2015@178.62.87.171:7474',
-    'http://neo4j:mafraj2015@localhost:7474',
+    'http://neo4j:Mafraj2015@localhost:7474',
     auth: process.env['NEO4J_AUTH']
 });
 
@@ -21,13 +21,27 @@ var Piece = module.exports = function Piece(_node) {
     this._node = _node;
 }
 
+Object.defineProperty(Piece.prototype, 'id', {
+    get: function () { return this._node._id; }
+});
+
 
 function isConstraintViolation(err) {
     return err instanceof neo4j.ClientError &&
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
 }
 
+function validate(props, required) {
+    var safeProps = {};
 
+    for (var prop in Piece.VALIDATION_INFO) {
+        var val = props[prop];
+        validateProp(prop, val, required);
+        safeProps[prop] = val;
+    }
+
+    return safeProps;
+}
 // Public constants:
 
 Piece.VALIDATION_INFO = {
@@ -39,33 +53,62 @@ Piece.VALIDATION_INFO = {
     },
     'quantity':{
         required: true,
+        minLength: 1,
         pattern: /^[0-9_]+$/,
         message: ' numbers only.'
     },
     'limit':{
         required: true,
+        minLength: 1,
         pattern: /^[0-9_]+$/,
         message: ' numbers only.'
     }
 };
 
+function validateProp(prop, val, required) {
+    var info = Piece.VALIDATION_INFO[prop];
+    var message = info.message;
+
+    if (!val) {
+        if (info.required && required) {
+            throw new errors.ValidationError(
+                'Missing ' + prop + ' (required).');
+        } else {
+            return;
+        }
+    }
+
+    if (info.minLength && val.length < info.minLength) {
+        throw new errors.ValidationError(
+            'Invalid ' + prop + ' (too short). Requirements: ' + message);
+    }
+
+
+    if (info.pattern && !info.pattern.test(val)) {
+        throw new errors.ValidationError(
+            'Invalid ' + prop + ' (format). Requirements: ' + message);
+    }
+}
+
 // Atomically updates this user, both locally and remotely in the db, with the
 // given property updates.
-/*User.prototype.patch = function (props, callback) {
-  //  var safeProps = validate(props);
+Piece.prototype.patch = function (props, callback) {
+    var safeProps = validate(props);
 
+    var idInt = parseInt(this.id);
     var query = [
-        'MATCH (piece:Piece {id: {id}})',
-        'SET user += {props}',
-        'RETURN piece',
+        'MATCH (piece:Piece) WHERE id(piece)= {id}',
+        'SET piece += {props}',
+        'RETURN piece'
     ].join('\n');
 
     var params = {
-        username: this.username,
-        props: props,
+        id: idInt,
+        props: safeProps,
     };
 
     var self = this;
+
 
     db.cypher({
         query: query,
@@ -78,33 +121,40 @@ Piece.VALIDATION_INFO = {
             // Alternately, we could tweak our query to explicitly check first
             // whether the username is taken or not.
             err = new errors.ValidationError(
-                'The username ‘' + props.username + '’ is taken.');
+                'The event ‘' + props.id + '’ is taken.');
         }
         if (err) return callback(err);
 
+
+        console.log("RESULTS");
+        console.log(results);
         if (!results.length) {
-            err = new Error('User has been deleted! Username: ' + self.username);
+            err = new Error('' +
+                'piece has been deleted! Piece: ' + self.id);
             return callback(err);
         }
 
         // Update our node with this updated+latest data from the server:
-        self._node = results[0]['user'];
+        self._node = results[0]['piece'];
 
         callback(null);
     });
-};*/
+};
+
 
 
 // Static methods:
 
 Piece.get = function (id, callback) {
+    var idInt=parseInt(id);
     var query = [
-        'MATCH (piece:Piece {id: {id}})',
+        'MATCH (piece:Piece )'+
+        'WHERE id(piece)= {id}'+
         'RETURN piece',
     ].join('\n')
 
     var params = {
-        id: parseInt(id)
+        id: idInt,
     };
     console.log (params);
     db.cypher({
@@ -112,14 +162,13 @@ Piece.get = function (id, callback) {
         params: params,
     }, function (err, results) {
         if (err) return callback(err);
-       /* if (!results.length) {
+        if (!results.length) {
             err = new Error('No such item with id: ' + id);
             return callback(err);
-        }*/
+        }
         console.log (results);
         var piece = new Piece(results[0]['piece']);
-
-       callback(null, piece);
+        callback(null, piece);
 
     });
 };
@@ -142,16 +191,9 @@ Piece.getAll = function (callback) {
 
 // Creates the user and persists (saves) it to the db, incl. indexing it:
 Piece.create = function (props, callback) {
-    var id=maxID(function(id){
+
         //console.log(id);
 
-        var propId={
-            id:id,
-            name:props.name,
-            quantity:props.quantity,
-            limit:props.limit
-
-        };
         var query = [
             'CREATE (piece:Piece {props})',
             'RETURN piece',
@@ -159,7 +201,7 @@ Piece.create = function (props, callback) {
 
         var params = {
 
-            props: propId
+            props: props
             //props: validate(props)
         };
 
@@ -182,36 +224,25 @@ Piece.create = function (props, callback) {
             var piece = new Piece(results[0]['piece']);
             callback(null, piece);
         });
-    })
 
 };
 
+Piece.prototype.del=function(callback){
 
-function maxID (callback){
-
-    var query = [
-        ' match (piece:Piece )',
-        'return max(piece.id)'
-
+    var query=[
+        'MATCH (piece:Piece)'+
+        'WHERE id(piece)={id}',
+        'DETACH DELETE piece',
     ].join('\n')
 
+    var params={
+        id:this.id,
+    };
+
     db.cypher({
-        query: query
-    }, function (err, results) {
-
-        if (err) return callback(err);
-
-        if (results[0]['max(piece.id)']===null) {
-            //  err = new Error('No such item with id: ' + id);
-
-            callback(1) ;
-            //return callback(1);
-        }
-        else{
-            callback( results[0]['max(piece.id)']+1);
-        }
-        //var piece = new Piece(results[0]['piece']);
-
-
-    });
-};
+        query: query,
+        params: params,
+    },function(err){
+        callback(err);
+    })
+}
