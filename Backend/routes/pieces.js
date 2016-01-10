@@ -36,7 +36,8 @@ exports.create = function (req, res, next) {
         quantity:req.body.quantity,
         limit:req.body.limit
     }, function (err, piece) {
-        if (err) {
+        if (err) return next(err);
+        /*{
             if (err instanceof errors.ValidationError) {
                 // Return to the create form and show the error message.
                 // TODO: Assuming username is the issue; hardcoding for that
@@ -56,7 +57,7 @@ exports.create = function (req, res, next) {
             } else {
                 return next(err);
             }
-        }
+        }*/
         res.json(piece);
     });
 };
@@ -65,17 +66,12 @@ exports.create = function (req, res, next) {
  * GET /pieces/:id
  */
 exports.show = function (req, res, next) {
-    Piece.get(req.params.id, function (err, pieces) {
+    Piece.get(req.params.id, function (err, piece) {
         // TODO: Gracefully "no such user" error. E.g. 404 page.
         if (err) return next(err);
         // TODO: Also fetch and show followers? (Not just follow*ing*.)
 
-            res.json('piece', {
-                Piece: Piece,
-                pieces: pieces,
-                name: req.query.name,   // Support pre-filling create form
-                error: req.query.error,     // Errors creating; see create route
-            });
+        res.json(piece);
 
     });
 };
@@ -85,39 +81,44 @@ exports.show = function (req, res, next) {
  * POST /users/:username {username, ...}
  */
 exports.edit = function (req, res, next) {
-    Piece.edit({
-        id:req.body.id,
-        name: req.body.name,
-        quantity:req.body.quantity,
-        limit:req.body.limit}
-        ,function (err, piece) {
+    Piece.get(req.params.id, function (err, piece) {
         // TODO: Gracefully "no such user" error. E.g. 404 page.
         if (err) return next(err);
-        user.patch(req.body, function (err) {
-            if (err) {
-                if (err instanceof errors.ValidationError) {
+        piece.patch(req.body, function (err) {
+            if (err) return next(err);
+           /* if (err) {
+                if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
                     // Return to the edit form and show the error message.
                     // TODO: Assuming username is the issue; hardcoding for that
                     // being the only input right now.
                     // TODO: It'd be better to use a cookie to "remember" this
                     // info, e.g. using a flash session.
-                    return res.redirect(URL.format({
+                    return res.json({
                         pathname: getUserURL(user),
                         query: {
-                            username: req.body.username,
-                            error: err.message,
-                        },
-                    }));
+                            error: err.message
+                        }
+                    });
                 } else {
                     return next(err);
                 }
-            }
-            res.json('piece', {
-                Piece: Piece,
-                pieces: pieces,
-                name: req.query.name,   // Support pre-filling create form
-                error: req.query.error,     // Errors creating; see create route
-            });
+            }*/
+            res.json(piece);
+        });
+    });
+};
+
+/**
+ * DELETE /users/:username
+ */
+exports.del = function (req, res, next) {
+    Piece.get(req.params.id, function (err, piece) {
+        // TODO: Gracefully handle "no such user" error somehow.
+        // E.g. redirect back to /users with an info message?
+        if (err) return next(err);
+        piece.del(function (err) {
+            if (err) return next(err);
+           res.json(piece);
         });
     });
 };
