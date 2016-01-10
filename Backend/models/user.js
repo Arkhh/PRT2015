@@ -179,6 +179,7 @@ User.prototype.del = function (callback) {
         'DETACH DELETE user'
     ].join('\n');
 
+    
     var params = {
         id: this.id
     };
