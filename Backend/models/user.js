@@ -126,12 +126,13 @@ User.prototype.patch = function (props, callback) {
     var safeProps = validate(props);
 
     var query = [
-        'MATCH (user:User {username: {username}})',
+        'MATCH (user:User) WHERE id(user)= {id}',
         'SET user += {props}',
         'RETURN user',
     ].join('\n');
 
     var params = {
+        id: this.id,
         username: this.username,
         password: this.password,
         props: safeProps

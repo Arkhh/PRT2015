@@ -233,7 +233,7 @@ Event.prototype.patch = function (props, callback) {
 
     var params = {
         id: idInt,
-        props: safeProps,
+        props: safeProps
     };
 
     var self = this;
