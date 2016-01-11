@@ -384,20 +384,30 @@ db.createConstraint({
     }
 });
 
-User.connect = function (email, password, callback){
+User.connect = function (props, callback){
+    console.log("props");
+    console.log(props);
+    var safeProps = validate(props);
     var query = [
-        'MATCH (user:User) ' +
-        'WHERE user.email = {email} ' +
-        'AND user.password = {password} ' +
+        'MATCH (user:User {email: {props}.email, password: {props}.password }) ' +
         'RETURN user',
+        //'MATCH (user:User) WHERE user.email= {props.email} AND user.password= {props.password} RETURN user',
     ].join('\n');
-
-    params = {
-        email: email,
-        password: password
+    console.log('QUERY');
+    console.log(query);
+    console.log("safeProps");
+    console.log(safeProps);
+    console.log('props.email');
+    console.log(safeProps.email);
+    console.log('props.pass');
+    console.log(safeProps.password);
+    var params = {
+        id: this.id,
+        props: safeProps
     }
     db.cypher({
-        query:query
+        query:query,
+        params: params
     }, function(err, results) {
         if (err) return callback(err);
         if (!results.length) {

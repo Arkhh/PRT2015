@@ -39,7 +39,7 @@ app.post(routeApi+'/users', routes.users.create);
 app.get(routeApi+'/users/:id', routes.users.show);
 app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
-app.post(routeApi+'/users/auth', routes.users.connect);
+app.post(routeApi+'/auth/', routes.users.connect);
 
 app.get(routeApi+'/pieces',routes.pieces.list);
 app.get(routeApi+'/pieces/:id',routes.pieces.show);

@@ -82,6 +82,18 @@ exports.edit = function (req, res) {
 };
 
 /**
+ * CONNECT /users/:username/:password
+ */
+exports.connect = function (req, res){
+    User.connect(
+        {
+        password: req.body.password,
+        email: req.body.email}, function (err, user) {
+        if (err) return res.json( {error:err + ''}); //+ error:err});
+        return res.json(user);
+    })
+};
+/**
  * DELETE /users/:username
  */
 exports.del = function (req, res) {
@@ -92,14 +104,4 @@ exports.del = function (req, res) {
             return res.json({deleted:'ok', user: user});
         });
     });
-};
-
-/**
- * CONNECT /users/:username/:password
- */
-exports.connect = function (req, res, next){
-    User.connect(req.params.email, req.params.password, function (err, user) {
-        if (err) return next(err);
-        return res.json(user);
-    })
 };
