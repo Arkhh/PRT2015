@@ -3,6 +3,7 @@
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
+var _ =require('underscore');
 
 var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
@@ -23,12 +24,26 @@ var User = module.exports = function User(_node) {
 // Public constants:
 
 User.VALIDATION_INFO = {
-    'username': {
-        required: true,
+    'nom':{
+        required: false,
         minLength: 2,
-        maxLength: 16,
+        maxLength: 12,
         pattern: /^[A-Za-z0-9_]+$/,
-        message: '2-16 characters; letters, numbers, and underscores only.'
+        message: 'string'
+    },
+    'prenom':{
+        required: false,
+        minLength: 2,
+        maxLength: 12,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'string'
+    },
+    'email':{
+        required: true,
+        minLength: 1,
+        maxLength: 30,
+        pattern: /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i,
+        message: 'string regex email chiffre lettre specChar'
     },
     'password':{
         required: true,
@@ -36,6 +51,48 @@ User.VALIDATION_INFO = {
         maxLength: 16,
         pattern: /^[A-Za-z0-9_]+$/,
         message: '2-16 characters; letters, numbers, and underscores only.'
+    },
+    'valide':{
+        required: false,
+        minLength: 4,
+        maxLength: 5,
+        pattern: /^[A-Za-z]+$/,
+        message: 'boolean'
+    },
+    'type':{
+        required: false,
+        minLength: 1,
+        maxLength: 10,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'String'
+    },
+    'mainForte':{
+        required: false,
+        minLength: 1,
+        maxLength: 14,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'string'
+    },
+    'admin':{
+        required: false,
+        minLength: 1,
+        maxLength: 14,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'string'
+    },
+    'naissance':{
+        required: false,
+        minLength: 1,
+        maxLength: 14,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'string'
+    },
+    'sexe':{
+        required: false,
+        minLength: 1,
+        maxLength: 2,
+        pattern: /^[A-Z]+$/,
+        message: 'string'
     }
 };
 
@@ -43,13 +100,39 @@ User.VALIDATION_INFO = {
 
 // The user's username, e.g. 'aseemk'.
 Object.defineProperty(User.prototype, 'id', {
-    get: function () { return this._node._id; }
+    get: function () {
+        return this._node._id;
+    }
+});
+Object.defineProperty(User.prototype, 'nom', {
+    get: function () { return this._node.properties['nom']; }
+});
+Object.defineProperty(User.prototype, 'prenom', {
+    get: function () { return this._node.properties['prenom']; }
+});
+Object.defineProperty(User.prototype, 'email', {
+    get: function () { return this._node.properties['email']; }
 });
 Object.defineProperty(User.prototype, 'password', {
     get: function () { return this._node.properties['password']; }
 });
-Object.defineProperty(User.prototype, 'username', {
-    get: function () { return this._node.properties['username']; }
+Object.defineProperty(User.prototype, 'valide', {
+    get: function () { return this._node.properties['valide']; }
+});
+Object.defineProperty(User.prototype, 'type', {
+    get: function () { return this._node.properties['type']; }
+});
+Object.defineProperty(User.prototype, 'mainForte', {
+    get: function () { return this._node.properties['mainForte']; }
+});
+Object.defineProperty(User.prototype, 'admin', {
+    get: function () { return this._node.properties['admin']; }
+});
+Object.defineProperty(User.prototype, 'naissance', {
+    get: function () { return this._node.properties['naissance']; }
+});
+Object.defineProperty(User.prototype, 'sexe', {
+    get: function () { return this._node.properties['sexe']; }
 });
 
 // Private helpers:
@@ -123,6 +206,12 @@ function isConstraintViolation(err) {
 // Atomically updates this user, both locally and remotely in the db, with the
 // given property updates.
 User.prototype.patch = function (props, callback) {
+    console.log(props);
+    props = _.extend(props,{
+        email: this.email,
+        password: this.password
+    });
+
     var safeProps = validate(props);
 
     var query = [
@@ -131,16 +220,11 @@ User.prototype.patch = function (props, callback) {
         'RETURN user',
     ].join('\n');
 
+
     var params = {
         id: this.id,
-        username: this.username,
-        password: this.password,
         props: safeProps
     };
-
-    var self = this;
-
-    console.log("HERE");
 
     db.cypher({
         query: query,
@@ -158,7 +242,7 @@ User.prototype.patch = function (props, callback) {
         if (err) return callback(err);
 
         if (!results.length) {
-            err = new Error('User has been deleted! Username: ' + self.username);
+            err = new Error('User has been deleted! Id: ' + this.id);
             return callback(err);
         }
 
@@ -223,15 +307,13 @@ User.create = function (props, callback) {
             // Alternately, we could tweak our query to explicitly check first
             // whether the username is taken or not.
             err = new errors.UnicityError(
-                'The username ‘' + props.username + '’ is taken.');
+                'The email ‘' + props.email + '’ is taken.');
         }
         if (err) return callback(err);
         var user = new User(results[0]['user']);
         callback(null, user);
     });
 };
-
-
 
 
 User.get = function (id, callback) {
@@ -257,7 +339,7 @@ User.get = function (id, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('No such user with ID: ' + id)
+            var error=new errors.PropertyError('No such user with ID: ' + id);
             err.push(error);
             return callback(err);
         }
@@ -292,12 +374,37 @@ User.getAll = function (callback) {
 // but this would be better as a formal schema migration script or similar.
 db.createConstraint({
     label: 'User',
-    property: 'username'
+    property: 'email'
 }, function (err, constraint) {
     if (err) throw err;     // Failing fast for now, by crash the application.
     if (constraint) {
-        console.log('(Registered unique usernames constraint.)');
+        console.log('(Registered unique emails constraint.)');
     } else {
         // Constraint already present; no need to log anything.
     }
 });
+
+User.connect = function (email, password, callback){
+    var query = [
+        'MATCH (user:User) ' +
+        'WHERE user.email = {email} ' +
+        'AND user.password = {password} ' +
+        'RETURN user',
+    ].join('\n');
+
+    params = {
+        email: email,
+        password: password
+    }
+    db.cypher({
+        query:query
+    }, function(err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            err = new Error('Email and/or password are maybe wrong');
+            return callback(err);
+        }
+        var user = new User(results[0]['user']);
+        callback(null, user);
+    });
+}
