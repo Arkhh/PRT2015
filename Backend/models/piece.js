@@ -9,7 +9,7 @@ var db = new neo4j.GraphDatabase({
     // but assume Neo4j installation defaults.
     url: process.env['NEO4J_URL'] || process.env['GRAPHENEDB_URL'] ||
    // 'http://neo4j:mafraj2015@178.62.87.171:7474',
-    'http://neo4j:mafraj2015@localhost:7474',
+    'http://neo4j:Mafraj2015@localhost:7474',
     auth: process.env['NEO4J_AUTH']
 });
 
@@ -23,6 +23,15 @@ var Piece = module.exports = function Piece(_node) {
 
 Object.defineProperty(Piece.prototype, 'id', {
     get: function () { return this._node._id; }
+});
+Object.defineProperty(Piece.prototype, 'name', {
+    get: function () { return this._node.properties['name']; }
+});
+Object.defineProperty(Piece.prototype, 'quantity', {
+    get: function () { return this._node.properties['quantity']; }
+});
+Object.defineProperty(Piece.prototype, 'limit', {
+    get: function () { return this._node.properties['limit']; }
 });
 
 
@@ -45,6 +54,12 @@ function validate(props, required) {
 // Public constants:
 
 Piece.VALIDATION_INFO = {
+    'id':{
+        required: true,
+        minLength: 1,
+        pattern: /^[0-9_]+$/,
+        message: ' numbers only.'
+    },
     'name': {
         required: true,
         minLength: 2,
@@ -65,29 +80,54 @@ Piece.VALIDATION_INFO = {
     }
 };
 
+function validate(props, required) {
+    var safeProps = {};
+    var TabErrors ={error:[]};
+    var error= null;
+
+    for (var prop in User.VALIDATION_INFO) {
+        error=null;
+        var val = props[prop];
+        error=validateProp(prop, val, required);
+        if(error){
+            TabErrors.error.push(error);
+        }else {
+            safeProps[prop] = val;
+        }
+
+    }
+
+    if(TabErrors.error.length>0){
+        return TabErrors;
+    }
+    return safeProps;
+}
+
 function validateProp(prop, val, required) {
+    required=true;
     var info = Piece.VALIDATION_INFO[prop];
     var message = info.message;
 
     if (!val) {
         if (info.required && required) {
-            throw new errors.ValidationError(
-                'Missing ' + prop + ' (required).');
+            return('Missing ' + prop + ' (required).');
         } else {
             return;
         }
     }
 
     if (info.minLength && val.length < info.minLength) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (too short). Requirements: ' + message);
+        return('Invalid ' + prop + ' (too short). Requirements: ' + message);
     }
 
+    if (info.maxLength && val.length > info.maxLength) {
+        return('Invalid ' + prop + ' (too long). Requirements: ' + message);
+    }
 
     if (info.pattern && !info.pattern.test(val)) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (format). Requirements: ' + message);
+        return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
+
 }
 
 // Atomically updates this user, both locally and remotely in the db, with the
@@ -120,8 +160,8 @@ Piece.prototype.patch = function (props, callback) {
             // but it'd be nicer if Neo4j returned this data semantically.
             // Alternately, we could tweak our query to explicitly check first
             // whether the username is taken or not.
-            err = new errors.ValidationError(
-                'The event ‘' + props.id + '’ is taken.');
+            err = new errors.UnicityError(
+                'The piece ‘' + props.name + '’ is taken.');
         }
         if (err) return callback(err);
 
@@ -245,4 +285,21 @@ Piece.prototype.del=function(callback){
     },function(err){
         callback(err);
     })
-}
+};
+
+// Static initialization:
+
+// Register our unique username constraint.
+// TODO: This is done async'ly (fire and forget) here for simplicity,
+// but this would be better as a formal schema migration script or similar.
+db.createConstraint({
+    label: 'Piece',
+    property: 'name'
+}, function (err, constraint) {
+    if (err) throw err;     // Failing fast for now, by crash the application.
+    if (constraint) {
+        console.log('(Registered unique names constraint.)');
+    } else {
+        // Constraint already present; no need to log anything.
+    }
+});
