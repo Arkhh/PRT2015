@@ -15,9 +15,9 @@ function getUserURL(piece) {
  */
 exports.list = function (req, res, next) {
     Piece.getAll(function (err, pieces) {
-        if (err) return next(err);
+        if (err) res.json(err);
 
-        res.json('piece', {
+        return res.json('piece', {
             Piece: Piece,
             pieces: pieces,
             name: req.query.name,   // Support pre-filling create form
@@ -36,29 +36,14 @@ exports.create = function (req, res, next) {
         quantity:req.body.quantity,
         limit:req.body.limit
     }, function (err, piece) {
-        if (err) return next(err);
-        /*{
-            if (err instanceof errors.ValidationError) {
-                // Return to the create form and show the error message.
-                // TODO: Assuming username is the issue; hardcoding for that
-                // being the only input right now.
-                // TODO: It'd be better to use a cookie to "remember" this info,
-                // e.g. using a flash session.
-                return res.redirect(URL.format({
-                    pathname: '/pieces',
-                    query: {
-                        id:req.body.id,
-                        name: req.body.name,
-                        quantity:req.body.quantity,
-                        limit:req.body.limit,
-                        error: err.message
-                    },
-                }));
-            } else {
-                return next(err);
-            }
-        }*/
-        res.json(piece);
+        if (err){
+            return res.json({
+                pathname: '/pieces',
+                error: err
+            });
+        }
+
+       return res.json(piece);
     });
 };
 
@@ -67,10 +52,13 @@ exports.create = function (req, res, next) {
  */
 exports.show = function (req, res, next) {
     Piece.get(req.params.id, function (err, piece) {
-        // TODO: Gracefully "no such user" error. E.g. 404 page.
-        if (err) return next(err);
-        // TODO: Also fetch and show followers? (Not just follow*ing*.)
 
+        if (err) {
+            return res.json({
+                pathname: '/pieces/:id',
+                error: err
+            });
+        }
         res.json(piece);
 
     });
@@ -78,7 +66,7 @@ exports.show = function (req, res, next) {
 
 
 /**
- * POST /users/:username {username, ...}
+ * POST /users/:id {id, ...}
  */
 exports.edit = function (req, res, next) {
     Piece.get(req.params.id, function (err, piece) {
@@ -86,24 +74,16 @@ exports.edit = function (req, res, next) {
         if (err) return next(err);
         piece.patch(req.body, function (err) {
             if (err) return next(err);
-           /* if (err) {
+            if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
-                    // Return to the edit form and show the error message.
-                    // TODO: Assuming username is the issue; hardcoding for that
-                    // being the only input right now.
-                    // TODO: It'd be better to use a cookie to "remember" this
-                    // info, e.g. using a flash session.
                     return res.json({
-                        pathname: getUserURL(user),
-                        query: {
                             error: err.message
-                        }
                     });
                 } else {
-                    return next(err);
+                    return res.json(err);
                 }
-            }*/
-            res.json(piece);
+            }
+            return res.json(piece);
         });
     });
 };
@@ -118,7 +98,8 @@ exports.del = function (req, res, next) {
         if (err) return next(err);
         piece.del(function (err) {
             if (err) return next(err);
-           res.json(piece);
+            res.json({deleted:'ok', piece: piece});
+
         });
     });
 };
