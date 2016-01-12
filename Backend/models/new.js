@@ -27,30 +27,24 @@ Neww.VALIDATION_INFO = {
         required: true,
         minLength: 5,
         maxLength: 50,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 2 et 16 caractères'
     },
     'description':{
         required: true,
         minLength: 5,
         maxLength: 10000,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 5 et 10000 caractères'
     },
     'descriptionShort':{
         required: true,
         minLength: 5,
         maxLength: 50,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 5 et 50 caractères'
-    },
-  /*  'date':{
-        required: true,
-        minLength: 8,
-        maxLength: 10,
-        pattern: /^'(0?\d|[12]\d|3[01])-(0?\d|1[012])-((?:20)\d{2})'$/,
-        message: 'Must be a date'
-    }*/
+    }
+
 };
 
 // Public instance properties:
@@ -125,7 +119,6 @@ function validateProp(prop, val, required) {
     }
 
     if (info.pattern && !info.pattern.test(val)) {
-        console.log(info.pattern+'      '+info.pattern.test(val));
         return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
 
@@ -184,6 +177,7 @@ Neww.prototype.patch = function (props, callback) {
 };
 
 Neww.prototype.del = function (callback) {
+
     // Use a Cypher query to delete both this user and his/her following
     // relationships in one query and one network request:
     // (Note that this'll still fail if there are any relationships attached
@@ -208,13 +202,8 @@ Neww.prototype.del = function (callback) {
 
 // Creates the user and persists (saves) it to the db, incl. indexing it:
 Neww.create = function (props, callback) {
-
-    var propsDate={
-        name:props.name,
-        description:props.description,
-        descriptionShort:props.descriptionShort,
-        date:Date.create(new Date())
-    }
+    var dateToday=new Date().getTime();//avoir la date d'ajourd'hui
+console.log(dateToday);
     var errorTab=[],testProps, err;
     var query = [
         'CREATE (new:New {props})',
@@ -227,11 +216,15 @@ Neww.create = function (props, callback) {
         errorTab.push( new errors.PropertyError(testProps.error));
         return callback(errorTab);
     }
-
+   // props: validate(props)
     var params = {
-        props: validate(props)
+        props:{
+            name:validate(props).name,
+            description:validate(props).description,
+            descritionShort:validate(props).descriptionShort,
+            date:dateToday
+        }
     };
-
     db.cypher({
         query: query,
         params: params
@@ -274,7 +267,7 @@ Neww.get = function (id, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('No such newsr with ID: ' + id)
+            var error=new errors.PropertyError('No such news with ID: ' + id)
             err.push(error);
             return callback(err);
         }
@@ -294,7 +287,7 @@ Neww.getAll = function (callback) {
     }, function (err, results) {
         if (err) return callback(err);
         var news = results.map(function (result) {
-            return new User(result['new']);
+            return new Neww(result['new']);
         });
         callback(null, news);
     });

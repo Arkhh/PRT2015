@@ -89,9 +89,9 @@ exports.edit = function (req, res) {
  * DELETE /news/:id
  */
 exports.del = function (req, res) {
-    User.get(req.params.id, function (err, neww) {
+    Neww.get(req.params.id, function (err, neww) {
         if (err) return res.json(err);
-        Neww.del(function (err) {
+        neww.del(function (err) {
             if (err) return res.json(err);
             res.json({deleted:'ok', new: neww});
         });
