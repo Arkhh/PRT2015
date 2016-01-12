@@ -24,6 +24,10 @@ exports.list = function (req, res, next) {
             lieu: req.query.lieu,
             prix: req.query.prix,
             description: req.query.description,
+            capacite: req.query.capacite,
+            valid: req.query.valid,
+            date: req.query.date,
+            shortDescription: req.query.shortDescription,
             error: req.query.error,     // Errors creating; see create route
         });
     });
@@ -34,34 +38,76 @@ exports.list = function (req, res, next) {
  */
 exports.create = function (req, res, next) {
     console.log('Bonjour');
-    Event.create({
-        nom: req.body.nom,
-        lieu: req.body.lieu,
-        prix: req.body.prix,
-        description: req.body.description
-    }, function (err, event) {
-        if (err) {
-            /*if (err instanceof errors.ValidationError) {
-             // Return to the create form and show the error message.
-             // TODO: Assuming username is the issue; hardcoding for that
-             // being the only input right now.
-             // TODO: It'd be better to use a cookie to "remember" this info,
-             // e.g. using a flash session.
-             return res.redirect(URL.format({
-             pathname: '/users',
-             query: {
-             username: req.body.username,
-             error: err.message,
-             },
-             }));*/
-            //} else {
-            return next(err);
-            //}
-        }
-        //res.redirect();
-        res.json(event);
-    });
-};
+    //var adminOK = Event.isAdmin(req.body.id);
+   // console.log('ICI');
+   // console.log(adminOK);
+   // if (Event.isAdmin(machin)) {
+        Event.create({
+            nom: req.body.nom,
+            lieu: req.body.lieu,
+            prix: req.body.prix,
+            description: req.body.description,
+            capacite: req.body.capacite,
+            valid: 0,
+            date: req.body.date,
+            shortDescription: req.body.shortDescription
+        }, function (err, event) {
+            if (err) {
+                /*if (err instanceof errors.ValidationError) {
+                 // Return to the create form and show the error message.
+                 // TODO: Assuming username is the issue; hardcoding for that
+                 // being the only input right now.
+                 // TODO: It'd be better to use a cookie to "remember" this info,
+                 // e.g. using a flash session.
+                 return res.redirect(URL.format({
+                 pathname: '/users',
+                 query: {
+                 username: req.body.username,
+                 error: err.message,
+                 },
+                 }));*/
+                //} else {
+                return next(err);
+                //}
+            }
+            //res.redirect();
+            res.json(event);
+        });
+    };
+  /*  else {
+        Event.create({
+            nom: req.body.nom,
+            lieu: req.body.lieu,
+            prix: req.body.prix,
+            description: req.body.description,
+            capacite: req.body.capacite,
+            valid: 0,
+            date: req.body.date,
+            shortDescription: req.body.shortDescription
+        }, function (err, event) {
+            if (err) {
+                /*if (err instanceof errors.ValidationError) {
+                 // Return to the create form and show the error message.
+                 // TODO: Assuming username is the issue; hardcoding for that
+                 // being the only input right now.
+                 // TODO: It'd be better to use a cookie to "remember" this info,
+                 // e.g. using a flash session.
+                 return res.redirect(URL.format({
+                 pathname: '/users',
+                 query: {
+                 username: req.body.username,
+                 error: err.message,
+                 },
+                 }));*/
+                //} else {*/
+               // return next(err);
+                //}
+           // }
+            //res.redirect();
+         /*   res.json(event);
+        });
+    }
+};*/
 
 /**
  * DELETE /users/:username

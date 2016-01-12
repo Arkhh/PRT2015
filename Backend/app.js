@@ -31,28 +31,28 @@ app.locals({
 });
 
 // Routes
-
-app.get('/', routes.site.index);
-
-app.get('/users', routes.users.list);
-app.post('/users', routes.users.create);
-app.get('/users/:id', routes.users.show);
-app.post('/users/:id', routes.users.edit);
-app.delete('/users/:id', routes.users.del);
+var routeApi ='/api';
 
 
-app.get('/pieces',routes.pieces.list);
-app.get('/pieces/:id',routes.pieces.show);
-app.post('/pieces',routes.pieces.create);
-app.post('/pieces/:id',routes.pieces.edit);
-app.del('/pieces/:id',routes.pieces.del);
+app.get(routeApi+'/users', routes.users.list);
+app.post(routeApi+'/users', routes.users.create);
+app.get(routeApi+'/users/:id', routes.users.show);
+app.post(routeApi+'/users/:id', routes.users.edit);
+app.delete(routeApi+'/users/:id', routes.users.del);
+app.post(routeApi+'/auth/', routes.users.connect);
 
-app.get('/events',routes.events.list);
-app.get('/events/:id',routes.events.show);
-app.post('/events',routes.events.create);
-app.post('/events/:id',routes.events.edit);
-app.del('/events/:id', routes.events.del);
+app.get(routeApi+'/pieces',routes.pieces.list);
+app.get(routeApi+'/pieces/:id',routes.pieces.show);
+app.post(routeApi+'/pieces',routes.pieces.create);
+app.post(routeApi+'/pieces/:id',routes.pieces.edit);
+app.delete(routeApi+'/pieces/:id',routes.pieces.del);
 
+
+app.get(routeApi+'/events',routes.events.list);
+app.get(routeApi+'/events/:id',routes.events.show);
+app.post(routeApi+'/events',routes.events.create);
+app.post(routeApi+'/events/:id',routes.events.edit);
+app.delete(routeApi+'/events/:id', routes.events.del);
 
 
 
