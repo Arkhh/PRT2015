@@ -25,14 +25,14 @@ var User = module.exports = function User(_node) {
 
 User.VALIDATION_INFO = {
     'nom':{
-        required: false,
+        required: true,
         minLength: 2,
         maxLength: 12,
         pattern: /^[A-Za-z0-9_]+$/,
         message: 'string'
     },
     'prenom':{
-        required: false,
+        required: true,
         minLength: 2,
         maxLength: 12,
         pattern: /^[A-Za-z0-9_]+$/,
@@ -62,14 +62,14 @@ User.VALIDATION_INFO = {
     'type':{
         required: false,
         minLength: 1,
-        maxLength: 10,
+        maxLength: 2,
         pattern: /^[A-Za-z0-9_]+$/,
         message: 'String'
     },
     'mainForte':{
         required: false,
         minLength: 1,
-        maxLength: 14,
+        maxLength: 1,
         pattern: /^[A-Za-z0-9_]+$/,
         message: 'string'
     },
@@ -90,7 +90,7 @@ User.VALIDATION_INFO = {
     'sexe':{
         required: false,
         minLength: 1,
-        maxLength: 2,
+        maxLength: 1,
         pattern: /^[A-Z]+$/,
         message: 'string'
     }
@@ -146,7 +146,7 @@ Object.defineProperty(User.prototype, 'sexe', {
 function validate(props, required) {
     var safeProps = {};
     var TabErrors ={error:[]};
-    var error= null;
+    var error= '';
 
     for (var prop in User.VALIDATION_INFO) {
         error=null;
@@ -170,7 +170,6 @@ function validate(props, required) {
 // By default, ignores null/undefined/empty values, but you can pass `true` for
 // the `required` param to enforce that any required properties are present.
 function validateProp(prop, val, required) {
-    required=true;
     var info = User.VALIDATION_INFO[prop];
     var message = info.message;
 
@@ -206,13 +205,24 @@ function isConstraintViolation(err) {
 // Atomically updates this user, both locally and remotely in the db, with the
 // given property updates.
 User.prototype.patch = function (props, callback) {
-    console.log(props);
+
+    var errorTab=[],validProps;
+
+
+
     props = _.extend(props,{
         email: this.email,
-        password: this.password
+        password: this.password,
+        nom: this.nom,
+        prenom: this.prenom
     });
 
-    var safeProps = validate(props);
+    validProps=validate(props,true);
+
+    if(validProps.error){
+        errorTab.push( new errors.PropertyError(validProps.error));
+        return callback(errorTab);
+    }
 
     var query = [
         'MATCH (user:User) WHERE id(user)= {id}',
@@ -223,30 +233,27 @@ User.prototype.patch = function (props, callback) {
 
     var params = {
         id: this.id,
-        props: safeProps
+        props: validProps
     };
+
+    var self = this;
+
 
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
         if (isConstraintViolation(err)) {
-            // TODO: This assumes username is the only relevant constraint.
-            // We could parse the constraint property out of the error message,
-            // but it'd be nicer if Neo4j returned this data semantically.
-            // Alternately, we could tweak our query to explicitly check first
-            // whether the username is taken or not.
-            err = new errors.UnicityError(
-                'The username ‘' + props.username + '’ is taken.');
+            //si l'email est déjà pris
+            err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
         }
         if (err) return callback(err);
 
         if (!results.length) {
-            err = new Error('User has been deleted! Id: ' + this.id);
+            err = new Error('L\'utilisateur avec l\'id: ' + this.id +'n\'existe pas dans la base');
             return callback(err);
         }
-
-        // Update our node with this updated+latest data from the server:
+        // Met à jour le noeud avec les dernieres modifications
         self._node = results[0]['user'];
 
         callback(null);
@@ -254,10 +261,7 @@ User.prototype.patch = function (props, callback) {
 };
 
 User.prototype.del = function (callback) {
-    // Use a Cypher query to delete both this user and his/her following
-    // relationships in one query and one network request:
-    // (Note that this'll still fail if there are any relationships attached
-    // of any other types, which is good because we don't expect any.)
+// supprime l'utilisateurs ainsi que toute ses relations
     var query = [
         'MATCH (user:User)',
         'WHERE id(user) = {id}',
@@ -277,23 +281,24 @@ User.prototype.del = function (callback) {
 };
 
 
-// Creates the user and persists (saves) it to the db, incl. indexing it:
+// Crée l'utilisateur et l'insère dans la DB
 User.create = function (props, callback) {
 
-    var errorTab=[],testProps, err;
+    var errorTab=[],validProps;
     var query = [
         'CREATE (user:User {props})',
         'RETURN user',
     ].join('\n');
 
-    testProps=validate(props);
-    if(testProps.error){
-        errorTab.push( new errors.PropertyError(testProps.error));
+    validProps=validate(props,true);
+
+    if(validProps.error){
+        errorTab.push( new errors.PropertyError(validProps.error));
         return callback(errorTab);
     }
 
     var params = {
-        props: validate(props)
+        props: validProps
     };
 
     db.cypher({
@@ -301,13 +306,8 @@ User.create = function (props, callback) {
         params: params
     }, function (err, results) {
         if (isConstraintViolation(err)) {
-            // TODO: This assumes username is the only relevant constraint.
-            // We could parse the constraint property out of the error message,
-            // but it'd be nicer if Neo4j returned this data semantically.
-            // Alternately, we could tweak our query to explicitly check first
-            // whether the username is taken or not.
-            err = new errors.UnicityError(
-                'The email ‘' + props.email + '’ is taken.');
+            //si l'email est déjà pris
+            err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
         }
         if (err) return callback(err);
         var user = new User(results[0]['user']);
@@ -366,55 +366,42 @@ User.getAll = function (callback) {
     });
 };
 
-
-// Static initialization:
-
-// Register our unique username constraint.
-// TODO: This is done async'ly (fire and forget) here for simplicity,
-// but this would be better as a formal schema migration script or similar.
-db.createConstraint({
-    label: 'User',
-    property: 'email'
-}, function (err, constraint) {
-    if (err) throw err;     // Failing fast for now, by crash the application.
-    if (constraint) {
-        console.log('(Registered unique emails constraint.)');
-    } else {
-        // Constraint already present; no need to log anything.
-    }
-});
-
 User.connect = function (props, callback){
-    console.log("props");
-    console.log(props);
-    var safeProps = validate(props);
+
+    var safeProps = validate(props,false);
     var query = [
         'MATCH (user:User {email: {props}.email, password: {props}.password }) ' +
         'RETURN user',
-        //'MATCH (user:User) WHERE user.email= {props.email} AND user.password= {props.password} RETURN user',
     ].join('\n');
-    console.log('QUERY');
-    console.log(query);
-    console.log("safeProps");
-    console.log(safeProps);
-    console.log('props.email');
-    console.log(safeProps.email);
-    console.log('props.pass');
-    console.log(safeProps.password);
+
     var params = {
         id: this.id,
         props: safeProps
-    }
+    };
+
     db.cypher({
         query:query,
         params: params
     }, function(err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            err = new Error('Email and/or password are maybe wrong');
+            err = new errors.ConnectionError('Mauvaise combinaison e-mail, mot de passe.');
             return callback(err);
         }
         var user = new User(results[0]['user']);
         callback(null, user);
     });
-}
+};
+
+
+// Initialisation des variables uniques pour l'user (email)
+db.createConstraint({
+    label: 'User',
+    property: 'email'
+}, function (err, constraint) {
+    if (err) throw err;
+    if (constraint) {
+        console.log('(Contrainte d\'email unique enregistée)');
+    }
+});
+

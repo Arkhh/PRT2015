@@ -18,7 +18,7 @@ exports.list = function (req, res) {
         if (err) return res.json(err);
         return res.json('users', {
             User: User,
-            users: users,
+            users: users
         })
     })
 };
@@ -29,7 +29,9 @@ exports.list = function (req, res) {
 exports.create = function (req, res) {
     User.create({
         password: req.body.password,
-        email: req.body.email
+        email: req.body.email,
+        nom: req.body.nom,
+        prenom: req.body.prenom
     }, function (err, user) {
         if (err) {
             return res.json({
@@ -82,14 +84,14 @@ exports.edit = function (req, res) {
 };
 
 /**
- * CONNECT /users/:username/:password
+ * POST /auth/
  */
 exports.connect = function (req, res){
     User.connect(
         {
         password: req.body.password,
         email: req.body.email}, function (err, user) {
-        if (err) return res.json( {error:err + ''}); //+ error:err});
+        if (err) return res.json( {error:[{message: [err]}]});
         return res.json(user);
     })
 };
