@@ -1,0 +1,87 @@
+<div data-spy="scroll" data-target="#header" class="landing">
+
+  <!-- header -->
+
+  <header id="header" class="navbar navbar-fixed-top"  data-spy="affix" data-offset-top="1">
+    <div class="container">
+      <a class="navbar-brand" href="#">BadminTown</a>
+      <p class="navbar-text pull-left text-muted hidden-xs"><small><em>Logiciel de matching pour joueurs de badminton</em></small></p>
+    </div>
+  </header>
+
+  <section id="content">
+
+    <div class="main-visual">
+      <div class="bg-inverse">
+        <div class="container text-center">
+          <h1 class="animated fadeInUp">Application en ligne de gestion de joueurs de Badminton</h1>
+          <p>
+            <a ng-click="displayInscription();" target="_blank" class="btn btn-lg btn-danger animated fadeInLeft m-l m-r m-b">Inscription</a>
+            <a ng-click="displayConnexion();"  target="_blank" class="btn btn-lg btn-primary animated fadeInRight m-l m-r m-b">Connexion</a>
+          </p>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div align="center" ng-if="showConn===true" class="col-md-6">
+                    <form ng-submit="logIn();" class="panel-body">
+                        <div class="block">
+                            <label class="control-label">E-mail</label>
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Mot de passe</label>
+                            <input type="password" id="inputPasswordLogin" placeholder="Mot de passe" class="form-control" ng-model="userinfos.password">
+                        </div>
+                        <a href="#" class="pull-right m-t-mini" style="color:white"><small>Mot de passe oublié ?</small></a>
+                        <button align="center" type="submit" class="btn btn-info">Se connecter</button>
+                        <div class="line line-dashed"></div>
+                        <p class="text-muted text-center"><small>Pas encore de compte ?</small></p>
+                        <a ng-click="displayInscription();" class="btn btn-white btn-block">Créer un compte</a>
+                    </form>
+                </div>
+                <div align="center" ng-if="showInscription===true" class="col-md-6">
+                    <form ng-submit="signUp();" class="panel-body">
+                        <div class="block">
+                            <label class="control-label">Nom</label>
+                            <input type="text" placeholder="Doe" class="form-control" ng-model="userinfos.nom">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Prénom</label>
+                            <input type="text" placeholder="John" class="form-control" ng-model="userinfos.prenom">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Votre adresse e-mail</label>
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Votre mot de passe</label>
+                            <input type="password" id="inputPasswordSignUp" placeholder="Password"  ng-model="userinfos.password" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-info">S'inscrire</button>
+                        <div class="line line-dashed"></div>
+                        <p class="text-muted text-center"><small>Vous avez déjà un compte ?</small></p>
+                        <a ng-click="displayConnexion();" class="btn btn-white btn-block">Se connecter</a>
+                    </form>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="about">
+      <div class="container">
+        <p>&nbsp;</p>
+        <div class="text-center m-large">
+          <h2 class="font-thin">A propos</h2>
+          <p>Inscrivez vous pour rejoindre notre système de joueurs de badminton</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Ressources -->
+  <link rel="stylesheet" href="styles/stylesheets/landing.css">
+  <!-- Ressources-->
+
+</div>
