@@ -8,7 +8,7 @@ var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
     // but assume Neo4j installation defaults.
     url: process.env['NEO4J_URL'] || process.env['GRAPHENEDB_URL'] ||
-    'http://neo4j:Mafraj2015@localhost:7474',
+    'http://neo4j:mafraj2015@localhost:7474',
     auth: process.env['NEO4J_AUTH']
 });
 
