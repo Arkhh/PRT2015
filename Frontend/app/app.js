@@ -8,7 +8,7 @@ angular.module('BadminTown', ['ngRoute'])
                 controller: 'LandingCtrl'
             })
             .when('/home', {
-                templateUrl: 'home.html',
+                templateUrl: 'views/home.html',
                 controller: 'HomeCtrl'
 
             })
@@ -18,57 +18,57 @@ angular.module('BadminTown', ['ngRoute'])
 
             })
             .when('/news/:id', {
-                templateUrl: 'newsDetails.html',
+                templateUrl: 'views/newsDetails.html',
                 controller: 'NewsCtrl'
 
             })
             .when('/admin', {
-                templateUrl: 'admin.html',
+                templateUrl: 'views/admin.html',
                 controller: 'AdminCtrl'
 
             })
             .when('/profile/', {
-                templateUrl: 'profile.html',
+                templateUrl: 'views/profile.html',
                 controller: 'ProfileCtrl'
 
             })
             .when('/events/', {
-                templateUrl: 'events.html',
+                templateUrl: 'views/events.html',
                 controller: 'EventsCtrl'
 
             })
             .when('/events/:id', {
-                templateUrl: 'eventsDetails.html',
+                templateUrl: 'views/eventsDetails.html',
                 controller: 'EventsCtrl'
 
             })
             .when('/events/create', {
-                templateUrl: 'events.html',
+                templateUrl: 'views/events.html',
                 controller: 'EventsCtrl'
 
             })
             .when('/events/users/:id', {
-                templateUrl: 'events.html',
+                templateUrl: 'views/events.html',
                 controller: 'EventsCtrl'
 
             })
             .when('/matches/', {
-                templateUrl: 'matches.html',
+                templateUrl: 'views/matches.html',
                 controller: 'MatchCtrl'
 
             })
             .when('/matches/results', {
-                templateUrl: 'results.html',
+                templateUrl: 'views/results.html',
                 controller: 'MatchCtrl'
 
             })
             .when('/matches/opponents', {
-                templateUrl: 'opponents.html',
+                templateUrl: 'views/opponents.html',
                 controller: 'MatchCtrl'
 
             })
             .when('/ranking', {
-                templateUrl: 'ranking.html',
+                templateUrl: 'views/ranking.html',
                 controller: 'RankingCtrl'
 
             })

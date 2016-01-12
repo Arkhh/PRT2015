@@ -2,7 +2,7 @@
 
 angular.module('BadminTown')
     //searching for and filtering merchants
-    .service('RequestBuilder', function($http, $q, $rootScope, UserMessages, DcomConfig, UserAuthToken, GuestAuthToken) {
+    .service('RequestBuilder', function($http, $q, $rootScope) {
 
       /*  var errorMessage = {
             defaultMsg : [ {user_msg : 'Oops. There was an error with your request.'} ],
@@ -32,7 +32,7 @@ angular.module('BadminTown')
                 
                 //var message = isDefined(data.message) ? data.message : errorMessage.defaultMsg;
 
-                deferred.reject(message);
+                deferred.reject(data);
 
 
                /* if (status in httpErrorMessages) {

@@ -7,15 +7,15 @@ angular.module('BadminTown')
     //searching for and filtering merchants
     .service('UserAPI', function(RequestBuilder) {
 
-        var USER_API_ENDPOINT = 'http://localhost:3000/api/users';
+        var API_ENDPOINT = 'http://localhost:3000/api';
 
-        function authenticate(username, password){
+        function authenticate(userinfo){
             return RequestBuilder.getRequestPromise({
                 method         : 'POST',
-                url            : USER_API_ENDPOINT + '/auth',
+                url            : API_ENDPOINT + '/auth/',
                 data           : {
-                    'username'      : username,
-                    'password'      : password
+                    'email'      : userinfo.email,
+                    'password'      : userinfo.password
                 }
             });
         }
@@ -23,7 +23,7 @@ angular.module('BadminTown')
         function createUser(userinfo) {
             return RequestBuilder.getRequestPromise({
                 method         : 'POST',
-                url            : USER_API_ENDPOINT,
+                url            : API_ENDPOINT + '/users/',
                 data           : userinfo
             });
         }
@@ -31,7 +31,7 @@ angular.module('BadminTown')
         function getUserInfo(id){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
-                url            : USER_API_ENDPOINT + '/users/'+id
+                url            : API_ENDPOINT + '/users/'+id
             });
         }
         /*

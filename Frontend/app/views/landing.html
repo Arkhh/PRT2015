@@ -16,43 +16,53 @@
         <div class="container text-center">
           <h1 class="animated fadeInUp">Application en ligne de gestion de joueurs de Badminton</h1>
           <p>
-            <a ng-click="" href="http://themeforest.net/item/first-mobile-first-web-app-theme/5002403" target="_blank" class="btn btn-lg btn-danger animated fadeInLeft m-l m-r m-b">Inscription</a>
-            <a ng-click="" href="index.html" target="_blank" class="btn btn-lg btn-primary animated fadeInRight m-l m-r m-b">Connexion</a>
+            <a ng-click="displayInscription();" target="_blank" class="btn btn-lg btn-danger animated fadeInLeft m-l m-r m-b">Inscription</a>
+            <a ng-click="displayConnexion();"  target="_blank" class="btn btn-lg btn-primary animated fadeInRight m-l m-r m-b">Connexion</a>
           </p>
             <div class="row">
-                <div align="left" class="col-md-6">
-                    <form action="index.html" class="panel-body">
+                <div class="col-md-3"></div>
+                <div align="center" ng-if="showConn===true" class="col-md-6">
+                    <form ng-submit="logIn();" class="panel-body">
                         <div class="block">
-                            <label class="control-label">Email</label>
-                            <input type="email" placeholder="test@example.com" class="form-control">
+                            <label class="control-label">E-mail</label>
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
                         </div>
                         <div class="block">
-                            <label class="control-label">Password</label>
-                            <input type="password" id="inputPasswordLogin" placeholder="Password" class="form-control">
+                            <label class="control-label">Mot de passe</label>
+                            <input type="password" id="inputPasswordLogin" placeholder="Mot de passe" class="form-control" ng-model="userinfos.password">
                         </div>
-                        <a href="#" class="pull-right m-t-mini"><small>Forgot password?</small></a>
-                        <button type="submit" class="btn btn-info">Sign in</button>
+                        <a href="#" class="pull-right m-t-mini" style="color:white"><small>Mot de passe oublié ?</small></a>
+                        <button align="center" type="submit" class="btn btn-info">Se connecter</button>
                         <div class="line line-dashed"></div>
-                        <p class="text-muted text-center"><small>Do not have an account?</small></p>
-                        <a href="signup.html" class="btn btn-white btn-block">Create an account</a>
+                        <p class="text-muted text-center"><small>Pas encore de compte ?</small></p>
+                        <a ng-click="displayInscription();" class="btn btn-white btn-block">Créer un compte</a>
                     </form>
                 </div>
-                <div align="right" class="col-md-6">
+                <div align="center" ng-if="showInscription===true" class="col-md-6">
                     <form ng-submit="signUp();" class="panel-body">
                         <div class="block">
-                            <label class="control-label">Your email address</label>
-                            <input type="email" placeholder="test@example.com" class="form-control" ng-model="userinfos.username">
+                            <label class="control-label">Nom</label>
+                            <input type="text" placeholder="Doe" class="form-control" ng-model="userinfos.nom">
                         </div>
                         <div class="block">
-                            <label class="control-label">Type a password</label>
+                            <label class="control-label">Prénom</label>
+                            <input type="text" placeholder="John" class="form-control" ng-model="userinfos.prenom">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Votre adresse e-mail</label>
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
+                        </div>
+                        <div class="block">
+                            <label class="control-label">Votre mot de passe</label>
                             <input type="password" id="inputPasswordSignUp" placeholder="Password"  ng-model="userinfos.password" class="form-control">
                         </div>
-                        <button type="submit" class="btn btn-info">Sign up</button>
+                        <button type="submit" class="btn btn-info">S'inscrire</button>
                         <div class="line line-dashed"></div>
-                        <p class="text-muted text-center"><small>Already have an account?</small></p>
-                        <a href="signin.html" class="btn btn-white btn-block">Sign in</a>
+                        <p class="text-muted text-center"><small>Vous avez déjà un compte ?</small></p>
+                        <a ng-click="displayConnexion();" class="btn btn-white btn-block">Se connecter</a>
                     </form>
                 </div>
+                <div class="col-md-3"></div>
             </div>
         </div>
       </div>
