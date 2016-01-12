@@ -5,6 +5,7 @@ var URL = require('url');
 
 var errors = require('../models/errors');
 var Event = require('../models/event');
+var User = require('../models/user');
 
 function getNameEvent(event) {
     return '/events/' + encodeURIComponent(event.nom);
@@ -36,78 +37,37 @@ exports.list = function (req, res, next) {
 /**
  * POST /users {username, ...}
  */
-exports.create = function (req, res, next) {
-    console.log('Bonjour');
-    //var adminOK = Event.isAdmin(req.body.id);
-   // console.log('ICI');
-   // console.log(adminOK);
-   // if (Event.isAdmin(machin)) {
-        Event.create({
-            nom: req.body.nom,
-            lieu: req.body.lieu,
-            prix: req.body.prix,
-            description: req.body.description,
-            capacite: req.body.capacite,
-            valid: 0,
-            date: req.body.date,
-            shortDescription: req.body.shortDescription
-        }, function (err, event) {
-            if (err) {
-                /*if (err instanceof errors.ValidationError) {
-                 // Return to the create form and show the error message.
-                 // TODO: Assuming username is the issue; hardcoding for that
-                 // being the only input right now.
-                 // TODO: It'd be better to use a cookie to "remember" this info,
-                 // e.g. using a flash session.
-                 return res.redirect(URL.format({
-                 pathname: '/users',
-                 query: {
-                 username: req.body.username,
-                 error: err.message,
-                 },
-                 }));*/
-                //} else {
-                return next(err);
-                //}
-            }
-            //res.redirect();
-            res.json(event);
-        });
-    };
-  /*  else {
-        Event.create({
-            nom: req.body.nom,
-            lieu: req.body.lieu,
-            prix: req.body.prix,
-            description: req.body.description,
-            capacite: req.body.capacite,
-            valid: 0,
-            date: req.body.date,
-            shortDescription: req.body.shortDescription
-        }, function (err, event) {
-            if (err) {
-                /*if (err instanceof errors.ValidationError) {
-                 // Return to the create form and show the error message.
-                 // TODO: Assuming username is the issue; hardcoding for that
-                 // being the only input right now.
-                 // TODO: It'd be better to use a cookie to "remember" this info,
-                 // e.g. using a flash session.
-                 return res.redirect(URL.format({
-                 pathname: '/users',
-                 query: {
-                 username: req.body.username,
-                 error: err.message,
-                 },
-                 }));*/
-                //} else {*/
-               // return next(err);
-                //}
-           // }
-            //res.redirect();
-         /*   res.json(event);
-        });
-    }
-};*/
+exports.create = function (req, res) {
+    var admin = false;
+    console.log('ADMIN');
+    console.log(admin);
+
+    User.get(req.body.idCreateur, function (err, user) {
+        if (err) return res.json( {error:err});
+        admin=user.isAdmin();
+        console.log('ADMIN 2');
+        console.log(admin);
+            Event.create({
+                nom: req.body.nom,
+                lieu: req.body.lieu,
+                prix: req.body.prix,
+                description: req.body.description,
+                capacite: req.body.capacite,
+                valid: admin,
+                date: req.body.date,
+                shortDescription: req.body.shortDescription
+            }, function (err, event) {
+                if (err) {
+                    return res.json({
+                        pathname: '/events',
+                        error: err
+                    });
+                }
+                return res.json(event);
+            });
+    })
+};
+
 
 /**
  * DELETE /users/:username

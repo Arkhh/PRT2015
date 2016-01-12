@@ -3,6 +3,7 @@
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
+var User = require('../models/user');
 
 var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
@@ -140,27 +141,24 @@ function validateProp(prop, val, required) {
 
     if (!val) {
         if (info.required && required) {
-            throw new errors.ValidationError(
-                'Missing ' + prop + ' (required).');
+            return('Missing ' + prop + ' (required).');
         } else {
             return;
         }
     }
 
     if (info.minLength && val.length < info.minLength) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (too short). Requirements: ' + message);
+        return('Invalid ' + prop + ' (too short). Requirements: ' + message);
     }
 
     if (info.maxLength && val.length > info.maxLength) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (too long). Requirements: ' + message);
+        return('Invalid ' + prop + ' (too long). Requirements: ' + message);
     }
 
     if (info.pattern && !info.pattern.test(val)) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (format). Requirements: ' + message);
+        return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
+
 }
 
 function isConstraintViolation(err) {
