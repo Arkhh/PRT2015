@@ -26,22 +26,22 @@ Event.VALIDATION_INFO = {
     'nom': {
         required: true,
         minLength: 2,
-        maxLength: 16,
-        pattern: /^[A-Za-z0-9_]+$/,
-        message: '2-16 characters; letters, numbers, and underscores only.'
+        maxLength: 20,
+        pattern: /^[A-Za-z_ ]+$/,
+        message: '2-16 characters; letters, spaces and underscores only.'
     },
     'lieu': {
         required: true,
-        minLength: 2,
-        maxLength: 16,
-        pattern: /^[A-Za-z0-9_]+$/,
+        minLength: 5,
+        maxLength: 30,
+        pattern: /^[A-Za-z0-9_ ]+$/,
         message: '2-16 characters; letters, numbers, and underscores only.'
     },
     'prix': {
         required: true,
         minLength: 1,
         maxLength: 16,
-        pattern: /^[A-Za-z0-9_]+$/,
+        pattern: /^[A-Za-z0-9_ ]+$/,
         message: 'numbers only (price).'
     },
     'description': {
@@ -49,7 +49,35 @@ Event.VALIDATION_INFO = {
         minLength: 1,
         maxLength: 50,
         pattern: /^[A-Za-z0-9_ ]+$/,
-        message: '2-50 characters; letters, numbers, and underscores only.'
+        message: '2-50 characters; letters, numbers,spaces and underscores only.'
+    },
+    'capacite': {
+        required: true,
+        minLength: 1,
+        maxLength: 50,
+        pattern: /^[A-Za-z0-9_ ]+$/,
+        message: 'numbers only.'
+    },
+    'valid': {
+        required: true,
+        minLength: 1,
+        maxLength: 2,
+        pattern: /^[0-9]+$/,
+        message: '1 number 0 or 1'
+    },
+    'date': {
+        required: true,
+        minLength: 1,
+        maxLength: 15,
+        pattern: /^[A-Za-z0-9_ ]+$/,
+        message: 'format date attendu'
+    },
+    'shortDescription': {
+        required: true,
+        minLength: 1,
+        maxLength: 50,
+        pattern: /^[A-Za-z0-9_ ]+$/,
+        message: '2-30 characters; letters, numbers,spaces and underscores only.'
     }
 };
 
@@ -59,7 +87,30 @@ Event.VALIDATION_INFO = {
 Object.defineProperty(Event.prototype, 'id', {
     get: function () { return this._node._id; }
 });
-
+Object.defineProperty(Event.prototype, 'nom', {
+    get: function () { return this._node.properties['nom']; }
+});
+Object.defineProperty(Event.prototype, 'lieu', {
+    get: function () { return this._node.properties['lieu']; }
+});
+Object.defineProperty(Event.prototype, 'prix', {
+    get: function () { return this._node.properties['prix']; }
+});
+Object.defineProperty(Event.prototype, 'description', {
+    get: function () { return this._node.properties['description']; }
+});
+Object.defineProperty(Event.prototype, 'capacite', {
+    get: function () { return this._node.properties['capacite']; }
+});
+Object.defineProperty(Event.prototype, 'valid', {
+    get: function () { return this._node.properties['valid']; }
+});
+Object.defineProperty(Event.prototype, 'date', {
+    get: function () { return this._node.properties['date']; }
+});
+Object.defineProperty(Event.prototype, 'shortDescription', {
+    get: function () { return this._node.properties['shortDescription']; }
+});
 // Private helpers:
 
 // Takes the given caller-provided properties, selects only known ones,
@@ -117,9 +168,40 @@ function isConstraintViolation(err) {
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
 }
 
+Event.isAdmin = function(idCreateur){
+    var idInt = parseInt(idCreateur);
+    var query = [
+        'MATCH (user:User)' +
+        'WHERE id(user) = {id} ' +
+        'RETURN user.admin',
+    ].join('\n')
+
+    var params = {
+        id: idInt,
+    };
+
+    db.cypher({
+        query: query,
+        params: params,
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            err = new Error('No such user with id: ' + id);
+            return callback(err);
+        }
+        var idUser = results;
+
+        console.log('RIGHT HERE');
+        console.log(idUser);
+
+        if(idUser == 1) return true;
+        else if(idUser == 0) return false;
+    });
+}
+
 Event.getAll = function (callback) {
     var query = [
-        'MATCH (evenement:Evenement)',
+        'MATCH (evenement:Event)',
         'RETURN evenement',
     ].join('\n');
 
@@ -138,17 +220,13 @@ Event.getAll = function (callback) {
 Event.create = function (props, callback) {
 
     var query = [
-        'CREATE (evenement:Evenement {props})',
+        'CREATE (evenement:Event {props})',
         'RETURN evenement',
     ].join('\n');
-
-    console.log('Batard');
 
     var params = {
         props: validate(props)
     };
-
-    console.log('Encules de params');
 
     db.cypher({
         query: query,
@@ -175,7 +253,7 @@ Event.prototype.del = function (callback) {
     // (Note that this'll still fail if there are any relationships attached
     // of any other types, which is good because we don't expect any.)
     var query = [
-        'MATCH (event:Evenement)',
+        'MATCH (event:Event)' +
         'WHERE id(event) = {id}',
         'DETACH DELETE event'
     ].join('\n');
@@ -196,7 +274,7 @@ Event.get = function (id, callback) {
 
     var idInt = parseInt(id);
     var query = [
-        'MATCH (event:Evenement)' +
+        'MATCH (event:Event)' +
         'WHERE id(event) = {id} ' +
         'RETURN event'
     ].join('\n');
@@ -223,12 +301,11 @@ Event.get = function (id, callback) {
 // given property updates.
 Event.prototype.patch = function (props, callback) {
     var safeProps = validate(props);
-
     var idInt = parseInt(this.id);
     var query = [
-        'MATCH (event:Evenement) WHERE id(event)= {id}',
-         'SET event += {props}',
-         'RETURN event'
+        'MATCH (event:Event) WHERE id(event)= {id}',
+        'SET event += {props}',
+        'RETURN event'
     ].join('\n');
 
     var params = {
@@ -254,8 +331,8 @@ Event.prototype.patch = function (props, callback) {
         if (err) return callback(err);
 
 
-        console.log("RESULTS");
-        console.log(results);
+        //console.log("RESULTS");
+        //console.log(results);
         if (!results.length) {
             err = new Error('Event has been deleted! Event: ' + self.id);
             return callback(err);

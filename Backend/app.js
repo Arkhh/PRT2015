@@ -35,24 +35,24 @@ var routeApi ='/api';
 
 
 app.get(routeApi+'/users', routes.users.list);
-app.post(routeApi+'/api/users', routes.users.create);
+app.post(routeApi+'/users', routes.users.create);
 app.get(routeApi+'/users/:id', routes.users.show);
 app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
-
+app.post(routeApi+'/auth/', routes.users.connect);
 
 app.get(routeApi+'/pieces',routes.pieces.list);
 app.get(routeApi+'/pieces/:id',routes.pieces.show);
 app.post(routeApi+'/pieces',routes.pieces.create);
 app.post(routeApi+'/pieces/:id',routes.pieces.edit);
-app.del(routeApi+'/pieces/:id',routes.pieces.del);
+app.delete(routeApi+'/pieces/:id',routes.pieces.del);
+
 
 app.get(routeApi+'/events',routes.events.list);
 app.get(routeApi+'/events/:id',routes.events.show);
 app.post(routeApi+'/events',routes.events.create);
 app.post(routeApi+'/events/:id',routes.events.edit);
-app.del(routeApi+'/events/:id', routes.events.del);
-
+app.delete(routeApi+'/events/:id', routes.events.del);
 
 
 
