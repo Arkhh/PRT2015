@@ -11,6 +11,7 @@ angular.module('BadminTown')
                 .then(function (data) {
                     if (!data.error) {
                         angular.forEach(data, function(value) {
+                            value._node.properties.date=parseInt(value._node.properties.date);
                             $scope.newsTab.push(value._node.properties);
                         });
 

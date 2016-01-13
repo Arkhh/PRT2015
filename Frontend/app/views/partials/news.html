@@ -10,8 +10,8 @@
                     <article class="media">
                         <div class="media-body">
                             <div class="pull-left media-mini text-center text-muted" style="padding-right:10px;">
-                                <strong class="h4">09</strong><br>
-                                <small class="label bg-light">jan 2016</small>
+                                <strong class="h4">{{news.date | date:'dd'}}</strong><br>
+                                <small class="label bg-light">{{news.date*1000 | date:'MMM yyyy'}}</small>
                             </div>
                             <uib-accordion-group class="media-mini text-left text-muted" heading="{{news.name}}">
                             <small class="block">{{news.description}}</small>
