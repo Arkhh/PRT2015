@@ -62,6 +62,12 @@ app.get(routeApi+'/news',routes.news.list);
 app.get(routeApi+'/news/:id',routes.news.show);
 app.post(routeApi+'/news',routes.news.create);
 
+app.get(routeApi+'/matches',routes.matches.list);
+app.get(routeApi+'/matches/:id',routes.matches.show);
+app.post(routeApi+'/matches',routes.matches.create);
+app.post(routeApi+'/matches/:id',routes.matches.edit);
+app.delete(routeApi+'/matches/:id', routes.matches.del);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));

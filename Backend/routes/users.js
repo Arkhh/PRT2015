@@ -6,9 +6,7 @@ var URL = require('url');
 var errors = require('../models/errors');
 var User = require('../models/user');
 
-function getUserURL(user) {
-    return '/users/' + encodeURIComponent(user.email);
-}
+
 
 /**
  * GET /users
