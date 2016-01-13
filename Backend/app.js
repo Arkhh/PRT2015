@@ -61,6 +61,8 @@ app.delete(routeApi+'/events/:id', routes.events.del);
 app.get(routeApi+'/news',routes.news.list);
 app.get(routeApi+'/news/:id',routes.news.show);
 app.post(routeApi+'/news',routes.news.create);
+app.post(routeApi+'/news/:id',routes.news.edit);
+app.delete(routeApi+'/news/:id',routes.news.del);
 
 
 http.createServer(app).listen(app.get('port'), function(){
