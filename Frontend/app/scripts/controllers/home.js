@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('BadminTown')
-    .controller('HomeCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,Cookies) {
+    .controller('HomeCtrl', function (UserAPI, $rootScope, $scope, $location, $filter) {
 
     $scope.userId=$rootScope.userID;
     $scope.connected =$rootScope.isConnected;
