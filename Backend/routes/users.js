@@ -6,20 +6,15 @@ var URL = require('url');
 var errors = require('../models/errors');
 var User = require('../models/user');
 
-function getUserURL(user) {
-    return '/users/' + encodeURIComponent(user.email);
-}
+
 
 /**
  * GET /users
  */
 exports.list = function (req, res) {
     User.getAll(function (err, users) {
-        if (err) return res.json(err);
-        return res.json('users', {
-            User: User,
-            users: users
-        })
+        if (err) return res.status(500).json(err);
+        return res.json(users);
     })
 };
 
@@ -34,7 +29,7 @@ exports.create = function (req, res) {
         prenom: req.body.prenom
     }, function (err, user) {
         if (err) {
-            return res.json({
+            return res.status(500).json({
                 pathname: '/users',
                 error: err
             });
@@ -51,7 +46,7 @@ exports.create = function (req, res) {
 exports.show = function (req, res) {
     User.get(req.params.id, function (err, user) {
         if (err) {
-            return res.json({
+            return res.status(404).json({
                 pathname: '/users/:id',
                 error: err
             });
@@ -66,16 +61,16 @@ exports.show = function (req, res) {
 exports.edit = function (req, res) {
 
     User.get(req.params.id, function (err, user) {
-        if (err) return res.json( {error:err});
+        if (err) return res.status(404).json( {error:err});
 
         user.patch(req.body, function (err) {
             if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
-                    return res.json({
+                    return res.status(500).json({
                             error: err
                     });
                 } else {
-                    return res.json(err);
+                    return res.status(500).json(err);
                 }
             }
             return res.json(user);
@@ -91,7 +86,7 @@ exports.connect = function (req, res){
         {
         password: req.body.password,
         email: req.body.email}, function (err, user) {
-        if (err) return res.json( {error:[{message: [err]}]});
+        if (err) return res.status(404).json( {error:[{message: [err]}]});
         return res.json(user);
     })
 };
@@ -100,9 +95,9 @@ exports.connect = function (req, res){
  */
 exports.del = function (req, res) {
     User.get(req.params.id, function (err, user) {
-        if (err) return res.json(err);
+        if (err) return res.status(404).json(err);
         user.del(function (err) {
-            if (err) return res.json(err);
+            if (err) return res.status(500).json(err);
             return res.json({deleted:'ok', user: user});
         });
     });

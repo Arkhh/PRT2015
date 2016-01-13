@@ -200,20 +200,39 @@ function isConstraintViolation(err) {
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
 }
 
+User.prototype.isAdmin = function() {
+    if(this.admin){
+        return true;
+    }
+    return false;
+}
+
 // Public instance methods:
 
 // Atomically updates this user, both locally and remotely in the db, with the
 // given property updates.
 User.prototype.patch = function (props, callback) {
 
+
     var errorTab=[],validProps;
 
-    props = _.extend(props,{
-        email: this.email,
-        password: this.password,
-        nom: this.nom,
-        prenom: this.prenom
-    });
+    if(!props.email){
+        props=_.extend(props,{
+            email: this.email});
+    }
+    if(!props.password){
+        props=_.extend(props,{
+            password: this.password});
+    }
+    if(!props.nom){
+        props=_.extend(props,{
+            nom: this.nom});
+    }
+    if(!props.prenom){
+        props=_.extend(props,{
+            prenom: this.prenom});
+    }
+
 
     validProps=validate(props,true);
 

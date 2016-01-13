@@ -16,7 +16,7 @@ function getNewURL(neww) {
  */
 exports.list = function (req, res) {
     Neww.getAll(function (err, news) {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json(err);
         res.json(news);
     });
 };
@@ -28,7 +28,7 @@ exports.show = function (req, res) {
     Neww.get(req.params.id, function (err, neww) {
         if (err)
         {
-            return res.json({
+            return res.status(404).json({
                 pathname: '/api/news/:id',
                 error: err
             });
@@ -43,13 +43,10 @@ exports.show = function (req, res) {
 exports.create = function (req, res) {
     Neww.create({
         name: req.body.name,
-        description:req.body.description,
-        descriptionShort:req.body.descriptionShort,
-
-
+        description:req.body.description
     }, function (err, neww) {
         if (err) {
-            return res.json({
+            return res.status(500).json({
                 pathname: '/api/news',
                 error: err
             });
@@ -63,15 +60,15 @@ exports.create = function (req, res) {
  */
 exports.edit = function (req, res) {
     Neww.get(req.params.id, function (err, neww) {
-        if (err) return res.json( {error:err});
+        if (err) return res.status(404).json( {error:err});
         neww.patch(req.body, function (err) {
             if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
-                    return res.json({
+                    return res.status(500).json({
                         error: err
                     });
                 } else {
-                    return res.json(err);
+                    return res.status(500).json(err);
                 }
             }
             return res.json(neww);
@@ -85,9 +82,9 @@ exports.edit = function (req, res) {
  */
 exports.del = function (req, res) {
     Neww.get(req.params.id, function (err, neww) {
-        if (err) return res.json(err);
+        if (err) return res.status(404).json(err);
         neww.del(function (err) {
-            if (err) return res.json(err);
+            if (err) return res.status(500).json(err);
             res.json({deleted:'ok', new: neww});
         });
     });

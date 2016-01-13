@@ -1,5 +1,5 @@
-// new.js
-// New model logic.
+// matche.js
+// Matche model logic.
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
@@ -15,48 +15,94 @@ var db = new neo4j.GraphDatabase({
 
 // Private constructor:
 
-var Neww = module.exports = function Neww(_node) {
+var Matche = module.exports = function Matche(_node) {
     // All we'll really store is the node; the rest of our properties will be
     // derivable or just pass-through properties (see below).
     this._node = _node;
 };
 
-// Public constants:
-
-Neww.VALIDATION_INFO = {
-    'name': {
+Matche.VALIDATION_INFO = {
+    'date': {
         required: true,
-        minLength: 5,
-        maxLength: 50,
-        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
-        message: 'Entre 5 et 50 caractères'
+        minLength: 1,
+        maxLength: 20,
+        pattern: /^[0-9]+$/,
+        message: 'time stamp'
     },
-    'description':{
+   /* 'idJ1': {
         required: true,
-        minLength: 5,
-        maxLength: 10000,
-        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
-        message: 'Entre 5 et 10000 caractères'
-    }
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'idJ2': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+
+    'Resultat1': {
+        required: false,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'boolean'
+    },
+    'Resultat2': {
+        required: false,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'boolean'
+    },
+    'Resultat': {
+        required: false,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'GainJ1': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'GainJ2': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'Perte1': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'PerteJ2': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },*/
 
 };
 
-// Public instance properties:
 
-// The user's username, e.g. 'aseemk'.
-Object.defineProperty(Neww.prototype, 'id', {
-    get: function () { return this._node._id; }
+Object.defineProperty(Matche.prototype, 'id', {
+    get: function () {
+        return this._node._id;
+    }
 });
-Object.defineProperty(Neww.prototype, 'name', {
-    get: function () { return this._node.properties['name']; }
-});
-Object.defineProperty(Neww.prototype, 'description', {
-    get: function () { return this._node.properties['description']; }
-});
-Object.defineProperty(Neww.prototype, 'descriptionShort', {
-    get: function () { return this._node.properties['descriptionShort']; }
-});
-Object.defineProperty(Neww.prototype, 'date', {
+Object.defineProperty(Matche.prototype, 'date', {
     get: function () { return this._node.properties['date']; }
 });
 
@@ -71,9 +117,9 @@ Object.defineProperty(Neww.prototype, 'date', {
 function validate(props, required) {
     var safeProps = {};
     var TabErrors ={error:[]};
-    var error= null;
+    var error= '';
 
-    for (var prop in Neww.VALIDATION_INFO) {
+    for (var prop in Matche.VALIDATION_INFO) {
         error=null;
         var val = props[prop];
         error=validateProp(prop, val, required);
@@ -89,11 +135,13 @@ function validate(props, required) {
         return TabErrors;
     }
     return safeProps;
-};
+}
 
+// Validates the given property based on the validation info above.
+// By default, ignores null/undefined/empty values, but you can pass `true` for
+// the `required` param to enforce that any required properties are present.
 function validateProp(prop, val, required) {
-    required=true;
-    var info = Neww.VALIDATION_INFO[prop];
+    var info = Matche.VALIDATION_INFO[prop];
     var message = info.message;
 
     if (!val) {
@@ -116,27 +164,15 @@ function validateProp(prop, val, required) {
         return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
 
-};
-/*
-function isConstraintViolation(err) {
-    return err instanceof neo4j.ClientError &&
-        err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
-};*/
+}
 
-// Public instance methods:
-//Modifie la news en bdd
-Neww.prototype.patch = function (props, callback) {
+// Atomically updates this user, both locally and remotely in the db, with the
+// given property updates.
+Matche.prototype.patch = function (props, callback) {
 
     var errorTab=[],validProps;
 
-    if(!props.name){
-        props=_.extend(props,{
-            name: this.name});
-    }
-    if(!props.description){
-        props=_.extend(props,{
-            description: this.description});
-    }
+
 
     validProps=validate(props,true);
 
@@ -146,9 +182,9 @@ Neww.prototype.patch = function (props, callback) {
     }
 
     var query = [
-        'MATCH (new:New) WHERE id(new)= {id}',
-        'SET new += {props}',
-        'RETURN new',
+        'MATCH (match:Match) WHERE id(match)= {id}',
+        'SET match += {props}',
+        'RETURN match',
     ].join('\n');
 
 
@@ -164,30 +200,31 @@ Neww.prototype.patch = function (props, callback) {
         query: query,
         params: params
     }, function (err, results) {
-       /* if (isConstraintViolation(err)) {
+      /*  if (isConstraintViolation(err)) {
             //si l'email est déjà pris
             err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
         }*/
         if (err) return callback(err);
 
         if (!results.length) {
-            err = new Error('La news avec l\'id: ' + this.id +'n\'existe pas dans la base');
+            err = new Error('Le match avec l\'id: ' + this.id +'n\'existe pas dans la base');
             return callback(err);
         }
         // Met à jour le noeud avec les dernieres modifications
-        self._node = results[0]['new'];
+        self._node = results[0]['match'];
 
         callback(null);
     });
 };
 
-//supprime la news et toutes ses relations
-Neww.prototype.del = function (callback) {
+
+// supprime le match ainsi que toute ses relations
+Matche.prototype.del = function (callback) {
 // supprime l'utilisateurs ainsi que toute ses relations
     var query = [
-        'MATCH (new:New)',
-        'WHERE id(new) = {id}',
-        'DETACH DELETE new'
+        'MATCH (match:Match)',
+        'WHERE id(match) = {id}',
+        'DETACH DELETE match'
     ].join('\n');
 
     var params = {
@@ -202,13 +239,13 @@ Neww.prototype.del = function (callback) {
     });
 };
 
-// Crée la news et l'ajoute dans la bdd
-Neww.create = function (props, callback) {
+// Crée le match et l'insère dans la DB
+Matche.create = function (props, callback) {
 
     var errorTab=[],validProps;
     var query = [
-        'CREATE (new:New {props})',
-        'RETURN new',
+        'CREATE (match:Match {props})',
+        'RETURN match',
     ].join('\n');
 
     validProps=validate(props,true);
@@ -217,43 +254,34 @@ Neww.create = function (props, callback) {
         errorTab.push( new errors.PropertyError(validProps.error));
         return callback(errorTab);
     }
-    var dateToday=new Date().getTime().toString()
-    validProps=_.extend(props,{
-        date: dateToday
-    });
+
     var params = {
         props: validProps
     };
-
-    console.log("requee")
-    console.log(query);
-    console.log("param")
-    console.log(validProps);
 
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
-      /*  if (isConstraintViolation(err)) {
+       /* if (isConstraintViolation(err)) {
             //si l'email est déjà pris
             err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
         }*/
         if (err) return callback(err);
-        var neww = new Neww(results[0]['new']);
-        callback(null, neww);
+        var matche = new Matche(results[0]['match']);
+        callback(null, matche);
     });
 };
 
-//récupère la news grace à l'id
-Neww.get = function (id, callback) {
+Matche.get = function (id, callback) {
 
     var idInt=parseInt(id);
 
 
     var query = [
-        'MATCH (new:New)',
-        'WHERE id(new) = {id}',
-        'RETURN new',
+        'MATCH (match:Match)',
+        'WHERE id(match) = {id}',
+        'RETURN match',
     ].join('\n');
 
 
@@ -268,69 +296,32 @@ Neww.get = function (id, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('No such news with ID: ' + id);
+            var error=new errors.PropertyError('No such match with ID: ' + id);
             err.push(error);
             return callback(err);
         }
-        var neww = new Neww(results[0]['new']);
-        callback(null, neww);
+        var matche = new Matche(results[0]['match']);
+        callback(null, matche);
     });
 };
 
-//récupère la liste des 5 news les plus récentes
-Neww.getAll = function (callback) {
+Matche.getAll = function (callback) {
     var query = [
-        'MATCH (new:New)',
-        'RETURN new',
-        'ORDER BY new.date desc',
-        'LIMIT 5'
+        'MATCH (match:Match)',
+        'RETURN match',
+        'ORDER BY match.date desc',
+        'LIMIT 10'
     ].join('\n');
 
     db.cypher({
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        var news = results.map(function (result) {
-            return new Neww(result['new']);
+        var matches = results.map(function (result) {
+            return new Matche(result['match']);
         });
-        callback(null, news);
+        callback(null, matches);
     });
 };
 
-Neww.getNewt=function(callback){
-    var query = [
-        'MATCH (new:New)',
-        'RETURN new',
-        'WHERE', //todo
-        'ORDER BY new.date desc',
-        'LIMIT 5'
-    ].join('\n');
 
-    db.cypher({
-        query: query
-    }, function (err, results) {
-        if (err) return callback(err);
-        var news = results.map(function (result) {
-            return new Neww(result['new']);
-        });
-        callback(null, news);
-    });
-}
-
-// Static initialization:
-
-// Register our unique username constraint.
-// TODO: This is done async'ly (fire and forget) here for simplicity,
-// but this would be better as a formal schema migration script or similar.
-/*
-db.createConstraint({
-    label: 'New',
-    property: 'name'
-}, function (err, constraint) {
-    if (err) throw err;     // Failing fast for now, by crash the application.
-    if (constraint) {
-        console.log('(Registered unique names constraint.)');
-    } else {
-        // Constraint already present; no need to log anything.
-    }
-});*/

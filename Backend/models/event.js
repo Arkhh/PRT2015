@@ -3,6 +3,7 @@
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
+var User = require('../models/user');
 
 var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
@@ -38,28 +39,28 @@ Event.VALIDATION_INFO = {
         message: '2-16 characters; letters, numbers, and underscores only.'
     },
     'prix': {
-        required: true,
+        required: false,
         minLength: 1,
         maxLength: 16,
         pattern: /^[A-Za-z0-9_ ]+$/,
         message: 'numbers only (price).'
     },
     'description': {
-        required: true,
+        required: false,
         minLength: 1,
         maxLength: 50,
         pattern: /^[A-Za-z0-9_ ]+$/,
         message: '2-50 characters; letters, numbers,spaces and underscores only.'
     },
     'capacite': {
-        required: true,
+        required: false,
         minLength: 1,
         maxLength: 50,
         pattern: /^[A-Za-z0-9_ ]+$/,
         message: 'numbers only.'
     },
     'valid': {
-        required: true,
+        required: false,
         minLength: 1,
         maxLength: 2,
         pattern: /^[0-9]+$/,
@@ -73,7 +74,7 @@ Event.VALIDATION_INFO = {
         message: 'format date attendu'
     },
     'shortDescription': {
-        required: true,
+        required: false,
         minLength: 1,
         maxLength: 50,
         pattern: /^[A-Za-z0-9_ ]+$/,
@@ -121,13 +122,24 @@ Object.defineProperty(Event.prototype, 'shortDescription', {
 // are present too. (Useful for `User.create`.)
 function validate(props, required) {
     var safeProps = {};
+    var TabErrors ={error:[]};
+    var error= '';
 
     for (var prop in Event.VALIDATION_INFO) {
+        error=null;
         var val = props[prop];
-        validateProp(prop, val, required);
-        safeProps[prop] = val;
+        error=validateProp(prop, val, required);
+        if(error){
+            TabErrors.error.push(error);
+        }else {
+            safeProps[prop] = val;
+        }
+
     }
 
+    if(TabErrors.error.length>0){
+        return TabErrors;
+    }
     return safeProps;
 }
 
@@ -138,29 +150,28 @@ function validateProp(prop, val, required) {
     var info = Event.VALIDATION_INFO[prop];
     var message = info.message;
 
+
     if (!val) {
+
         if (info.required && required) {
-            throw new errors.ValidationError(
-                'Missing ' + prop + ' (required).');
+            return('Missing ' + prop + ' (required).');
         } else {
             return;
         }
     }
 
     if (info.minLength && val.length < info.minLength) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (too short). Requirements: ' + message);
+        return('Invalid ' + prop + ' (too short). Requirements: ' + message);
     }
 
     if (info.maxLength && val.length > info.maxLength) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (too long). Requirements: ' + message);
+        return('Invalid ' + prop + ' (too long). Requirements: ' + message);
     }
 
     if (info.pattern && !info.pattern.test(val)) {
-        throw new errors.ValidationError(
-            'Invalid ' + prop + ' (format). Requirements: ' + message);
+        return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
+
 }
 
 function isConstraintViolation(err) {
@@ -191,8 +202,6 @@ Event.isAdmin = function(idCreateur){
         }
         var idUser = results;
 
-        console.log('RIGHT HERE');
-        console.log(idUser);
 
         if(idUser == 1) return true;
         else if(idUser == 0) return false;
@@ -218,14 +227,23 @@ Event.getAll = function (callback) {
 
 // Creates the user and persists (saves) it to the db, incl. indexing it:
 Event.create = function (props, callback) {
+    var errorTab=[],validProps,required;
 
     var query = [
         'CREATE (evenement:Event {props})',
         'RETURN evenement',
     ].join('\n');
 
+    validProps=validate(props,true);
+
+
+    if(validProps.error){
+        errorTab.push( new errors.PropertyError(validProps.error));
+        return callback(errorTab);
+    }
+
     var params = {
-        props: validate(props)
+        props: validProps
     };
 
     db.cypher({
@@ -300,6 +318,18 @@ Event.get = function (id, callback) {
 // Atomically updates this user, both locally and remotely in the db, with the
 // given property updates.
 Event.prototype.patch = function (props, callback) {
+    if(!props.date){
+        props=_.extend(props,{
+            date: this.date});
+    }
+    if(!props.nom){
+        props=_.extend(props,{
+            nom: this.nom});
+    }
+    if(!props.lieu){
+        props=_.extend(props,{
+            lieu: this.lieu});
+    }
     var safeProps = validate(props);
     var idInt = parseInt(this.id);
     var query = [
@@ -331,8 +361,7 @@ Event.prototype.patch = function (props, callback) {
         if (err) return callback(err);
 
 
-        //console.log("RESULTS");
-        //console.log(results);
+
         if (!results.length) {
             err = new Error('Event has been deleted! Event: ' + self.id);
             return callback(err);

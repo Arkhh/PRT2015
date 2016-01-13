@@ -45,13 +45,6 @@ app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
 
-app.get(routeApi+'/pieces',routes.pieces.list);
-app.get(routeApi+'/pieces/:id',routes.pieces.show);
-app.post(routeApi+'/pieces',routes.pieces.create);
-app.post(routeApi+'/pieces/:id',routes.pieces.edit);
-app.delete(routeApi+'/pieces/:id',routes.pieces.del);
-
-
 app.get(routeApi+'/events',routes.events.list);
 app.get(routeApi+'/events/:id',routes.events.show);
 app.post(routeApi+'/events',routes.events.create);
@@ -63,6 +56,12 @@ app.get(routeApi+'/news/:id',routes.news.show);
 app.post(routeApi+'/news',routes.news.create);
 app.post(routeApi+'/news/:id',routes.news.edit);
 app.delete(routeApi+'/news/:id',routes.news.del);
+
+app.get(routeApi+'/matches',routes.matches.list);
+app.get(routeApi+'/matches/:id',routes.matches.show);
+app.post(routeApi+'/matches',routes.matches.create);
+app.post(routeApi+'/matches/:id',routes.matches.edit);
+app.delete(routeApi+'/matches/:id', routes.matches.del);
 
 
 http.createServer(app).listen(app.get('port'), function(){
