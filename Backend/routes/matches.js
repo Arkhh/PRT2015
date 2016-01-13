@@ -13,11 +13,8 @@ var Matche = require('../models/matche');
  */
 exports.list = function (req, res) {
     Matche.getAll(function (err, matches) {
-        if (err) return res.json(err);
-        return res.json('matches', {
-            Matche: Matche,
-            matches: matches
-        })
+        if (err) return res.status(500).json(err);
+        return res.json(matches)
     })
 };
 
@@ -35,7 +32,7 @@ exports.create = function (req, res) {
         date:req.body.date
     }, function (err, matche) {
         if (err) {
-            return res.json({
+            return res.status(500).json({
                 pathname: '/matches',
                 error: err
             });
@@ -50,7 +47,7 @@ exports.create = function (req, res) {
 exports.show = function (req, res) {
     Matche.get(req.params.id, function (err, matche) {
         if (err) {
-            return res.json({
+            return res.status(404).json({
                 pathname: '/Matches/:id',
                 error: err
             });
@@ -66,16 +63,16 @@ exports.show = function (req, res) {
 exports.edit = function (req, res) {
 
     Matche.get(req.params.id, function (err, matche) {
-        if (err) return res.json( {error:err});
+        if (err) return res.status(404).json( {error:err});
 
         matche.patch(req.body, function (err) {
             if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
-                    return res.json({
+                    return res.status(500).json({
                         error: err
                     });
                 } else {
-                    return res.json(err);
+                    return res.status(500).json(err);
                 }
             }
             return res.json(matche);
@@ -88,9 +85,9 @@ exports.edit = function (req, res) {
  */
 exports.del = function (req, res) {
     Matche.get(req.params.id, function (err, matche) {
-        if (err) return res.json(err);
+        if (err) return res.status(404).json(err);
         matche.del(function (err) {
-            if (err) return res.json(err);
+            if (err) return res.status(500).json(err);
             return res.json({deleted:'ok', match: matche});
         });
     });

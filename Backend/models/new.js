@@ -29,7 +29,7 @@ Neww.VALIDATION_INFO = {
         minLength: 5,
         maxLength: 50,
         pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
-        message: 'Entre 2 et 16 caractères'
+        message: 'Entre 5 et 50 caractères'
     },
     'description':{
         required: true,
@@ -37,13 +37,6 @@ Neww.VALIDATION_INFO = {
         maxLength: 10000,
         pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 5 et 10000 caractères'
-    },
-    'descriptionShort':{
-        required: true,
-        minLength: 5,
-        maxLength: 50,
-        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
-        message: 'Entre 5 et 50 caractères'
     }
 
 };
@@ -136,14 +129,15 @@ Neww.prototype.patch = function (props, callback) {
 
     var errorTab=[],validProps;
 
+    if(!props.name){
+        props=_.extend(props,{
+            name: this.name});
+    }
+    if(!props.description){
+        props=_.extend(props,{
+            description: this.description});
+    }
 
-/*
-    props = _.extend(props,{
-        name: this.name,
-        description: this.description,
-        descriptionShort: this.descriptionSort
-    });
-*/
     validProps=validate(props,true);
 
     if(validProps.error){
@@ -225,7 +219,7 @@ Neww.create = function (props, callback) {
     }
     var dateToday=new Date().getTime().toString()
     validProps=_.extend(props,{
-        date: dateToday.slice(0,dateToday.length-3)
+        date: dateToday
     });
     var params = {
         props: validProps
