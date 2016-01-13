@@ -17,19 +17,7 @@ function getNameEvent(event) {
 exports.list = function (req, res, next) {
     Event.getAll(function (err, events) {
         if (err) return next(err);
-        res.json('events', {
-            Event: Event,
-            events: events,
-            nom: req.query.nom,   // Support pre-filling create form
-            lieu: req.query.lieu,
-            prix: req.query.prix,
-            description: req.query.description,
-            capacite: req.query.capacite,
-            valid: req.query.valid,
-            date: req.query.date,
-            shortDescription: req.query.shortDescription,
-            error: req.query.error,     // Errors creating; see create route
-        });
+        res.json(events);
     });
 };
 
