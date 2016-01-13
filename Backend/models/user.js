@@ -208,8 +208,6 @@ User.prototype.patch = function (props, callback) {
 
     var errorTab=[],validProps;
 
-
-
     props = _.extend(props,{
         email: this.email,
         password: this.password,

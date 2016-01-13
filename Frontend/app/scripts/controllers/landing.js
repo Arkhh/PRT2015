@@ -4,13 +4,40 @@
 'use strict';
 
 angular.module('BadminTown')
-    .controller('LandingCtrl', function (UserAPI, $rootScope, $scope, $location, $filter) {
+    .controller('LandingCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
 
-        $rootScope.isConnected=false;
-        $rootScope.userID=null;
 
-        $scope.showConn=false;
-        $scope.showInscription=false;
+
+        function init(){
+            $scope.showConn=false;
+            $scope.showInscription=false;
+            $scope.session = $cookies.get('isConnected');
+            $scope.userInfos = $cookies.get('userInfos');
+
+            if($scope.session || $scope.userInfos){
+                console.log("SESSION ON");
+
+                $location.path("/home");
+            }
+
+        }
+
+        function onSucessRedirect(data){
+            $scope.userinfos={
+                id:data._node._id,
+                email:data._node.properties.email,
+                password:data._node.properties.password,
+                nom:data._node.properties.nom,
+                prenom:data._node.properties.prenom
+            };
+            $cookies.put('isConnected', true);
+            $cookies.putObject('userInfos',$scope.userinfos);
+            $location.path("/home")
+        }
+
+        init();
+
+
 
         $scope.displayInscription = function(){
             $scope.showConn=false;
@@ -32,28 +59,19 @@ angular.module('BadminTown')
         $scope.logIn = function() {
             UserAPI.authenticate($scope.userinfos)
                 .then(function(data) {
-                    console.log(data);
                     if(!data.error){
-                        $rootScope.isConnected=true;
-                        $rootScope.userID=data._node._id;
-                        $location.path("/home")
+                        onSucessRedirect(data);
                     }
                 });
-
-
         };
 
         $scope.signUp = function() {
             UserAPI.createUser($scope.userinfos)
                 .then(function(data) {
-                    console.log(data);
                     if(!data.error){
-                        $rootScope.isConnected=true;
-                        $rootScope.userID=data._node._id;
-                        console.log("T'es co");
+                       onSucessRedirect(data);
                     }
                 });
         };
-
 
     });
