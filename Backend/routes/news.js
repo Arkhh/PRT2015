@@ -17,12 +17,7 @@ function getNewURL(neww) {
 exports.list = function (req, res) {
     Neww.getAll(function (err, news) {
         if (err) return res.json(err);
-        return res.json('news', {
-            User: Neww,
-            users: news,
-            id: req.query.id,   // Support pre-filling create form
-            error: req.query.error     // Errors creating; see create route
-        });
+        res.json(news);
     });
 };
 
