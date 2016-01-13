@@ -17,12 +17,7 @@ function getNewURL(neww) {
 exports.list = function (req, res) {
     Neww.getAll(function (err, news) {
         if (err) return res.json(err);
-        return res.json('news', {
-            User: Neww,
-            users: news,
-            id: req.query.id,   // Support pre-filling create form
-            error: req.query.error     // Errors creating; see create route
-        });
+        res.json(news);
     });
 };
 
@@ -89,9 +84,9 @@ exports.edit = function (req, res) {
  * DELETE /news/:id
  */
 exports.del = function (req, res) {
-    User.get(req.params.id, function (err, neww) {
+    Neww.get(req.params.id, function (err, neww) {
         if (err) return res.json(err);
-        Neww.del(function (err) {
+        neww.del(function (err) {
             if (err) return res.json(err);
             res.json({deleted:'ok', new: neww});
         });

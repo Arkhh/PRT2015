@@ -3,6 +3,7 @@
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
+var _ =require('underscore');
 
 var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
@@ -27,30 +28,24 @@ Neww.VALIDATION_INFO = {
         required: true,
         minLength: 5,
         maxLength: 50,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 2 et 16 caractères'
     },
     'description':{
         required: true,
         minLength: 5,
         maxLength: 10000,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 5 et 10000 caractères'
     },
     'descriptionShort':{
         required: true,
         minLength: 5,
         maxLength: 50,
-        pattern: /^[A-Za-z0-9_\s]+$/,
+        pattern: /^[A-Za-z0-9_'éèêùàô\s]+$/,
         message: 'Entre 5 et 50 caractères'
-    },
-  /*  'date':{
-        required: true,
-        minLength: 8,
-        maxLength: 10,
-        pattern: /^'(0?\d|[12]\d|3[01])-(0?\d|1[012])-((?:20)\d{2})'$/,
-        message: 'Must be a date'
-    }*/
+    }
+
 };
 
 // Public instance properties:
@@ -125,23 +120,36 @@ function validateProp(prop, val, required) {
     }
 
     if (info.pattern && !info.pattern.test(val)) {
-        console.log(info.pattern+'      '+info.pattern.test(val));
         return('Invalid ' + prop + ' (format). Requirements: ' + message);
     }
 
 };
-
+/*
 function isConstraintViolation(err) {
     return err instanceof neo4j.ClientError &&
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
-};
+};*/
 
 // Public instance methods:
-
-// Atomically updates this user, both locally and remotely in the db, with the
-// given property updates.
+//Modifie la news en bdd
 Neww.prototype.patch = function (props, callback) {
-    var safeProps = validate(props);
+
+    var errorTab=[],validProps;
+
+
+/*
+    props = _.extend(props,{
+        name: this.name,
+        description: this.description,
+        descriptionShort: this.descriptionSort
+    });
+*/
+    validProps=validate(props,true);
+
+    if(validProps.error){
+        errorTab.push( new errors.PropertyError(validProps.error));
+        return callback(errorTab);
+    }
 
     var query = [
         'MATCH (new:New) WHERE id(new)= {id}',
@@ -149,45 +157,39 @@ Neww.prototype.patch = function (props, callback) {
         'RETURN new',
     ].join('\n');
 
+
     var params = {
         id: this.id,
-        props: safeProps
+        props: validProps
     };
 
     var self = this;
+
 
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
-        if (isConstraintViolation(err)) {
-            // TODO: This assumes username is the only relevant constraint.
-            // We could parse the constraint property out of the error message,
-            // but it'd be nicer if Neo4j returned this data semantically.
-            // Alternately, we could tweak our query to explicitly check first
-            // whether the username is taken or not.
-            err = new errors.UnicityError(
-                'The name ‘' + props.name + '’ is taken.');
-        }
+       /* if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
+        }*/
         if (err) return callback(err);
 
         if (!results.length) {
-            err = new Error('News has been deleted! Name: ' + self.name);
+            err = new Error('La news avec l\'id: ' + this.id +'n\'existe pas dans la base');
             return callback(err);
         }
-
-        // Update our node with this updated+latest data from the server:
+        // Met à jour le noeud avec les dernieres modifications
         self._node = results[0]['new'];
 
         callback(null);
     });
 };
 
+//supprime la news et toutes ses relations
 Neww.prototype.del = function (callback) {
-    // Use a Cypher query to delete both this user and his/her following
-    // relationships in one query and one network request:
-    // (Note that this'll still fail if there are any relationships attached
-    // of any other types, which is good because we don't expect any.)
+// supprime l'utilisateurs ainsi que toute ses relations
     var query = [
         'MATCH (new:New)',
         'WHERE id(new) = {id}',
@@ -206,51 +208,49 @@ Neww.prototype.del = function (callback) {
     });
 };
 
-// Creates the user and persists (saves) it to the db, incl. indexing it:
+// Crée la news et l'ajoute dans la bdd
 Neww.create = function (props, callback) {
 
-    var propsDate={
-        name:props.name,
-        description:props.description,
-        descriptionShort:props.descriptionShort,
-        date:Date.create(new Date())
-    }
-    var errorTab=[],testProps, err;
+    var errorTab=[],validProps;
     var query = [
         'CREATE (new:New {props})',
         'RETURN new',
     ].join('\n');
 
+    validProps=validate(props,true);
 
-    testProps=validate(props);
-    if(testProps.error){
-        errorTab.push( new errors.PropertyError(testProps.error));
+    if(validProps.error){
+        errorTab.push( new errors.PropertyError(validProps.error));
         return callback(errorTab);
     }
-
+    var dateToday=new Date().getTime().toString()
+    validProps=_.extend(props,{
+        date: dateToday.slice(0,dateToday.length-3)
+    });
     var params = {
-        props: validate(props)
+        props: validProps
     };
+
+    console.log("requee")
+    console.log(query);
+    console.log("param")
+    console.log(validProps);
 
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
-        if (isConstraintViolation(err)) {
-            // TODO: This assumes username is the only relevant constraint.
-            // We could parse the constraint property out of the error message,
-            // but it'd be nicer if Neo4j returned this data semantically.
-            // Alternately, we could tweak our query to explicitly check first
-            // whether the username is taken or not.
-            err = new errors.UnicityError(
-                'The name ‘' + props.name + '’ is taken.');
-        }
+      /*  if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
+        }*/
         if (err) return callback(err);
         var neww = new Neww(results[0]['new']);
         callback(null, neww);
     });
 };
 
+//récupère la news grace à l'id
 Neww.get = function (id, callback) {
 
     var idInt=parseInt(id);
@@ -274,7 +274,7 @@ Neww.get = function (id, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('No such newsr with ID: ' + id)
+            var error=new errors.PropertyError('No such news with ID: ' + id);
             err.push(error);
             return callback(err);
         }
@@ -283,10 +283,13 @@ Neww.get = function (id, callback) {
     });
 };
 
+//récupère la liste des 5 news les plus récentes
 Neww.getAll = function (callback) {
     var query = [
         'MATCH (new:New)',
         'RETURN new',
+        'ORDER BY new.date desc',
+        'LIMIT 5'
     ].join('\n');
 
     db.cypher({
@@ -294,17 +297,38 @@ Neww.getAll = function (callback) {
     }, function (err, results) {
         if (err) return callback(err);
         var news = results.map(function (result) {
-            return new User(result['new']);
+            return new Neww(result['new']);
         });
         callback(null, news);
     });
 };
+
+Neww.getNewt=function(callback){
+    var query = [
+        'MATCH (new:New)',
+        'RETURN new',
+        'WHERE', //todo
+        'ORDER BY new.date desc',
+        'LIMIT 5'
+    ].join('\n');
+
+    db.cypher({
+        query: query
+    }, function (err, results) {
+        if (err) return callback(err);
+        var news = results.map(function (result) {
+            return new Neww(result['new']);
+        });
+        callback(null, news);
+    });
+}
 
 // Static initialization:
 
 // Register our unique username constraint.
 // TODO: This is done async'ly (fire and forget) here for simplicity,
 // but this would be better as a formal schema migration script or similar.
+/*
 db.createConstraint({
     label: 'New',
     property: 'name'
@@ -315,4 +339,4 @@ db.createConstraint({
     } else {
         // Constraint already present; no need to log anything.
     }
-});
+});*/
