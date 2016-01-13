@@ -201,7 +201,6 @@ function isConstraintViolation(err) {
 }
 
 User.prototype.isAdmin = function() {
-    console.log("fonction isAdmin");
     if(this.admin){
         return true;
     }
@@ -214,16 +213,25 @@ User.prototype.isAdmin = function() {
 // given property updates.
 User.prototype.patch = function (props, callback) {
 
-    var errorTab=[],validProps;
+    var errorTab=[],validProps,required;
 
+    if(!props.email){
+        props=_.extend(props,{
+            email: this.email});
+    }
+    if(!props.password){
+        props=_.extend(props,{
+            password: this.password});
+    }
+    if(!props.nom){
+        props=_.extend(props,{
+            nom: this.nom});
+    }
+    if(!props.prenom){
+        props=_.extend(props,{
+            prenom: this.prenom});
+    }
 
-
-    props = _.extend(props,{
-        email: this.email,
-        password: this.password,
-        nom: this.nom,
-        prenom: this.prenom
-    });
 
     validProps=validate(props,true);
 
