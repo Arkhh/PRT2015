@@ -1,1 +1,25 @@
-NEWSPD
+<section class="panel">
+    <header class="panel-heading">
+        Actualités
+    </header>
+    <section class="panel-body">
+        <div class="panel-group"  role="tablist" aria-multiselectable="true">
+            <uib-accordion close-others="true">
+                <div ng-repeat="news in newsTab">
+                    <div ng-if="newsTab[0].name != news.name" class="line pull-in"></div>
+                    <article class="media">
+                        <div class="media-body">
+                            <div class="pull-left media-mini text-center text-muted" style="padding-right:10px;">
+                                <strong class="h4">09</strong><br>
+                                <small class="label bg-light">jan 2016</small>
+                            </div>
+                            <uib-accordion-group class="media-mini text-left text-muted" heading="{{news.name}}">
+                            <small class="block">{{news.description}}</small>
+                            </uib-accordion-group>
+                        </div>
+                    </article>
+                </div>
+            </uib-accordion>
+        </div>
+    </section>
+</section>

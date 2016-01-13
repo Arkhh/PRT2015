@@ -1,16 +1,16 @@
 <!-- header -->
 <header id="header" class="navbar">
     <ul class="nav navbar-nav navbar-avatar pull-right">
-        <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown">
+        <div uib-dropdown is-open="status.isopen">
+            <a class="dropdown-toggle"  uib-dropdown-toggle ng-disabled="disabled">
                 <span class="hidden-xs-only">{{userInfos.prenom}} {{userInfos.nom}}</span>
                 <span class="thumb-small avatar inline"><img src="styles/images/avatar.jpg" alt="Mika Sokeil" class="img-circle"></span>
                 <b class="caret hidden-xs-only"></b>
             </a>
-            <ul class="dropdown-menu pull-right">
-                <li><a ng-click="disconnect();">Deconnexion</a></li>
+            <ul class="dropdown-menu pull-right" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                <li role="menuitem"><a ng-click="disconnect();">Deconnexion</a></li>
             </ul>
-        </li>
+        </div>
     </ul>
     <a class="navbar-brand">BadminTown</a>
     <button type="button" class="btn btn-link pull-left nav-toggle visible-xs" data-toggle="class:slide-nav slide-nav-left" data-target="body">

@@ -2,6 +2,26 @@
  * Created by Thomas on 12/01/2016.
  */
 angular.module('BadminTown')
-    .controller('NewsCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
+    .controller('NewsCtrl', function (newsAPI, $rootScope, $scope, $location, $filter,$cookies) {
+
+        $scope.newsTab=[];
+
+        $scope.getLatestNews = function () {
+            newsAPI.getNews($scope.userInfos.id)
+                .then(function (data) {
+                    if (!data.error) {
+                        angular.forEach(data, function(value) {
+                            $scope.newsTab.push(value._node.properties);
+                        });
+
+                        console.log($scope.newsTab);
+
+
+                    }
+                });
+
+        };
+        $scope.getLatestNews();
+
 
     });
