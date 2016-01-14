@@ -1,3 +1,94 @@
-<div align="center">
-    <button ng-click="getInfos();">GETINFO</button>
-</div>
+<section class="panel">
+    <div class="panel-body">
+
+        <uib-tabset>
+            <uib-tab heading="Informations personelles">
+
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Email</label>
+                        <div class="col-lg-8">
+                            <input type="text" name="email" ng-model="userInfos.email" placeholder="test@example.com" class="bg-focus form-control" ng-requided="true" data-type="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Password</label>
+                        <div class="col-lg-8">
+                            <input ng-type="password" name="password" placeholder="Nouveau mot de passe"  ng-model="userInfos.password" class="bg-focus form-control">
+                            <div class="line line-dashed m-t-large"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Nom</label>
+                        <div class="col-lg-8">
+                            <input type="text" name="name" ng-model="userInfos.nom" placeholder="Nom" ng-requided="true" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Prenom</label>
+                        <div class="col-lg-8">
+                            <input type="text" name="prenom" ng-model="userInfos.prenom" placeholder="Prenom" ng-requided="true" class="form-control">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Sexe</label>
+                        <div class="col-lg-4">
+                            <select name="account" ng-model="userInfos.sexe" class="form-control">
+                                <option value=""></option>
+                                <option value="H">Homme</option>
+                                <option value="F">Femme</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <button type="submit" class="btn btn-primary">Editer le profil</button>
+                        </div>
+                    </div>
+                </form>
+
+            </uib-tab>
+            <uib-tab heading="Joueur">
+
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Main forte</label>
+                        <div class="col-lg-4">
+                            <select name="account" ng-model="userInfos.mainForte" class="form-control">
+                                <option value="">Aucune</option>
+                                <option value="G">Gauche</option>
+                                <option value="D">Droite</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Type de joueur</label>
+                        <div class="col-lg-4">
+                            <select name="account" ng-model="userInfos.TypeJoueur" class="form-control">
+                                <option value="">Aucun</option>
+                                <option value="S">Simple</option>
+                                <option value="D">Double</option>
+                                <option value="T">Tout</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h4>Volée</h4>
+                    <uib-rating style="font-size: 20px;" ng-model="rate" max="max" readonly="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" state-on="'glyphicon-ok-sign'" state-off="'glyphicon-ok-circle'" aria-labelledby="custom-icons-1"></uib-rating>
+                    <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+
+
+                </form>
+
+            </uib-tab>
+        </uib-tabset>
+
+
+    </div>
+</section>

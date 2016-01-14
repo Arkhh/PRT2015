@@ -26,7 +26,9 @@
 <!-- nav -->
 <nav id="nav" class="nav-primary hidden-xs nav-vertical">
     <ul class="nav" data-spy="affix" data-offset-top="50">
-        <li ng-class="{active: partials['showProfile']}"> <a ng-click="displayPartial('showProfile');"><i class="fa fa-edit fa-lg"></i><span>Mon Profil</span></a></li>
+
+        <li ng-class="{active: partials['showProfile']}"> <a ng-click="displayPartial('showProfile')"><i class="fa fa-edit fa-lg"></i><span>Mon Profil</span></a></li>
+
         <li ng-class="{active: partials['showNews']}" class="dropdown-submenu">
             <a ng-click="displayPartial('showNews');"><i class="fa fa-list fa-lg"></i><span>News</span></a>
             <ul class="dropdown-menu">
@@ -49,7 +51,7 @@
 
         <li ng-class="{active: partials['showRanking']}"><a ng-click="displayPartial('showRanking');"><i class="fa fa-signal fa-lg"></i><span>Classement</span></a></li>
 
-        <li ng-class="{active: partials['showAdmin']}" class="dropdown-submenu">
+        <li ng-if="userInfos.admin===true" ng-class="{active: partials['showAdmin']}" class="dropdown-submenu">
             <a><i class="fa fa-link fa-lg"></i><span>Admin</span></a>
             <ul class="dropdown-menu">
                 <li><a href="mail.html">Mail</a></li>
@@ -69,14 +71,12 @@
 <!-- / nav -->
 <section id="content">
     <section class="main padder">
-
-        <nav ng-include="'views/partials/profile.html'" ng-controller="ProfileCtrl" ng-show="partials['showProfile']" class="account-nav"></nav>
-        <nav ng-include="'views/partials/news.html'" ng-controller="NewsCtrl" ng-show="partials['showNews']" class="account-nav"></nav>
-        <nav ng-include="'views/partials/events.html'" ng-controller="EventsCtrl" ng-show="partials['showEvents']" class="account-nav"></nav>
-        <nav ng-include="'views/partials/ranking.html'" ng-controller="RankingCtrl" ng-show="partials['showRanking']" class="account-nav"></nav>
-        <nav ng-include="'views/partials/matches.html'" ng-controller="MatchCtrl" ng-show="partials['showMatches']" class="account-nav"></nav>
-
-
+        <nav ng-include="'views/partials/profile.html'" ng-controller="ProfileCtrl" ng-if="partials['showProfile']" class="account-nav"></nav>
+        <nav ng-include="'views/partials/news.html'" ng-controller="NewsCtrl" ng-if="partials['showNews']" class="account-nav"></nav>
+        <nav ng-include="'views/partials/events.html'" ng-controller="EventsCtrl" ng-if="partials['showEvents']" class="account-nav"></nav>
+        <nav ng-include="'views/partials/ranking.html'" ng-controller="RankingCtrl" ng-if="partials['showRanking']" class="account-nav"></nav>
+        <nav ng-include="'views/partials/matches.html'" ng-controller="MatchCtrl" ng-if="partials['showMatches']" class="account-nav"></nav>
+        <nav ng-include="'views/partials/admin.html'" ng-controller="AdminCtrl" ng-if="partials['showAdmin']" class="account-nav"></nav>
     </section>
 </section>
 

@@ -25,10 +25,9 @@ angular.module('BadminTown')
         function onSucessRedirect(data){
             $scope.userinfos={
                 id:data._node._id,
-                email:data._node.properties.email,
-                password:data._node.properties.password,
                 nom:data._node.properties.nom,
-                prenom:data._node.properties.prenom
+                prenom:data._node.properties.prenom,
+                admin:data._node.properties.admin
             };
             $cookies.put('isConnected', true);
             $cookies.putObject('userInfos',$scope.userinfos);

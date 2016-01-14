@@ -8,7 +8,7 @@ angular.module('BadminTown')
     .controller('HomeCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
 
 
-        $scope.displayPartial= function(partial){
+       $scope.displayPartial= function(partial){
 
             $scope.partials['showProfile']=false;
             $scope.partials['showNews']=false;
@@ -40,6 +40,9 @@ angular.module('BadminTown')
 
         function isConnected(){
             if($scope.session===false || !$scope.userInfos){
+                $scope.userInfos='';
+                $cookies.remove('isConnected');
+                $cookies.remove('userInfos');
                 $location.path("/");
             }
         }

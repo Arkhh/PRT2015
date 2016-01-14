@@ -307,6 +307,10 @@ User.create = function (props, callback) {
         'RETURN user',
     ].join('\n');
 
+    props=_.extend(props,{
+        admin: false
+    });
+
     validProps=validate(props,true);
 
     if(validProps.error){
