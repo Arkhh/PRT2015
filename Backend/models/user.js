@@ -93,6 +93,83 @@ User.VALIDATION_INFO = {
         maxLength: 1,
         pattern: /^[A-Z]+$/,
         message: 'string'
+    },
+    'totalVolee':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'nbEvalVolee':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'totalFrappe':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'nbEvalFrappe':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'totalEndurance':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'nbEvalEndurance':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'totalFond':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'nbEvalFond':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'totalTechnique':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'nbEvalTechnique':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
+    },
+    'classement':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
     }
 };
 
@@ -133,6 +210,36 @@ Object.defineProperty(User.prototype, 'naissance', {
 });
 Object.defineProperty(User.prototype, 'sexe', {
     get: function () { return this._node.properties['sexe']; }
+});
+Object.defineProperty(User.prototype, 'totalVolee', {
+    get: function () { return this._node.properties['totalVolee']; }
+});
+Object.defineProperty(User.prototype, 'nbEvalVolee', {
+    get: function () { return this._node.properties['nbEvalVolee']; }
+});
+Object.defineProperty(User.prototype, 'totalFrappe', {
+    get: function () { return this._node.properties['totalFrappe']; }
+});
+Object.defineProperty(User.prototype, 'nbEvalFrappe', {
+    get: function () { return this._node.properties['nbEvalFrappe']; }
+});
+Object.defineProperty(User.prototype, 'totalEndurance', {
+    get: function () { return this._node.properties['totalEndurance']; }
+});
+Object.defineProperty(User.prototype, 'nbEvalEndurance', {
+    get: function () { return this._node.properties['nbEvalEndurance']; }
+});
+Object.defineProperty(User.prototype, 'totalFond', {
+    get: function () { return this._node.properties['totalFond']; }
+});
+Object.defineProperty(User.prototype, 'nbEvalFond', {
+    get: function () { return this._node.properties['nbEvalFond']; }
+});
+Object.defineProperty(User.prototype, 'totalTechnique', {
+    get: function () { return this._node.properties['totalTechnique']; }
+});
+Object.defineProperty(User.prototype, 'nbEvalTechnique', {
+    get: function () { return this._node.properties['nbEvalTechnique']; }
 });
 
 // Private helpers:
@@ -421,3 +528,375 @@ db.createConstraint({
     }
 });
 
+//GESTION DES SKILLS
+//CREATION
+User.prototype.createRelVolee = function (){
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Volee' " +
+        "CREATE (u)-[r:RelationEvaluation { moyenne: 0 }]->(s) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+User.prototype.createRelFrappe = function (){
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Frappe' " +
+        "CREATE (u)-[r:RelationEvaluation { moyenne: 0 }]->(s) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+User.prototype.createRelFond = function (){
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Fond' " +
+        "CREATE (u)-[r:RelationEvaluation { moyenne: 0 }]->(s) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+User.prototype.createRelEndurance = function (){
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Endurance' " +
+        "CREATE (u)-[r:RelationEvaluation { moyenne: 0 }]->(s) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+User.prototype.createRelTechnique = function (){
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Technique' " +
+        "CREATE (u)-[r:RelationEvaluation { moyenne: 0 }]->(s) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+//EDIT
+User.prototype.editRelVolee = function (note, callback){
+
+    var noteInt = parseInt(note);
+    var newTotalVolee = this.totalVolee + noteInt;
+    var newNbEval = this.nbEvalVolee + 1;
+    var newMoyenne = (newTotalVolee/newNbEval)
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Volee' " +
+        "SET r.moyenne = {newMoyenne}, u.nbEvalVolee = {newNbEvalVolee}, u.totalVolee = {newTotalVolee} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        newMoyenne: newMoyenne,
+        newNbEvalVolee: newNbEval,
+        newTotalVolee: newTotalVolee
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        var user = new User(results[0]);
+        callback(null, user);
+    });
+};
+
+User.prototype.editRelFrappe = function (note, callback){
+
+    var noteInt = parseInt(note);
+    var newTotalFrappe = this.totalFrappe + noteInt;
+    var newNbEval = this.nbEvalFrappe + 1;
+    var newMoyenne = (newTotalFrappe/newNbEval)
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Frappe' " +
+        "SET r.moyenne = {newMoyenne}, u.nbEvalFrappe = {newNbEvalFrappe}, u.totalFrappe = {newTotalFrappe} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        newMoyenne: newMoyenne,
+        newNbEvalFrappe: newNbEval,
+        newTotalFrappe: newTotalFrappe
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        var user = new User(results[0]);
+        callback(null, user);
+    });
+};
+
+User.prototype.editRelFond = function (note, callback){
+
+    var noteInt = parseInt(note);
+    var newTotalFond = this.totalFond + noteInt;
+    var newNbEval = this.nbEvalFond + 1;
+    var newMoyenne = (newTotalFond/newNbEval)
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Fond' " +
+        "SET r.moyenne = {newMoyenne}, u.nbEvalFond = {newNbEvalFond}, u.totalFond = {newTotalFond} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        newMoyenne: newMoyenne,
+        newNbEvalFond: newNbEval,
+        newTotalFond: newTotalFond
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        var user = new User(results[0]);
+        callback(null, user);
+    });
+};
+
+User.prototype.editRelTechnique = function (note, callback){
+
+    var noteInt = parseInt(note);
+    var newTotalTechnique = this.totalTechnique + noteInt;
+    var newNbEval = this.nbEvalTechnique + 1;
+    var newMoyenne = (newTotalTechnique/newNbEval)
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Technique' " +
+        "SET r.moyenne = {newMoyenne}, u.nbEvalTechnique = {newNbEvalTechnique}, u.totalTechnique = {newTotalTechnique} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        newMoyenne: newMoyenne,
+        newNbEvalTechnique: newNbEval,
+        newTotalTechnique: newTotalTechnique
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        var user = new User(results[0]);
+        callback(null, user);
+    });
+};
+
+User.prototype.editRelEndurance = function (note, callback){
+
+    var noteInt = parseInt(note);
+    var newTotalEndurance = this.totalEndurance + noteInt;
+    var newNbEval = this.nbEvalEndurance + 1;
+    var newMoyenne = (newTotalEndurance/newNbEval)
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = 'Endurance' " +
+        "SET r.moyenne = {newMoyenne}, u.nbEvalEndurance = {newNbEvalEndurance}, u.totalEndurance = {newTotalEndurance} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        newMoyenne: newMoyenne,
+        newNbEvalEndurance: newNbEval,
+        newTotalEndurance: newTotalEndurance
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        var user = new User(results[0]);
+        callback(null, user);
+    });
+};
+
+//FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
+User.prototype.searchSkillLevel = function(nomSkill, noteCherchee, callback) {
+
+    var intNoteCherchee = parseInt(noteCherchee);
+
+    if (intNoteCherchee > 5) {
+        //si l'email est déjà pris
+        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
+        callback(err);
+    }
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE s.nom = {nomSkill} " +
+        "AND " +
+        "id(u)<{id} OR {id}<id(u) " +
+        "WITH u,s " +
+        "MATCH (u)-[r:RelationEvaluation]->(s) " +
+        "WHERE round(r.moyenne) = {noteCherchee} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        nomSkill: nomSkill,
+        noteCherchee: intNoteCherchee,
+        id: this.id
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+
+        var i=0;
+        var tabReponse = [];
+        while(i<results.length){
+            //tabReponse.push(results[i].u.properties); pour juste les données des noeuds
+            //tabReponse.push(results[i].u); Pour données des noeuds + id
+            tabReponse.push(results[i].u._id); //Pour simplement les ids des noeuds correspondant
+            i++;
+        }
+        callback(null, tabReponse);
+    });
+}
