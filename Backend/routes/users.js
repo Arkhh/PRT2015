@@ -27,7 +27,7 @@ exports.create = function (req, res) {
         email: req.body.email,
         nom: req.body.nom,
         prenom: req.body.prenom,
-        classement: 1000,
+        points: 1000,
         totalVolee: 0,
         totalFond: 0,
         totalFrappe: 0,
@@ -45,11 +45,7 @@ exports.create = function (req, res) {
                 error: err
             });
         }
-        user.createRelVolee();
-        user.createRelFrappe();
-        user.createRelFond();
-        user.createRelTechnique();
-        user.createRelEndurance();
+        user.createRel();
         return res.json(user);
 
     });
@@ -120,73 +116,9 @@ exports.del = function (req, res) {
     });
 };
 
-/**
- * noteVolee /notationVolee/:note
- */
-exports.noteVolee = function (req, res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        user.editRelVolee(req.body.note, function (err, user) {
-            if (err) return res.status(404).json(err);
-            return res.json({edited: 'ok', user: user});
-        });
-    });
-};
 
 /**
- * noteFrappe /notationFrappe/:note
- */
-exports.noteFrappe = function (req, res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        user.editRelFrappe(req.body.note, function (err, user) {
-            if (err) return res.status(404).json(err);
-            return res.json({edited: 'ok', user: user});
-        });
-    });
-};
-
-/**
- * noteTechnique /notationTechnique/:note
- */
-exports.noteTechnique = function (req, res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        user.editRelTechnique(req.body.note, function (err, user) {
-            if (err) return res.status(404).json(err);
-            return res.json({edited: 'ok', user: user});
-        });
-    });
-};
-
-/**
- * noteFond /notationFond/:note
- */
-exports.noteFond = function (req, res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        user.editRelFond(req.body.note, function (err, user) {
-            if (err) return res.status(404).json(err);
-            return res.json({edited: 'ok', user: user});
-        });
-    });
-};
-
-/**
- * noteEndurance /notationEndurance/:note
- */
-exports.noteEndurance = function (req, res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        user.editRelEndurance(req.body.note, function (err, user) {
-            if (err) return res.status(404).json(err);
-            return res.json({edited: 'ok', user: user});
-        });
-    });
-};
-
-/**
- * noteEndurance /notationEndurance/:note
+ * searchSkillLvl /searchSkillLevel/:id
  */
 exports.searchSkillLvl = function (req, res) {
     User.get(req.params.id, function (err, user) {
@@ -198,4 +130,44 @@ exports.searchSkillLvl = function (req, res) {
             return res.json(user);
         });
     });
+};
+
+/**
+ * read /readRel/:id
+ */
+exports.notation = function (req, res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        user.readRel(req.body.nomSkill, function (err, rel) {
+            console.log("SORTIE DANS LE SEARCH SKILL")
+            if (err) return res.status(404).json(err);
+            console.log("rel");
+            console.log(rel[0]);
+            User.notation(req.body.note, rel, function (err, rela) {
+                if (err) return err;
+                return res.json(rela);
+            })
+            //return res.json(user);
+        });
+    });
+};
+
+/**
+ * pubList /pub/users/
+ */
+exports.pubList = function (req,res) {
+    User.pubList(function (err, users){
+        if (err) return res.status(500).json(err);
+        return res.json(users);
+    })
+}
+
+/**
+ * GET /users
+ */
+exports.list = function (req, res) {
+    User.getAll(function (err, users) {
+        if (err) return res.status(500).json(err);
+        return res.json(users);
+    })
 };

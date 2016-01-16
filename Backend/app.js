@@ -45,13 +45,9 @@ app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
 
-app.post(routeApi+'/notationVolee/:id', routes.users.noteVolee);
-app.post(routeApi+'/notationTechnique/:id', routes.users.noteTechnique);
-app.post(routeApi+'/notationEndurance/:id', routes.users.noteEndurance);
-app.post(routeApi+'/notationFrappe/:id', routes.users.noteFrappe);
-app.post(routeApi+'/notationFond/:id', routes.users.noteFond);
-
 app.post(routeApi+'/searchSkillLevel/:id', routes.users.searchSkillLvl);
+app.post(routeApi+'/notation/:id', routes.users.notation);
+app.get(routeApi+'/pub/users', routes.users.pubList);
 
 
 app.get(routeApi+'/events',routes.events.list);
