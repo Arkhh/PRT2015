@@ -45,6 +45,12 @@ app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
 
+app.post(routeApi+'/searchSkillLevel/:id', routes.users.searchSkillLvl);
+app.post(routeApi+'/notation/:id', routes.users.notation);
+app.get(routeApi+'/pub/users', routes.users.pubList);
+app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
+
+
 app.get(routeApi+'/events',routes.events.list);
 app.get(routeApi+'/events/:id',routes.events.show);
 app.post(routeApi+'/events',routes.events.create);

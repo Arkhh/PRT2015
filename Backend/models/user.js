@@ -19,6 +19,7 @@ var User = module.exports = function User(_node) {
     // All we'll really store is the node; the rest of our properties will be
     // derivable or just pass-through properties (see below).
     this._node = _node;
+    //this._rel = _rel;
 };
 
 // Public constants:
@@ -92,12 +93,6 @@ User.VALIDATION_INFO = {
         minLength: 1,
         maxLength: 1,
         pattern: /^[A-Z]+$/,
-        message: 'string'
-    },
-    'points':{
-        required: false,
-        minLength: 1,
-        pattern: /^[0-9]+$/,
         message: 'string'
     }
 };
@@ -209,12 +204,64 @@ function isConstraintViolation(err) {
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
 }
 
+function createJson(res){
+    var i = 0;
+    var tabReponse = [];
+    while (i<res.length){
+        var moyenne1 = res[i].r1.properties.moyenne;
+        var moyenne2 = res[i].r2.properties.moyenne;
+        var moyenne3 = res[i].r3.properties.moyenne;
+        var moyenne4 = res[i].r4.properties.moyenne;
+        var moyenne5 = res[i].r5.properties.moyenne;
+        var noteMoyenne = (moyenne1 + moyenne2 + moyenne3 + moyenne4 + moyenne5)/5;
+        // while
+        var tab= {
+            id: res[i].u._id,
+            nom: res[i].u.properties.nom,
+            prenom: res[i].u.properties.prenom,
+            mainForte: res[i].u.properties.mainForte,
+            points: res[i].u.properties.points,
+            noteMoyenne: noteMoyenne
+        }
+        tabReponse.push(tab);
+        i++;
+    }
+    /*console.log("Ici");
+    console.log(res[0].r);
+    console.log(res[1].r);
+    console.log(res[2].r);
+    console.log('moyenne');
+    console.log(tab.noteMoyenne);*/
+    return tabReponse;
+};
+
+function createJsonId(res){
+    var moyenne1 = res[0].r1.properties.moyenne;
+    var moyenne2 = res[0].r2.properties.moyenne;
+    var moyenne3 = res[0].r3.properties.moyenne;
+    var moyenne4 = res[0].r4.properties.moyenne;
+    var moyenne5 = res[0].r5.properties.moyenne;
+    var noteMoyenne = (moyenne1 + moyenne2 + moyenne3 + moyenne4 + moyenne5)/5;
+    // while
+    var tab = {
+        id: res[0].u._id,
+        nom: res[0].u.properties.nom,
+        prenom: res[0].u.properties.prenom,
+        mainForte: res[0].u.properties.mainForte,
+        points: res[0].u.properties.points,
+        noteMoyenne: noteMoyenne
+    }
+    return tab;
+};
+
+//tabReponse.push(results[i].u.properties
+
 User.prototype.isAdmin = function() {
     if(this.admin){
         return true;
     }
     return false;
-}
+};
 
 // Public instance methods:
 
@@ -379,6 +426,67 @@ User.get = function (id, callback) {
     });
 };
 
+User.pubList = function(callback){
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE s1.nom = 'Volee'AND s2.nom = 'Frappe'AND s3.nom = 'Technique'AND s4.nom = 'Endurance'AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 " +
+        "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
+        "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
+        "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
+        "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
+        "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
+        "RETURN u,r1,r2,r3,r4,r5"
+    ].join('\n');
+
+    db.cypher({
+        query: query
+    }, function (err, results) {
+        if (err) return callback(err);
+        console.log("results");
+        console.log(results);
+        var users = createJson(results);
+       /* var users = results.map(function (result) {
+            console.log("users");
+            console.log(users);
+            return createJson(result);
+        });*/
+        callback(null, users);
+    });
+};
+
+User.prototype.pubListId = function(callback){
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE id(u) = {id} AND s1.nom = 'Volee'AND s2.nom = 'Frappe'AND s3.nom = 'Technique'AND s4.nom = 'Endurance'AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 " +
+        "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
+        "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
+        "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
+        "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
+        "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
+        "RETURN u,r1,r2,r3,r4,r5"
+    ].join('\n');
+
+    var params = {
+        id: this.id
+    }
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        //console.log("results");
+        //console.log(results);
+        var users = createJsonId(results);
+        /* var users = results.map(function (result) {
+         console.log("users");
+         console.log(users);
+         return createJson(result);
+         });*/
+        callback(null, users);
+    });
+};
 
 User.getAll = function (callback) {
     var query = [
@@ -436,3 +544,188 @@ db.createConstraint({
     }
 });
 
+//GESTION DES SKILLS
+
+//CREATION
+
+// FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
+User.prototype.searchSkillLevel = function(nomSkill, noteCherchee, callback) {
+
+    var intNoteCherchee = parseInt(noteCherchee);
+
+    if (intNoteCherchee > 5) {
+        //si l'email est déjà pris
+        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
+        callback(err);
+    }
+
+    var query = [
+        "MATCH (u:User),(s:Skill) " +
+        "WHERE s.nom = {nomSkill} " +
+        "AND " +
+        "id(u)<{id} OR {id}<id(u) " +
+        "WITH u,s " +
+        "MATCH (u)-[r:RelationEvaluation]->(s) " +
+        "WHERE round(r.moyenne) = {noteCherchee} " +
+        "RETURN u"
+    ].join('\n');
+
+    var params = {
+        nomSkill: nomSkill,
+        noteCherchee: intNoteCherchee,
+        id: this.id
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+
+        var i=0;
+        var tabReponse = [];
+        while(i<results.length){
+            //tabReponse.push(results[i].u.properties); //pour juste les données des noeuds
+            //tabReponse.push(results[i].u); //Pour données des noeuds + id
+            tabReponse.push(results[i].u._id); //Pour simplement les ids des noeuds correspondant
+            i++;
+        }
+        callback(null, tabReponse);
+    });
+};
+
+//FONCTION GENERALE POUR CREATION DE REL SKILL
+User.prototype.createRel = function (){
+
+    var query = [
+        "MATCH (u:User),(a:Skill),(b:Skill),(c:Skill),(d:Skill),(e:Skill) " +
+        "WHERE id(u) = {id} AND a.nom = 'Endurance' " +
+        "AND b.nom = 'Frappe' AND c.nom = 'Volee' AND d.nom = 'Fond' AND e.nom = 'Technique' " +
+        "CREATE (u)-[r0:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(a) " +
+        "CREATE (u)-[r1:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(b) " +
+        "CREATE (u)-[r2:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(c) " +
+        "CREATE (u)-[r3:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(d) " +
+        "CREATE (u)-[r4:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(e) " +
+        "RETURN r0,r1,r2,r3,r4"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+//LIRE LA RELATION
+User.prototype.readRel = function (nomSkill,callback){
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(u) = {id} AND s.nom = {nomSkill} " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: this.id,
+        nomSkill: nomSkill
+    };
+
+    /*console.log("query");
+    console.log(query);
+    console.log("params");
+    console.log(params);*/
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        console.log(results);
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+       // console.log('results');
+       // console.log(results);
+        callback(null, results);
+        //return ('Okay');
+        //callback(null, 'Rel Volee Creee');
+        //var user = new User(results[0]['user']);
+        //callback(null, user);
+    });
+};
+
+//EDIT GENERALISE DE LA RELATION
+User.notation = function (note, rel, callback){
+
+    var noteInt = parseInt(note);
+    console.log("noteInt");
+    console.log(noteInt);
+
+    if (noteInt > 5) {
+        //si l'email est déjà pris
+        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
+        callback(err, null);
+    }
+
+    var newTotal = rel[0].r.properties.total + noteInt;
+    console.log("total");
+    console.log
+    console.log(newTotal);
+    var newNbEval = rel[0].r.properties.nbEval + 1;
+    console.log("newNbEval");
+    console.log(newNbEval);
+    var newMoyenne = (newTotal/newNbEval);
+    console.log("newMoyenne");
+    console.log(newMoyenne);
+
+
+    var query = [
+        "MATCH (u:User)-[r:RelationEvaluation]->(s:Skill) " +
+        "WHERE id(r) = {id} " +
+        "SET r.nbEval = {newNbEval}, r.total = {newTotal} " +
+        "SET r.moyenne = {newMoyenne} " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        id: rel[0].r._id,
+        newMoyenne: newMoyenne,
+        newNbEval: newNbEval,
+        newTotal: newTotal
+    };
+
+    console.log("query");
+    console.log(query);
+    console.log("params");
+    console.log(params);
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('Quelle erreur mettre ???');
+        }
+        if (err) return err;
+        //var user = new User(results[0]);
+        callback(null, results);
+    });
+};
