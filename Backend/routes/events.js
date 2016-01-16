@@ -25,22 +25,28 @@ exports.list = function (req, res, next) {
 /**
  * POST /users {username, ...}
  */
+
 exports.create = function (req, res) {
-    var admin = false;
+    var valid = 0;
     User.get(req.body.idCreateur, function (err, user) {
         if (err) return res.status(404).json( {error:err});
         admin=user.isAdmin();
-            Event.create(
-    req.body
-            , function (err, event) {
-                if (err) {
-                    return res.status(500).json({
-                        pathname: '/events',
-                        error: err
-                    });
-                }
-                return res.json(event);
-            });
+        if(admin) valid=1;
+        Event.create({
+            nom: req.body.nom,
+            lieu: req.body.lieu,
+            date: req.body.date,
+            prix: req.body.prix,
+            valid: valid
+        }, function (err, user) {
+            if (err) {
+                return res.status(500).json({
+                    pathname: '/users',
+                    error: err
+                });
+            }
+            return res.json(user);
+        });
     })
 };
 

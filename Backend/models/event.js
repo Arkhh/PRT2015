@@ -39,7 +39,7 @@ Event.VALIDATION_INFO = {
         message: '2-16 characters; letters, numbers, and underscores only.'
     },
     'prix': {
-        required: false,
+        required: true,
         minLength: 1,
         maxLength: 16,
         pattern: /^[A-Za-z0-9_ ]+$/,
@@ -62,9 +62,9 @@ Event.VALIDATION_INFO = {
     'valid': {
         required: false,
         minLength: 1,
-        maxLength: 2,
-        pattern: /^[0-9]+$/,
-        message: '1 number 0 or 1'
+        maxLength: 5,
+        pattern: /^[A-Za-z0-9_]+$/,
+        message: 'boolean'
     },
     'date': {
         required: true,

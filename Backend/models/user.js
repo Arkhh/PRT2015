@@ -420,4 +420,3 @@ db.createConstraint({
         console.log('(Contrainte d\'email unique enregistée)');
     }
 });
-
