@@ -343,12 +343,12 @@ function createJson(res){
 };
 
 function createJsonId(res){
-    var moyenne1 = res[0].r1.properties.moyenne;
-    var moyenne2 = res[0].r2.properties.moyenne;
-    var moyenne3 = res[0].r3.properties.moyenne;
-    var moyenne4 = res[0].r4.properties.moyenne;
-    var moyenne5 = res[0].r5.properties.moyenne;
-    var noteMoyenne = (moyenne1 + moyenne2 + moyenne3 + moyenne4 + moyenne5)/5;
+    var moyenneVolee = res[0].r1.properties.moyenne;
+    var moyenneFrappe = res[0].r2.properties.moyenne;
+    var moyenneTechnique = res[0].r3.properties.moyenne;
+    var moyenneEndurance = res[0].r4.properties.moyenne;
+    var moyenneFond = res[0].r5.properties.moyenne;
+    var noteMoyenne = (moyenneVolee + moyenneFrappe + moyenneTechnique + moyenneEndurance + moyenneFond)/5;
     // while
     var tab = {
         id: res[0].u._id,
@@ -356,6 +356,11 @@ function createJsonId(res){
         prenom: res[0].u.properties.prenom,
         mainForte: res[0].u.properties.mainForte,
         points: res[0].u.properties.points,
+        moyenneVolee: moyenneVolee,
+        moyenneFrappe: moyenneFrappe,
+        moyenneEndurance: moyenneEndurance,
+        moyenneTechnique: moyenneTechnique,
+        moyenneFond: moyenneFond,
         noteMoyenne: noteMoyenne
     }
     return tab;
@@ -559,7 +564,7 @@ User.pubList = function(callback){
 User.prototype.pubListId = function(callback){
     var query = [
         "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
-        "WHERE id(u) = {id} AND s1.nom = 'Volee'AND s2.nom = 'Frappe'AND s3.nom = 'Technique'AND s4.nom = 'Endurance'AND s5.nom = 'Fond' " +
+        "WHERE id(u) = {id} AND s1.nom = 'Volee' AND s2.nom = 'Frappe' AND s3.nom = 'Technique' AND s4.nom = 'Endurance' AND s5.nom = 'Fond' " +
         "WITH u,s1,s2,s3,s4,s5 " +
         "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
         "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
@@ -650,7 +655,7 @@ db.createConstraint({
 //CREATION
 
 // FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
-User.prototype.searchSkillLevel = function(nomSkill, noteCherchee, callback) {
+User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
 
     var intNoteCherchee = parseInt(noteCherchee);
 
@@ -664,7 +669,7 @@ User.prototype.searchSkillLevel = function(nomSkill, noteCherchee, callback) {
         "MATCH (u:User),(s:Skill) " +
         "WHERE s.nom = {nomSkill} " +
         "AND " +
-        "id(u)<{id} OR {id}<id(u) " +
+        "id(u) <> {id} " +
         "WITH u,s " +
         "MATCH (u)-[r:RelationEvaluation]->(s) " +
         "WHERE round(r.moyenne) = {noteCherchee} " +
@@ -674,7 +679,7 @@ User.prototype.searchSkillLevel = function(nomSkill, noteCherchee, callback) {
     var params = {
         nomSkill: nomSkill,
         noteCherchee: intNoteCherchee,
-        id: this.id
+        id: id
     };
 
     db.cypher({
