@@ -420,3 +420,27 @@ db.createConstraint({
         console.log('(Contrainte d\'email unique enregistée)');
     }
 });
+
+//Inscription event
+User.prototype.inscription = function(idEvent, callback){
+
+    var query = [
+        "MATCH (u:User),(e:Event) " +
+        "WHERE id(u) = {id} AND id(e) = {idEvent} " +
+        "CREATE (u)-[r:RelationInscription]->(e) " +
+        "RETURN r"
+    ].join('\n');
+
+    var params = {
+        idEvent: idEvent,
+        id: this.id
+    };
+
+    db.cypher({
+        query:query,
+        params: params
+    }, function(err, results) {
+        if (err) return callback(err);
+    });
+    callback(null,results);
+}

@@ -44,6 +44,8 @@ app.get(routeApi+'/users/:id', routes.users.show);
 app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
+app.post(routeApi+'/users/inscription/:id', routes.users.inscription);
+
 
 app.get(routeApi+'/events',routes.events.list);
 app.get(routeApi+'/events/:id',routes.events.show);

@@ -102,3 +102,15 @@ exports.del = function (req, res) {
         });
     });
 };
+/**
+ * INSCRIPTION /users/inscription/:id
+ */
+exports.inscription = function (req, res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        user.inscription(req.body.idEvent, function (rel, err) {
+            if (err) return res.status(500).json(err);
+            return res.json(rel);
+        });
+    });
+};
