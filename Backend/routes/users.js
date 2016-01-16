@@ -102,3 +102,16 @@ exports.del = function (req, res) {
         });
     });
 };
+
+/**
+ * GET /adv/users/:id
+ */
+exports.adv = function (req, res) {
+    User.getAdv(req.params.id,function (err, users) {
+        if (err) return  res.status(404).json({
+            pathname: 'adv/users/:id',
+            error: err
+        });
+        return res.json(users);
+    })
+};
