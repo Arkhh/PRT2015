@@ -48,6 +48,7 @@ app.post(routeApi+'/auth/', routes.users.connect);
 app.post(routeApi+'/searchSkillLevel/:id', routes.users.searchSkillLvl);
 app.post(routeApi+'/notation/:id', routes.users.notation);
 app.get(routeApi+'/pub/users', routes.users.pubList);
+app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
 
 
 app.get(routeApi+'/events',routes.events.list);

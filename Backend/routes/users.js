@@ -160,7 +160,20 @@ exports.pubList = function (req,res) {
         if (err) return res.status(500).json(err);
         return res.json(users);
     })
-}
+};
+
+/**
+ * pubList /pub/users/:id
+ */
+exports.pubListId = function (req,res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        user.pubListId(function (err, users){
+            if (err) return res.status(500).json(err);
+            return res.json(users);
+        })
+    })
+};
 
 /**
  * GET /users

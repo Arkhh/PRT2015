@@ -342,6 +342,25 @@ function createJson(res){
     return tabReponse;
 };
 
+function createJsonId(res){
+    var moyenne1 = res[0].r1.properties.moyenne;
+    var moyenne2 = res[0].r2.properties.moyenne;
+    var moyenne3 = res[0].r3.properties.moyenne;
+    var moyenne4 = res[0].r4.properties.moyenne;
+    var moyenne5 = res[0].r5.properties.moyenne;
+    var noteMoyenne = (moyenne1 + moyenne2 + moyenne3 + moyenne4 + moyenne5)/5;
+    // while
+    var tab = {
+        id: res[0].u._id,
+        nom: res[0].u.properties.nom,
+        prenom: res[0].u.properties.prenom,
+        mainForte: res[0].u.properties.mainForte,
+        points: res[0].u.properties.points,
+        noteMoyenne: noteMoyenne
+    }
+    return tab;
+};
+
 //tabReponse.push(results[i].u.properties
 
 User.prototype.isAdmin = function() {
@@ -535,7 +554,40 @@ User.pubList = function(callback){
         });*/
         callback(null, users);
     });
-}
+};
+
+User.prototype.pubListId = function(callback){
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE id(u) = {id} AND s1.nom = 'Volee'AND s2.nom = 'Frappe'AND s3.nom = 'Technique'AND s4.nom = 'Endurance'AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 " +
+        "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
+        "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
+        "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
+        "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
+        "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
+        "RETURN u,r1,r2,r3,r4,r5"
+    ].join('\n');
+
+    var params = {
+        id: this.id
+    }
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        //console.log("results");
+        //console.log(results);
+        var users = createJsonId(results);
+        /* var users = results.map(function (result) {
+         console.log("users");
+         console.log(users);
+         return createJson(result);
+         });*/
+        callback(null, users);
+    });
+};
 
 User.getAll = function (callback) {
     var query = [
