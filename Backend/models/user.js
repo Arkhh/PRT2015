@@ -93,6 +93,12 @@ User.VALIDATION_INFO = {
         maxLength: 1,
         pattern: /^[A-Z]+$/,
         message: 'string'
+    },
+    'points':{
+        required: false,
+        minLength: 1,
+        pattern: /^[0-9]+$/,
+        message: 'string'
     }
 };
 
@@ -133,6 +139,9 @@ Object.defineProperty(User.prototype, 'naissance', {
 });
 Object.defineProperty(User.prototype, 'sexe', {
     get: function () { return this._node.properties['sexe']; }
+});
+Object.defineProperty(User.prototype, 'points', {
+    get: function () { return this._node.properties['points']; }
 });
 
 // Private helpers:
@@ -308,7 +317,8 @@ User.create = function (props, callback) {
     ].join('\n');
 
     props=_.extend(props,{
-        admin: false
+        admin: false,
+        points: '1000'
     });
 
     validProps=validate(props,true);

@@ -14,10 +14,6 @@ angular.module('BadminTown')
                             value._node.properties.date=parseInt(value._node.properties.date);
                             $scope.newsTab.push(value._node.properties);
                         });
-
-                        console.log($scope.newsTab);
-
-
                     }
                 });
 

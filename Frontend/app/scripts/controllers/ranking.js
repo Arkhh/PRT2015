@@ -3,5 +3,4 @@
  */
 angular.module('BadminTown')
     .controller('RankingCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
-
     });

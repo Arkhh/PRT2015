@@ -23,7 +23,7 @@ angular.module('BadminTown')
         $scope.disconnect = function(){
             $cookies.remove('isConnected');
             $cookies.remove('userInfos');
-            $scope.session = false;
+            $scope.userInfos='';
             init();
         };
 
@@ -39,7 +39,7 @@ angular.module('BadminTown')
         }
 
         function isConnected(){
-            if($scope.session===false || !$scope.userInfos){
+            if(!$scope.userInfos){
                 $scope.userInfos='';
                 $cookies.remove('isConnected');
                 $cookies.remove('userInfos');
