@@ -18,6 +18,34 @@ angular.module('BadminTown')
             prenom:'zamel2'
         });
 
+
+        $scope.matches=[];
+
+        $scope.matches.push({
+            idMatch:'5',
+            idJ1:'70',
+            idJ2:'68',
+            date:Date.create(1452271844000).relative('fr'),
+            resultatJ1:'70',
+            resultatJ2:'68',
+            resultat:'',
+            noteJ1:'false',
+            noteJ2:'false',
+            recompenseJ1:15,
+            recompenseJ2:10,
+        });
+        $scope.matches.push({
+            id:'6',
+            nom:'bop2',
+            prenom:'zamel2',
+            date: Date.create(1437150390000).relative('fr'),
+            resultat:'D',
+            note:'false',
+            recompense:-10
+        });
+
+
+
         $scope.processSearch= function(simpleSearchText){
             if($scope.searchProcessing===true){
                 return;
