@@ -378,17 +378,7 @@ User.create = function (props, callback) {
 
     props=_.extend(props,{
         admin: false,
-        points: '1000',
-        totalVolee: 5,
-        totalFond: 5,
-        totalFrappe: 5,
-        totalEndurance: 5,
-        totalTechnique: 5,
-        nbEvalVolee: 1,
-        nbEvalFond: 1,
-        nbEvalFrappe: 1,
-        nbEvalEndurance: 1,
-        nbEvalTechnique: 1
+        points: '1000'
     });
 
     validProps=validate(props,true);
@@ -628,11 +618,11 @@ User.prototype.createRel = function (){
         "MATCH (u:User),(a:Skill),(b:Skill),(c:Skill),(d:Skill),(e:Skill) " +
         "WHERE id(u) = {id} AND a.nom = 'Endurance' " +
         "AND b.nom = 'Frappe' AND c.nom = 'Volee' AND d.nom = 'Fond' AND e.nom = 'Technique' " +
-        "CREATE (u)-[r0:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(a) " +
-        "CREATE (u)-[r1:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(b) " +
-        "CREATE (u)-[r2:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(c) " +
-        "CREATE (u)-[r3:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(d) " +
-        "CREATE (u)-[r4:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(e) " +
+        "CREATE (u)-[r0:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(a) " +
+        "CREATE (u)-[r1:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(b) " +
+        "CREATE (u)-[r2:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(c) " +
+        "CREATE (u)-[r3:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(d) " +
+        "CREATE (u)-[r4:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(e) " +
         "RETURN r0,r1,r2,r3,r4"
     ].join('\n');
 
@@ -686,7 +676,7 @@ User.prototype.readRel = function (nomSkill,callback){
         if (err) return err;
        // console.log('results');
        // console.log(results);
-        callback(null, results);
+        return callback(null, results);
         //return ('Okay');
         //callback(null, 'Rel Volee Creee');
         //var user = new User(results[0]['user']);
@@ -701,15 +691,14 @@ User.notation = function (note, rel, callback){
     console.log("noteInt");
     console.log(noteInt);
 
-    if (noteInt > 5) {
+    if (noteInt > 10) {
         //si l'email est déjà pris
-        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
-        callback(err, null);
+        err = new errors.UnicityError('La note ne peut dépasser 10 !!!');
+        return callback(err, null);
     }
 
     var newTotal = rel[0].r.properties.total + noteInt;
     console.log("total");
-    console.log
     console.log(newTotal);
     var newNbEval = rel[0].r.properties.nbEval + 1;
     console.log("newNbEval");
