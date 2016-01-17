@@ -297,17 +297,23 @@ Neww.getAll = function (callback) {
     });
 };
 
-Neww.getNewt=function(callback){
+Neww.getNext=function(id,callback){
+    var idInt=parseInt(id);
     var query = [
+        'MATCH (npre:New)',
         'MATCH (new:New)',
+        'WHERE id(npre)={id}',
+        'AND new.date<npre.date',
         'RETURN new',
-        'WHERE', //todo
         'ORDER BY new.date desc',
         'LIMIT 5'
     ].join('\n');
-
+    var params = {
+        id: idInt
+    };
     db.cypher({
-        query: query
+        query: query,
+        params:params
     }, function (err, results) {
         if (err) return callback(err);
         var news = results.map(function (result) {
