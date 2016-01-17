@@ -1,0 +1,41 @@
+<br/>
+<form>
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+
+            <input type="text" class="form-control" placeholder="Rechercher un joueur..." ng-model="searchPlayer">
+
+        </div>
+    </div>
+</form>
+
+<div ng-if="!ErrorDisplay" class="table-responsive">
+    <table class="table table-hover table-bordered" style="background-color: white">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Prenom</th>
+                <th>Nom</th>
+                <th>Points</th>
+                <th>Note Moyenne</th>
+                <th>Defier</th>
+            </tr>
+            </thead>
+            <tbody>
+
+        <tr ng-repeat="player in rankingTab |filter:searchPlayer " ng-class="{success: (player.id==userInfos.id) } "> <th>{{rankingTab.indexOf(player)+1}}</th> <td>{{player.prenom}}</td><td>{{player.nom}}</td><td>{{player.points}}</td>
+            <td> <input-stars  max="10" ng-model="player.noteMoyenne" readonly></input-stars></td>
+            <td ng-if="player.id!=userInfos.id">
+                <a class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Defier </a>
+            </td>
+            <td ng-if="player.id==userInfos.id">
+                <div>VOUS</div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="alert alert-danger" ng-if="ErrorDisplay" role="alert">{{ErrorDisplay}}</div>
+
+

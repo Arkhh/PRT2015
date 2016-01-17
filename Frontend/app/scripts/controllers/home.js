@@ -5,28 +5,51 @@
 'use strict';
 
 angular.module('BadminTown')
-    .controller('HomeCtrl', function (UserAPI, $rootScope, $scope, $location, $filter) {
+    .controller('HomeCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
 
-    $scope.userId=$rootScope.userID;
-    $scope.connected =$rootScope.isConnected;
 
-        function isConnected(){
-            if($scope.connected===false || !($scope.userId)){
-                $location.path("/");
-            }
-        }
+       $scope.displayPartial= function(partial){
 
-        function init(){
-            isConnected();
-        }
+            $scope.partials['showProfile']=false;
+            $scope.partials['showNews']=false;
+            $scope.partials['showMatches']=false;
+            $scope.partials['showEvents']=false;
+            $scope.partials['showRanking']=false;
+            //$scope.partials['showAdmin']=false;
+            $scope.partials[partial]=true;
+
+        };
+
+        $scope.disconnect = function(){
+            $cookies.remove('isConnected');
+            $cookies.remove('userInfos');
+            $scope.userInfos='';
+            init();
+        };
 
         init();
 
 
-        $scope.disconnect = function(){
-            $scope.userId=undefined;
-            $scope.connected=false;
-            init();
+        function init(){
+            $scope.partials=[];
+            $scope.session = $cookies.get('isConnected');
+            $scope.userInfos = $cookies.getObject('userInfos');
+            isConnected();
+            $scope.displayPartial('showProfile');
         }
+
+        function isConnected(){
+            if(!$scope.userInfos){
+                $scope.userInfos='';
+                $cookies.remove('isConnected');
+                $cookies.remove('userInfos');
+                $location.path("/");
+            }
+        }
+
+
+
+
+
 
     });
