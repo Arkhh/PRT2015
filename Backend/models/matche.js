@@ -447,8 +447,9 @@ Matche.getByUser = function (id, callback) {
         }
         var i=0;
         var matches = [];
+        console.log(results);
         while (i < results.length) {
-            matches.push(getJson(results[i]));
+            matches.push(getUserJson(results[i]));
             i++;
 
         }
