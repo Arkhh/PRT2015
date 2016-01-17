@@ -267,6 +267,23 @@ function createJsonId(res){
     return tab;
 };
 
+function createJsonMoy(res){
+    var moyenneVolee = res[0].r1.properties.moyenne;
+    var moyenneFrappe = res[0].r2.properties.moyenne;
+    var moyenneTechnique = res[0].r3.properties.moyenne;
+    var moyenneEndurance = res[0].r4.properties.moyenne;
+    var moyenneFond = res[0].r5.properties.moyenne;
+    // while
+    var tab = {
+        moyenneVolee: moyenneVolee,
+        moyenneFrappe: moyenneFrappe,
+        moyenneEndurance: moyenneEndurance,
+        moyenneTechnique: moyenneTechnique,
+        moyenneFond: moyenneFond
+    }
+    return tab;
+};
+
 //tabReponse.push(results[i].u.properties
 
 User.prototype.isAdmin = function() {
@@ -573,13 +590,34 @@ db.createConstraint({
 
 // FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
 User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
+/*
+    console.log("id");
+    console.log(id);
+    console.log("NOM");
+    console.log(nomSkill);
+    console.log("note")
+    console.log(noteCherchee)*/
 
     var intNoteCherchee = parseInt(noteCherchee);
+    if (intNoteCherchee - 2 < 0){
+        var noteInf = 0;
+
+    }
+    else {
+        var noteInf = intNoteCherchee - 2;
+    }
+    if (intNoteCherchee + 2 > 10){
+        var noteSup = 10;
+    }
+    else {
+        var noteSup = intNoteCherchee + 2;
+    }
+
 
     if (intNoteCherchee > 5) {
         //si l'email est déjà pris
         err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
-        callback(err);
+        return(err);
     }
 
     var query = [
@@ -589,15 +627,24 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         "id(u) <> {id} " +
         "WITH u,s " +
         "MATCH (u)-[r:RelationEvaluation]->(s) " +
-        "WHERE round(r.moyenne) = {noteCherchee} " +
+        "WHERE {noteInf} < {noteCherchee} < {noteSup} " +
         "RETURN u"
     ].join('\n');
 
     var params = {
         nomSkill: nomSkill,
         noteCherchee: intNoteCherchee,
-        id: id
+        id: id,
+        noteSup: noteSup,
+        noteInf: noteInf
     };
+
+    console.log("nomSkill");
+    console.log(nomSkill);
+    console.log("noteCherchee");
+    console.log(intNoteCherchee);
+    //console.log("roundNoteCherchee");
+    //console.log(intNoteCherchee);
 
     db.cypher({
         query: query,
@@ -611,13 +658,15 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
 
         var i=0;
         var tabReponse = [];
+
         while(i<results.length){
             //tabReponse.push(results[i].u.properties); //pour juste les données des noeuds
             //tabReponse.push(results[i].u); //Pour données des noeuds + id
             tabReponse.push(results[i].u._id); //Pour simplement les ids des noeuds correspondant
             i++;
         }
-        callback(null, tabReponse);
+
+        return callback(null, tabReponse);
     });
 };
 
@@ -709,7 +758,6 @@ User.notation = function (note, rel, callback){
 
     var newTotal = rel[0].r.properties.total + noteInt;
     console.log("total");
-    console.log
     console.log(newTotal);
     var newNbEval = rel[0].r.properties.nbEval + 1;
     console.log("newNbEval");
@@ -752,3 +800,121 @@ User.notation = function (note, rel, callback){
         callback(null, results);
     });
 };
+
+//SUGGESTION DE JOUEURS
+User.prototype.suggest = function (callback) {
+
+
+
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE id(u) = {id} AND s1.nom = 'Volee' AND s2.nom = 'Frappe' AND s3.nom = 'Technique' AND s4.nom = 'Endurance' AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 " +
+        "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
+        "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
+        "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
+        "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
+        "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
+        "RETURN u,r1,r2,r3,r4,r5"
+    ].join('\n');
+
+    var params = {
+        id: this.id
+    }
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+
+        var users = createJsonMoy(results);
+
+        var tabSkills = [];
+        tabSkills.push(
+            {nomSkill: 'Volee', moyenne: users.moyenneVolee},
+            {nomSkill: 'Frappe', moyenne: users.moyenneFrappe},
+            {nomSkill: 'Fond', moyenne: users.moyenneFond},
+            {nomSkill: 'Technique', moyenne: users.moyenneTechnique},
+            {nomSkill: 'Endurance', moyenne: users.moyenneEndurance}
+        );
+
+        var idUser = results[0].u._id;
+
+        var tabId = [];
+        //tabId.push(tabSkills.forEach(User.searchSkillLevel(this.id, nomSkill, moyenne, callback)));
+
+        var i = 0;
+
+
+        var itemsProcessed =0;
+
+        tabSkills.forEach (function (skill){
+            User.searchSkillLevel(idUser, skill.nomSkill, skill.moyenne, function(err,result){
+                var controle = [];
+                controle.push(result);
+                result.forEach(function(ids){
+                    tabId.push(ids);
+                })
+                itemsProcessed++;
+                if(itemsProcessed === tabSkills.length) {
+                    //TODO trier tabID
+                    tabId.sort();
+                    var courant = null;
+                    var cnt = 0;
+                    var objetSoluce = {};
+                    var tableauRep=[];
+                    for (var i = 0; i < tabId.length; i++) {
+                        if (tabId[i] != courant) {
+                            if (cnt > 0) {
+                                console.log(courant + ' est present --> ' + cnt + ' fois');
+                                objetSoluce = {id: courant, nb: cnt};
+                                tableauRep.push(objetSoluce);
+                            }
+                            courant = tabId[i];
+                            cnt = 1;
+                        } else {
+                            cnt++;
+                        }
+                    }
+                    if (cnt > 0) {
+                        console.log(courant + ' est present --> ' + cnt + ' fois');
+                        objetSoluce = {id: courant, nb: cnt};
+                        tableauRep.push(objetSoluce);
+                    }
+                    var newTabRep = [];
+                    newTabRep = tableauRep.sort(keysrt('nb'));
+                    var lastTabRep = [];
+                    lastTabRep = newTabRep.slice(0,8);
+                    console.log("lastTab");
+                    var tabFinal = [];
+                    for(j=0; j<lastTabRep.length; j++){
+                        tabFinal.push(lastTabRep[j].id);
+                    }
+                    console.log(tabFinal);
+                    return callback(null, tabFinal);
+                }
+                }
+            )
+
+        }
+        )
+
+
+
+      //  tabSkills.forEach(function(skill) { console.log("hello"); tabId.push(User.searchSkillLevel(idUser, skill.nomSkill, skill.moyenne)) });
+      //  console.log("hello2");
+
+
+    });
+};
+
+function keysrt(key) {
+    return function(a,b){
+        if (a[key] > b[key]) return 1;
+        if (a[key] < b[key]) return -1;
+        return 0;
+    }
+}
+
+//someArrayOfObjects.sort(keysrt('text'));
