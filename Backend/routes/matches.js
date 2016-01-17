@@ -23,12 +23,12 @@ exports.list = function (req, res) {
  */
 exports.create = function (req, res) {
     Matche.create({
-        idJ1: req.body.idJ1,
-        idJ2: req.body.idJ2,
-        gainJ1: req.body.gainJ1,
-        gainJ2: req.body.gainJ2,
-        perteJ1:req.body.perteJ1,
-        perteJ2:req.body.perteJ2,
+      /*  id1: req.body.id1,
+        id2: req.body.id2,
+        GainJ1: req.body.GainJ1,
+        GainJ1: req.body.GainJ1,
+        PerteJ1:req.body.PerteJ1,
+        PerteJ2:req.body.PerteJ2*/
         date:req.body.date
     }, function (err, matche) {
         if (err) {
@@ -48,7 +48,7 @@ exports.show = function (req, res) {
     Matche.get(req.params.id, function (err, matche) {
         if (err) {
             return res.status(404).json({
-                pathname: '/matches/:id',
+                pathname: '/Matches/:id',
                 error: err
             });
         }
@@ -92,33 +92,3 @@ exports.del = function (req, res) {
         });
     });
 };
-
-/**
- * GET /matches/users/:id
- */
-exports.getByUser = function (req, res) {
-    Matche.getByUser(req.params.id, function (err, matches) {
-        if (err) {
-            return res.status(404).json({
-                pathname: '/matches/users/:id',
-                error: err
-            });
-        }
-        return res.json(matches);
-    })
-};
-
-/**
- * GET /matches/usersnext
- */
-exports.getByUserNext= function (req,res) {
-    Matche.getByUserNext(req.body, function (err, matches) {
-        if (err) {
-            return res.status(404).json({
-                pathname: '/matches/usersnext',
-                error: err
-            });
-        }
-        return res.json(matches);
-    })
-}
