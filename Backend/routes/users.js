@@ -111,7 +111,6 @@ exports.del = function (req, res) {
     });
 };
 
-
 /**
  * searchSkillLvl /searchSkillLevel/:id
  */
@@ -185,9 +184,22 @@ exports.list = function (req, res) {
 exports.suggest = function (req,res) {
     User.get(req.params.id, function (err, user) {
         if (err) return res.status(404).json(err);
-        user.suggest(function (err, users){
+        user.suggest(function (err, users) {
             if (err) return res.status(500).json(err);
             return res.json(users);
         })
+    })
+};
+
+/**
+ * GET /adv/users/:id
+ */
+exports.adv = function (req, res) {
+    User.getAdv(req.params.id,function (err, users) {
+        if (err) return  res.status(404).json({
+            pathname: 'adv/users/:id',
+            error: err
+        });
+        return res.json(users);
     })
 };
