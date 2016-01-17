@@ -19,9 +19,9 @@ angular.module('BadminTown')
         });
 
 
-        $scope.matches=[];
+        $scope.histoMatches=[];
 
-        $scope.matches.push({
+        $scope.histoMatches.push({
             idMatch:'5',
             idJ1:'70',
             idJ2:'68',
@@ -31,14 +31,46 @@ angular.module('BadminTown')
             resultat:'',
             noteJ1:'false',
             noteJ2:'false',
-            recompenseJ1:15,
-            recompenseJ2:10,
+            gainJ1:15,
+            gainJ2:10,
+            perteJ1:15,
+            perteJ2:10
+        });
+        $scope.histoMatches.push({
+            id:'6',
+            nom:'bop2',
+            prenom:'zamel2',
+            date: Date.create(1452271844000).relative('fr'),
+            resultat:'D',
+            note:'false',
+            recompense:-10
+        });
+
+
+
+
+        $scope.matches=[];
+
+        $scope.matches.push({
+            idMatch:'5',
+            idJ1:'70',
+            idJ2:'68',
+            date:Date.create(1469039504000).relative('fr'),
+            resultatJ1:'70',
+            resultatJ2:'68',
+            resultat:'',
+            noteJ1:'false',
+            noteJ2:'false',
+            gainJ1:15,
+            gainJ2:10,
+            perteJ1:15,
+            perteJ2:10
         });
         $scope.matches.push({
             id:'6',
             nom:'bop2',
             prenom:'zamel2',
-            date: Date.create(1437150390000).relative('fr'),
+            date: Date.create(1469039404000).relative('fr'),
             resultat:'D',
             note:'false',
             recompense:-10

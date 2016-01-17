@@ -1,5 +1,3 @@
-<section class="panel">
-
     <uib-tabset>
 
 
@@ -7,64 +5,35 @@
         <uib-tab heading="Matches">
 
             <ul class="list-group col-md-6">
-                <div align="center"><h2>Matches en cours</h2></div>
-                <li class="list-group-item">
+                <div align="center">
+                    <h2>Matches en cours</h2>
+                </div>
+                <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in matches">
                     <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
+                        <span class="pull-left thumb-small">
+                            <img src="images/avatar.jpg" alt="John said" class="img-rounded">
+                        </span>
                         <div class="row">
-                        <div class="col-md-3">
-                            <div><a href="#" class="h5">Chris Fox</a></div>
-                            <small class="text-muted">about 2 minutes ago</small>
-                        </div>
-
-                        <div class="col-md-2">Resultat
-                            <div class=" text-success m-t-small">
-                                <small>Victoire</small>
-                                <i class="fa fa-circle"></i>
-                                <small>(Resultat temporaire)</small>
+                            <div class="col-md-3">
+                                <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
+                                <small class="text-muted">{{match.date}}</small>
                             </div>
-                        </div>
 
-                        <div class="col-md-5">
-                        <a class="btn btn-sm btn-danger pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-trash"></i> Suprimer</a>
-                        <a class="btn btn-sm btn-info pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
-                        </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-success m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Amanda Conlan</a></div>
-                            <small class="text-muted">about 2 hours ago</small>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-warning m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Dan Doorack</a></div>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-danger m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Lauren Taylor</a></div>
-                            <small class="text-muted">about 2 minutes ago</small>
+                            <div class="col-md-2">Resultat
+                                <div class=" text-success m-t-small">
+                                    <small>Victoire</small>
+                                    <i class="fa fa-circle"></i>
+                                    <small>(Resultat temporaire)</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <a class="btn btn-sm btn-danger pull-right" data-toggle="modal" href="#modal">
+                                    <i class="fa fa-fw fa-trash"></i>
+                                    Suprimer
+                                </a>
+                                <a class="btn btn-sm btn-info pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -227,7 +196,7 @@
                 <ul class="list-group col-md-6">
                     <div align="center"><h2>Historique</h2></div>
 
-                    <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches">
+                    <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
                         <div class="media ">
                             <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
 
@@ -269,6 +238,3 @@
 
 
     </uib-tabset>
-
-
-</section>
