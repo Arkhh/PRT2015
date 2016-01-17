@@ -19,66 +19,7 @@ var Matche = module.exports = function Matche(_node) {
     // All we'll really store is the node; the rest of our properties will be
     // derivable or just pass-through properties (see below).
     this._node = _node;
-
 };
-
-function createJson(res ){
-   var resultat= {
-        id:res.match._id
-        ,date:res.match.properties.date
-        ,idJ1:res.r._fromId
-        ,gainJ1:res.r.properties.gain
-        ,perteJ1:res.r.properties.perte
-        ,resultat1:res.r.properties.resultat
-        ,aNoter1:res.r.properties.aNoter
-        ,idJ2:res.r2._fromId
-        ,gainJ2:res.r2.properties.gain
-        ,perteJ2:res.r2.properties.perte
-        ,resultat2:res.r2.properties.resultat
-        ,aNoter2:res.r2.properties.aNoter
-        ,resultat:res.match.properties.resultat
-
-    }
-    return resultat
-};
-
-function getJson(res,res2){
-    var resultat= {
-        id:res.match._id
-        ,date:res.match.properties.date
-        ,idJ1:res.r._fromId
-        ,gainJ1:res.r.properties.gain
-        ,perteJ1:res.r.properties.perte
-        ,resultat1:res.r.properties.resultat
-        ,aNoter1:res.r.properties.aNoter
-        ,idJ2:res2.r._fromId
-        ,gainJ2:res2.r.properties.gain
-        ,perteJ2:res2.r.properties.perte
-        ,resultat2:res2.r.properties.resultat
-        ,aNoter2:res2.r.properties.aNoter
-        ,resultat:res.match.properties.resultat
-    }
-    return resultat
-};
-
-function getJson(res){
-    var resultat= {
-        id:res.match._id
-        ,date:res.match.properties.date
-        ,idJ1:res.r._fromId
-        ,gainJ1:res.r.properties.gain
-        ,perteJ1:res.r.properties.perte
-        ,resultat1:res.r.properties.resultat
-        ,aNoter1:res.r.properties.aNoter
-        ,idJ2:res.r2._fromId
-        ,gainJ2:res.r2.properties.gain
-        ,perteJ2:res.r2.properties.perte
-        ,resultat2:res.r2.properties.resultat
-        ,aNoter2:res.r2.properties.aNoter
-        ,resultat:res.match.properties.resultat
-    }
-    return resultat
-}
 
 Matche.VALIDATION_INFO = {
     'date': {
@@ -88,70 +29,70 @@ Matche.VALIDATION_INFO = {
         pattern: /^[0-9]+$/,
         message: 'time stamp'
     },
-   'idJ1': {
+   /* 'idJ1': {
         required: true,
         minLength: 1,
         maxLength: 12,
-        pattern: /^[0-9]+$/,
+        pattern: /^[0-9_]+$/,
         message: 'number'
     },
     'idJ2': {
         required: true,
         minLength: 1,
         maxLength: 12,
-        pattern: /^[0-9]+$/,
+        pattern: /^[0-9_]+$/,
         message: 'number'
     },
-/*
-    'resultat1': {
+
+    'Resultat1': {
         required: false,
         minLength: 1,
         maxLength: 12,
         pattern: /^[0-9_]+$/,
         message: 'boolean'
     },
-    'resultat2': {
+    'Resultat2': {
         required: false,
         minLength: 1,
         maxLength: 12,
         pattern: /^[0-9_]+$/,
         message: 'boolean'
     },
-    'resultat': {
+    'Resultat': {
         required: false,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'GainJ1': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'GainJ2': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'Perte1': {
+        required: true,
+        minLength: 1,
+        maxLength: 12,
+        pattern: /^[0-9_]+$/,
+        message: 'number'
+    },
+    'PerteJ2': {
+        required: true,
         minLength: 1,
         maxLength: 12,
         pattern: /^[0-9_]+$/,
         message: 'number'
     },*/
-    'gainJ1': {
-        required: true,
-        minLength: 1,
-        maxLength: 12,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'gainJ2': {
-        required: true,
-        minLength: 1,
-        maxLength: 12,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'perteJ1': {
-        required: true,
-        minLength: 1,
-        maxLength: 12,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'perteJ2': {
-        required: true,
-        minLength: 1,
-        maxLength: 12,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
 
 };
 
@@ -163,24 +104,6 @@ Object.defineProperty(Matche.prototype, 'id', {
 });
 Object.defineProperty(Matche.prototype, 'date', {
     get: function () { return this._node.properties['date']; }
-});
-Object.defineProperty(Matche.prototype, 'gainJ1', {
-    get: function () { return this._node.properties['gainJ1']; }
-});
-Object.defineProperty(Matche.prototype, 'perteJ1', {
-    get: function () { return this._node.properties['gainJ1']; }
-});
-Object.defineProperty(Matche.prototype, 'gainJ2', {
-    get: function () { return this._node.properties['gainJ2']; }
-});
-Object.defineProperty(Matche.prototype, 'perteJ2', {
-    get: function () { return this._node.properties['gainJ2']; }
-});
-Object.defineProperty(Matche.prototype, 'idJ1', {
-    get: function () { return this._node.properties['idJ1']; }
-});
-Object.defineProperty(Matche.prototype, 'idJ2', {
-    get: function () { return this._node.properties['idJ2']; }
 });
 
 // Private helpers:
@@ -321,13 +244,8 @@ Matche.create = function (props, callback) {
 
     var errorTab=[],validProps;
     var query = [
-
-        'MATCH (j1:User),(j2:User)',
-        'WHERE id(j1) = {idJ1} AND id(j2) = {idJ2}',
         'CREATE (match:Match {props})',
-        'CREATE (j1)-[r:JOUE{info1}]->(match)',
-        'CREATE (j2)-[r2:JOUE{ info2}]->(match)',
-        'RETURN r,r2,match'
+        'RETURN match',
     ].join('\n');
 
     validProps=validate(props,true);
@@ -336,25 +254,21 @@ Matche.create = function (props, callback) {
         errorTab.push( new errors.PropertyError(validProps.error));
         return callback(errorTab);
     }
-    console.log(validProps.idJ1);
+
     var params = {
-        idJ1:parseInt(validProps.idJ1),
-        idJ2:parseInt(validProps.idJ2),
-        props:{date:validProps.date,resultat:'',},
-        info1:{gain:validProps.gainJ1,perte:validProps.perteJ1,resultat:'',aNoter:''},
-        info2:{gain:validProps.gainJ2,perte:validProps.perteJ2,resultat:'',aNoter:''}
-       // props: validProps
+        props: validProps
     };
 
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
-
+       /* if (isConstraintViolation(err)) {
+            //si l'email est déjà pris
+            err = new errors.UnicityError('L\'email ‘' + props.email + '’ est déjà utilisé.');
+        }*/
         if (err) return callback(err);
-
-        var matche=createJson(results[0]);
-
+        var matche = new Matche(results[0]['match']);
         callback(null, matche);
     });
 };
@@ -366,9 +280,8 @@ Matche.get = function (id, callback) {
 
     var query = [
         'MATCH (match:Match)',
-        'MATCH (match)-[r:JOUE]-()',
-        'WHERE id(match) = {id} ',
-        'RETURN match,r',
+        'WHERE id(match) = {id}',
+        'RETURN match',
     ].join('\n');
 
 
@@ -387,8 +300,7 @@ Matche.get = function (id, callback) {
             err.push(error);
             return callback(err);
         }
-        var matche = getJson(results[0],results[1]);
-
+        var matche = new Matche(results[0]['match']);
         callback(null, matche);
     });
 };
@@ -396,120 +308,18 @@ Matche.get = function (id, callback) {
 Matche.getAll = function (callback) {
     var query = [
         'MATCH (match:Match)',
-        'MATCH (match)-[r:JOUE]-(u1:User)',
-        'MATCH (match)-[r2:JOUE]-(u2:User)',
-        'WHERE  id(r)<>id(r2)',
-        'AND id(u1)<>id(u2)',
-        'RETURN DISTINCT match,r,r2',
+        'RETURN match',
         'ORDER BY match.date desc',
-        'LIMIT 0'
-
+        'LIMIT 10'
     ].join('\n');
 
     db.cypher({
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        var i=0;
-        var matches = [];
-        while (i < results.length) {
-            matches.push(getJson(results[i]));
-            i++;
-        }
-
-        callback(null, matches);
-    });
-};
-
-
-Matche.getByUser = function (id, callback) {
-
-    var idInt=parseInt(id);
-
-    var query = [
-        'MATCH (user:User)-[r:JOUE]',
-        '-(match:Match)',
-        '-[r2:JOUE]-(u:User)',
-        'WHERE id(user)={id} AND id(u)<>{id}',
-        'RETURN match,r,r2',
-        'ORDER BY match.date desc',
-        'LIMIT 10'
-    ].join('\n');
-
-
-    var params = {
-        id: idInt
-    };
-
-    db.cypher({
-        query: query,
-        params: params
-    }, function (err, results) {
-        if (err) return callback(err);
-        if (!results.length) {
-            var err=[];
-            var error=new errors.PropertyError('No such player with ID: ' + id);
-            err.push(error);
-            return callback(err);
-        }
-        var i=0;
-        var matches = [];
-        while (i < results.length) {
-            matches.push(getJson(results[i]));
-            i++;
-
-        }
-
-        callback(null, matches);
-    });
-};
-
-//'MATCH (npre:New)',
-//'WHERE id(npre)={id}',
-Matche.getByUserNext = function (props, callback) {
-
-    var idInt=parseInt(props.id);
-    var idIntm=parseInt(props.idm);
-
-    var query = [
-
-        'MATCH (mpre:Match)',
-        'MATCH (user:User)-[r:JOUE]',
-        '-(match:Match)',
-        '-[r2:JOUE]-(u:User)',
-        'WHERE id(user)={id} AND id(u)<>{id}',
-        'AND id(mpre)={idm}',
-        'AND match.date<mpre.date',
-        'RETURN match,r,r2',
-        'ORDER BY match.date desc',
-        'LIMIT 10'
-    ].join('\n');
-
-
-    var params = {
-        id: idInt,
-        idm:idIntm
-    };
-
-    db.cypher({
-        query: query,
-        params: params
-    }, function (err, results) {
-        if (err) return callback(err);
-        if (!results.length) {
-            var err=[];
-            var error=new errors.PropertyError('No such player with ID: ' + id);
-            err.push(error);
-            return callback(err);
-        }
-        var i=0;
-        var matches = [];
-        while (i < results.length) {
-            matches.push(getJson(results[i]));
-            i++;
-            //  console.log(matches);
-        }
-        console.log(matches);
+        var matches = results.map(function (result) {
+            return new Matche(result['match']);
+        });
         callback(null, matches);
     });
 };
