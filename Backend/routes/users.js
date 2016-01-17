@@ -5,6 +5,8 @@ var URL = require('url');
 
 var errors = require('../models/errors');
 var User = require('../models/user');
+var _ =require('underscore');
+
 
 
 
@@ -26,18 +28,7 @@ exports.create = function (req, res) {
         password: req.body.password,
         email: req.body.email,
         nom: req.body.nom,
-        prenom: req.body.prenom,
-        points: 1000,
-        totalVolee: 0,
-        totalFond: 0,
-        totalFrappe: 0,
-        totalEndurance: 0,
-        totalTechnique: 0,
-        nbEvalVolee: 0,
-        nbEvalFond: 0,
-        nbEvalFrappe: 0,
-        nbEvalEndurance: 0,
-        nbEvalTechnique: 0
+        prenom: req.body.prenom
     }, function (err, user) {
         if (err) {
             return res.status(500).json({
@@ -46,7 +37,8 @@ exports.create = function (req, res) {
             });
         }
         user.createRel();
-        return res.json(user);
+        return res.json(_.extend(user._node.properties,{
+            id: user._node._id})); //TODO refactor
 
     });
 };
@@ -64,7 +56,9 @@ exports.show = function (req, res) {
                 error: err
             });
         }
-        return res.json(user);
+        return res.json(_.extend(user._node.properties,{
+            id: user._node._id})); //TODO
+
     })
 };
 
@@ -86,7 +80,8 @@ exports.edit = function (req, res) {
                     return res.status(500).json(err);
                 }
             }
-            return res.json(user);
+            return res.json(_.extend(user._node.properties,{
+                id: user._node._id})); //TODO
         });
     });
 };

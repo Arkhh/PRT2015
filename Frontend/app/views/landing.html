@@ -22,14 +22,15 @@
             <div class="row">
                 <div class="col-md-3"></div>
                 <div align="center" ng-if="showConn===true" class="col-md-6">
+                    <div class="alert alert-danger" ng-if="errors" role="alert">{{errors}}</div>
                     <form ng-submit="logIn();" class="panel-body">
                         <div class="block">
                             <label class="control-label">E-mail</label>
-                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email" ng-required="true">
                         </div>
                         <div class="block">
                             <label class="control-label">Mot de passe</label>
-                            <input type="password" id="inputPasswordLogin" placeholder="Mot de passe" class="form-control" ng-model="userinfos.password">
+                            <input type="password" id="inputPasswordLogin" placeholder="Mot de passe" class="form-control" ng-model="userinfos.password" ng-required="true">
                         </div>
                         <a href="#" class="pull-right m-t-mini" style="color:white"><small>Mot de passe oublié ?</small></a>
                         <button align="center" type="submit" class="btn btn-info">Se connecter</button>
@@ -39,22 +40,23 @@
                     </form>
                 </div>
                 <div align="center" ng-if="showInscription===true" class="col-md-6">
+                    <div class="alert alert-danger" ng-if="errors" role="alert">{{errors}}</div>
                     <form ng-submit="signUp();" class="panel-body">
                         <div class="block">
                             <label class="control-label">Nom</label>
-                            <input type="text" placeholder="Doe" class="form-control" ng-model="userinfos.nom">
+                            <input type="text" placeholder="Doe" class="form-control" ng-model="userinfos.nom" ng-required="true">
                         </div>
                         <div class="block">
                             <label class="control-label">Prénom</label>
-                            <input type="text" placeholder="John" class="form-control" ng-model="userinfos.prenom">
+                            <input type="text" placeholder="John" class="form-control" ng-model="userinfos.prenom" ng-required="true">
                         </div>
                         <div class="block">
                             <label class="control-label">Votre adresse e-mail</label>
-                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email">
+                            <input type="email" placeholder="test@exemple.fr" class="form-control" ng-model="userinfos.email" ng-required="true" ng-pattern="/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+\.[a-z0-9-]/">
                         </div>
                         <div class="block">
                             <label class="control-label">Votre mot de passe</label>
-                            <input type="password" id="inputPasswordSignUp" placeholder="Password"  ng-model="userinfos.password" class="form-control">
+                            <input type="password" id="inputPasswordSignUp" placeholder="Mot de passe"  ng-model="userinfos.password" class="form-control" ng-required="true" >
                         </div>
                         <button type="submit" class="btn btn-info">S'inscrire</button>
                         <div class="line line-dashed"></div>

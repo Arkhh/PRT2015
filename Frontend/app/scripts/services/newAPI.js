@@ -1,25 +1,19 @@
 /**
- * Created by Thomas on 11/01/2016.
+ * Created by Thomas on 13/01/2016.
  */
+'use strict';
+
 angular.module('BadminTown')
     //searching for and filtering merchants
-    .service('MatchAPI', function(RequestBuilder) {
+    .service('newsAPI', function(RequestBuilder) {
 
         var API_ENDPOINT = 'http://localhost:3000/api';
 
 
-        function createMatch(matchinfo) {
-            return RequestBuilder.getRequestPromise({
-                method         : 'POST',
-                url            : API_ENDPOINT + '/matches/',
-                data           : matchinfo
-            });
-        }
-
-        function getMatchUser(id){
+        function getNews(){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
-                url            : API_ENDPOINT + '/games/user/'+id
+                url            : API_ENDPOINT + '/news/'
             });
         }
         /*
@@ -33,8 +27,9 @@ angular.module('BadminTown')
 
 
         return {
-            'getMatchUser'		: getMatchUser,
-            'createMatch'        : createMatch
+            'getNews'      : getNews
+            //'getUserInfo'		: getUserInfo,
+            //'createUser'        : createUser
             //'resetPassword'		: resetPassword
         };
 

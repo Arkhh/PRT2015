@@ -95,76 +95,6 @@ User.VALIDATION_INFO = {
         pattern: /^[A-Z]+$/,
         message: 'string'
     },
-    'totalVolee':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'nbEvalVolee':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'totalFrappe':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'nbEvalFrappe':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'totalEndurance':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'nbEvalEndurance':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'totalFond':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'nbEvalFond':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'totalTechnique':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
-    'nbEvalTechnique':{
-        required: false,
-        minLength: 1,
-        maxLength: 8,
-        pattern: /^[0-9]+$/,
-        message: 'number'
-    },
     'points':{
         required: false,
         minLength: 1,
@@ -211,36 +141,6 @@ Object.defineProperty(User.prototype, 'naissance', {
 });
 Object.defineProperty(User.prototype, 'sexe', {
     get: function () { return this._node.properties['sexe']; }
-});
-Object.defineProperty(User.prototype, 'totalVolee', {
-    get: function () { return this._node.properties['totalVolee']; }
-});
-Object.defineProperty(User.prototype, 'nbEvalVolee', {
-    get: function () { return this._node.properties['nbEvalVolee']; }
-});
-Object.defineProperty(User.prototype, 'totalFrappe', {
-    get: function () { return this._node.properties['totalFrappe']; }
-});
-Object.defineProperty(User.prototype, 'nbEvalFrappe', {
-    get: function () { return this._node.properties['nbEvalFrappe']; }
-});
-Object.defineProperty(User.prototype, 'totalEndurance', {
-    get: function () { return this._node.properties['totalEndurance']; }
-});
-Object.defineProperty(User.prototype, 'nbEvalEndurance', {
-    get: function () { return this._node.properties['nbEvalEndurance']; }
-});
-Object.defineProperty(User.prototype, 'totalFond', {
-    get: function () { return this._node.properties['totalFond']; }
-});
-Object.defineProperty(User.prototype, 'nbEvalFond', {
-    get: function () { return this._node.properties['nbEvalFond']; }
-});
-Object.defineProperty(User.prototype, 'totalTechnique', {
-    get: function () { return this._node.properties['totalTechnique']; }
-});
-Object.defineProperty(User.prototype, 'nbEvalTechnique', {
-    get: function () { return this._node.properties['nbEvalTechnique']; }
 });
 Object.defineProperty(User.prototype, 'points', {
     get: function () { return this._node.properties['points']; }
@@ -327,7 +227,7 @@ function createJson(res){
             nom: res[i].u.properties.nom,
             prenom: res[i].u.properties.prenom,
             mainForte: res[i].u.properties.mainForte,
-            points: res[i].u.properties.points,
+            points: parseInt(res[i].u.properties.points),
             noteMoyenne: noteMoyenne
         }
         tabReponse.push(tab);
@@ -355,6 +255,7 @@ function createJsonId(res){
         nom: res[0].u.properties.nom,
         prenom: res[0].u.properties.prenom,
         mainForte: res[0].u.properties.mainForte,
+        type: res[0].u.properties.type,
         points: res[0].u.properties.points,
         moyenneVolee: moyenneVolee,
         moyenneFrappe: moyenneFrappe,
@@ -398,7 +299,8 @@ User.prototype.isAdmin = function() {
 // given property updates.
 User.prototype.patch = function (props, callback) {
 
-    var errorTab=[],validProps,required;
+
+    var errorTab=[],validProps;
 
     if(!props.email){
         props=_.extend(props,{
@@ -490,6 +392,21 @@ User.create = function (props, callback) {
         'CREATE (user:User {props})',
         'RETURN user',
     ].join('\n');
+
+    props=_.extend(props,{
+        admin: false,
+        points: '1000',
+        totalVolee: 5,
+        totalFond: 5,
+        totalFrappe: 5,
+        totalEndurance: 5,
+        totalTechnique: 5,
+        nbEvalVolee: 1,
+        nbEvalFond: 1,
+        nbEvalFrappe: 1,
+        nbEvalEndurance: 1,
+        nbEvalTechnique: 1
+    });
 
     validProps=validate(props,true);
 
@@ -769,7 +686,7 @@ User.prototype.createRel = function (){
     ].join('\n');
 
     var params = {
-        id: this.id,
+        id: this.id
     };
 
     db.cypher({
