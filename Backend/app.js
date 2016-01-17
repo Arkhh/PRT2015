@@ -44,11 +44,13 @@ app.get(routeApi+'/users/:id', routes.users.show);
 app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
+app.get(routeApi+'/adv/users/:id',routes.users.adv);
 
 app.post(routeApi+'/searchSkillLevel/:id', routes.users.searchSkillLvl);
 app.post(routeApi+'/notation/:id', routes.users.notation);
 app.get(routeApi+'/pub/users', routes.users.pubList);
 app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
+app.get(routeApi+'/suggest/:id', routes.users.suggest);
 
 
 app.get(routeApi+'/events',routes.events.list);
@@ -62,13 +64,15 @@ app.get(routeApi+'/news/:id',routes.news.show);
 app.post(routeApi+'/news',routes.news.create);
 app.post(routeApi+'/news/:id',routes.news.edit);
 app.delete(routeApi+'/news/:id',routes.news.del);
+app.get(routeApi+'/nextnews/:id',routes.news.next);
 
 app.get(routeApi+'/matches',routes.matches.list);
 app.get(routeApi+'/matches/:id',routes.matches.show);
 app.post(routeApi+'/matches',routes.matches.create);
 app.post(routeApi+'/matches/:id',routes.matches.edit);
 app.delete(routeApi+'/matches/:id', routes.matches.del);
-
+app.get(routeApi+'/matches/users/:id',routes.matches.getByUser);
+app.post(routeApi+'/usersnext/matches',routes.matches.getByUserNext);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));

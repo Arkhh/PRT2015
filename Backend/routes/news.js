@@ -89,3 +89,19 @@ exports.del = function (req, res) {
         });
     });
 };
+
+/**
+ * GET /nextnews/:id
+ */
+exports.next = function (req, res) {
+    Neww.getNext(req.params.id, function (err, news) {
+        if (err)
+        {
+            return res.status(404).json({
+                pathname: '/api/nextnews/:id',
+                error: err
+            });
+        }
+        res.json(news);
+    });
+};

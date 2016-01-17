@@ -117,10 +117,8 @@ exports.del = function (req, res) {
  */
 exports.searchSkillLvl = function (req, res) {
     User.get(req.params.id, function (err, user) {
-        console.log('SORTIE DANS LE GET');
         if (err) return res.status(404).json(err);
-        user.searchSkillLevel(req.body.nomSkill,req.body.noteCherchee, function (err, user) {
-            console.log("SORTIE DANS LE SEARCH SKILL")
+        User.searchSkillLevel(req.params.id, req.body.nomSkill,req.body.noteCherchee, function (err, user) {
             if (err) return res.status(404).json(err);
             return res.json(user);
         });
@@ -176,6 +174,34 @@ exports.pubListId = function (req,res) {
 exports.list = function (req, res) {
     User.getAll(function (err, users) {
         if (err) return res.status(500).json(err);
+        return res.json(users);
+    })
+};
+
+//SUGGESTION DE JOUEUR
+/**
+ * suggest /suggestion/:id
+ */
+exports.suggest = function (req,res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        user.suggest(function (err, users){
+            if (err) return res.status(500).json(err);
+            return res.json(users);
+        })
+    })
+};
+
+
+/**
+ * GET /adv/users/:id
+ */
+exports.adv = function (req, res) {
+    User.getAdv(req.params.id,function (err, users) {
+        if (err) return  res.status(404).json({
+            pathname: 'adv/users/:id',
+            error: err
+        });
         return res.json(users);
     })
 };
