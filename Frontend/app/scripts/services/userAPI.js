@@ -42,12 +42,46 @@ angular.module('BadminTown')
             });
         }*/
 
+        function getRanking(){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/pub/users/'
+            });
+        }
+
+        function getUserPubInfos(id){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/pub/users/'+id
+            });
+        }
+
+
+        function updateUser(userinfo,id) {
+            return RequestBuilder.getRequestPromise({
+                method         : 'POST',
+                url            : API_ENDPOINT + '/users/'+id,
+                data           : userinfo
+            });
+        }
+
+        function getUserByName(str){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/search/users/'+str
+            });
+        }
+
 
 
         return {
             'authenticate'      : authenticate,
             'getUserInfo'		: getUserInfo,
-            'createUser'        : createUser
+            'getUserPubInfos'	: getUserPubInfos,
+            'getUserByName'	: getUserByName,
+            'createUser'        : createUser,
+            'updateUser'        : updateUser,
+            'getRanking'        : getRanking
             //'resetPassword'		: resetPassword
         };
 

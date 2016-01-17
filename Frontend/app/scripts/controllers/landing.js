@@ -13,10 +13,9 @@ angular.module('BadminTown')
             $scope.showInscription=false;
             $scope.session = $cookies.get('isConnected');
             $scope.userInfos = $cookies.get('userInfos');
+            $scope.errors='';
 
             if($scope.session || $scope.userInfos){
-                console.log("SESSION ON");
-
                 $location.path("/home");
             }
 
@@ -58,18 +57,24 @@ angular.module('BadminTown')
         $scope.logIn = function() {
             UserAPI.authenticate($scope.userinfos)
                 .then(function(data) {
-                    if(!data.error){
-                        onSucessRedirect(data);
-                    }
+                    $scope.errors='';
+                    onSucessRedirect(data);
+
+                     },function(err){
+                    $scope.errors=err;
+
                 });
         };
 
         $scope.signUp = function() {
             UserAPI.createUser($scope.userinfos)
                 .then(function(data) {
-                    if(!data.error){
-                       onSucessRedirect(data);
-                    }
+                    $scope.errors='';
+                    onSucessRedirect(data);
+
+                    },function(err){
+                    $scope.errors=err;
+
                 });
         };
 

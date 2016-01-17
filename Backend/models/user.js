@@ -94,6 +94,13 @@ User.VALIDATION_INFO = {
         maxLength: 1,
         pattern: /^[A-Z]+$/,
         message: 'string'
+    },
+    'points':{
+        required: false,
+        minLength: 1,
+        maxLength: 8,
+        pattern: /^[0-9]+$/,
+        message: 'number'
     }
 };
 
@@ -220,7 +227,7 @@ function createJson(res){
             nom: res[i].u.properties.nom,
             prenom: res[i].u.properties.prenom,
             mainForte: res[i].u.properties.mainForte,
-            points: res[i].u.properties.points,
+            points: parseInt(res[i].u.properties.points),
             noteMoyenne: noteMoyenne
         }
         tabReponse.push(tab);
@@ -248,6 +255,7 @@ function createJsonId(res){
         nom: res[0].u.properties.nom,
         prenom: res[0].u.properties.prenom,
         mainForte: res[0].u.properties.mainForte,
+        type: res[0].u.properties.type,
         points: res[0].u.properties.points,
         moyenneVolee: moyenneVolee,
         moyenneFrappe: moyenneFrappe,
@@ -370,7 +378,17 @@ User.create = function (props, callback) {
 
     props=_.extend(props,{
         admin: false,
-        points: '1000'
+        points: '1000',
+        totalVolee: 5,
+        totalFond: 5,
+        totalFrappe: 5,
+        totalEndurance: 5,
+        totalTechnique: 5,
+        nbEvalVolee: 1,
+        nbEvalFond: 1,
+        nbEvalFrappe: 1,
+        nbEvalEndurance: 1,
+        nbEvalTechnique: 1
     });
 
     validProps=validate(props,true);
@@ -619,7 +637,7 @@ User.prototype.createRel = function (){
     ].join('\n');
 
     var params = {
-        id: this.id,
+        id: this.id
     };
 
     db.cypher({

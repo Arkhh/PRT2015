@@ -2,7 +2,7 @@
  * Created by Thomas on 12/01/2016.
  */
 angular.module('BadminTown')
-    .controller('MatchCtrl', function (MatchAPI, $rootScope, $scope, $location, $filter,$cookies) {
+    .controller('MatchCtrl', function (MatchAPI,UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
 
 
         $scope.players=[];
@@ -17,6 +17,35 @@ angular.module('BadminTown')
             nom:'bop2',
             prenom:'zamel2'
         });
+
+        $scope.processSearch= function(simpleSearchText){
+            if($scope.searchProcessing===true){
+                return;
+            }
+
+            if(simpleSearchText.length<2){
+                $scope.ErrorSearch='Minimum 2 caractères';
+                return;
+            }
+
+            $scope.searchProcessing=true;
+
+
+            UserAPI.getUserByName(simpleSearchText)
+                .then(function (data) {
+
+                    if (data.length>0) { //TODO check si plusieurs resultats...
+
+                        $scope.getUserInfo(data.id);
+                        $scope.searchProcessing=false;
+                        $scope.ErrorSearch=undefined;
+
+                    }
+                },function(err){
+                    $scope.searchProcessing=false;
+                    $scope.ErrorSearch=err;
+                })
+        };
 
         $scope.opponentCreate={id:'',nom:'',prenom:''};
         $scope.opponentDisplay='';

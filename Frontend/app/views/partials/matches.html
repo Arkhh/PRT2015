@@ -5,14 +5,7 @@
 
 
         <uib-tab heading="Matches">
-            <header class="panel-heading">
 
-            </header>
-
-            <form class="navbar-form pull-left shift ng-pristine ng-valid">
-                <i class="fa fa-search text-muted"></i>
-                <input type="text" class="input-sm form-control" placeholder="Search">
-            </form>
             <ul class="list-group col-md-6">
                 <div align="center"><h2>Matches en cours</h2></div>
                 <li class="list-group-item">
@@ -149,13 +142,122 @@
 
         </uib-tab>
 
+
+
+
+
         <uib-tab heading="Creer match">
 
-            <form class="navbar-form pull-left shift ng-pristine ng-valid">
-                <i class="fa fa-search text-muted"></i>
-                <input type="text" class="input-sm form-control" placeholder="Search">
+            <form class="navbar-form  shift" align="center" ng-submit="processSearch(simpleSearchText);">
+                    <span align="center">
+                    <input type="text" name="name" ng-model="simpleSearchText" placeholder="Recherche joueur" ng-required="true">
+                    <button type="submit" class="btn btn-sm btn-link"><span  style="font-size: 20px;" class="fa fa-search text-muted"></span> </button>
+                    </span>
+                <div   class="checkbox"> <label> <input ng-model="advanced" type="checkbox" name="advancedSearch"> Recheche avancée </label> </div>
             </form>
-            <div class="m-b row">
+
+            <div class="alert alert-danger" ng-if="ErrorSearch" role="alert">{{ErrorSearch}}</div>
+            <div class="alert alert-danger" ng-if="searchResult0" role="alert">Votre recherche n'a retourné aucun résultat, veuillez réduire vos critères.</div>
+
+
+            <div ng-if="advanced">
+                <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Sexe</label>
+                    <div class="col-lg-4">
+                        <select name="account" ng-model="myInfos.sexe" class="form-control">
+                            <option value=""></option>
+                            <option value="H">Homme</option>
+                            <option value="F">Femme</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Main forte</label>
+                    <div class="col-lg-4">
+                        <select name="account" ng-model="myInfos.mainForte" class="form-control">
+                            <option value="">Indifferent</option>
+                            <option value="G">Gauche</option>
+                            <option value="D">Droite</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Type de joueur</label>
+                    <div class="col-lg-4">
+                        <select name="account" ng-model="myInfos.type" class="form-control">
+                            <option value="S">Simple</option>
+                            <option value="D">Double</option>
+                            <option value="T">Tout</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top:40px;" class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <h4>Notes minimum :</h4>
+                    </div>
+                </div>
+                <label class="col-lg-3 control-label">Volée</label>
+                <input-stars  max="10" ng-model="myInfos.moyenneVolee" ></input-stars><br/>
+                <label class="col-lg-3 control-label">Fond</label>
+                <input-stars  max="10" ng-model="myInfos.moyenneFond" ></input-stars><br/>
+                <label class="col-lg-3 control-label">Endurance</label>
+                <input-stars  max="10" ng-model="myInfos.moyenneEndurance" ></input-stars><br/>
+                <label class="col-lg-3 control-label">Technique</label>
+                <input-stars  max="10" ng-model="myInfos.moyenneTechnique" ></input-stars><br/>
+                <label class="col-lg-3 control-label">Frappe</label>
+                <input-stars  max="10" ng-model="myInfos.moyenneFrappe" ></input-stars><br/>
+                <label class="col-lg-3 control-label">Général</label>
+                <input-stars  max="10" ng-model="myInfos.noteMoyenne" ></input-stars><br/>
+
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" ng-click="editProfile();" class="btn btn-primary">Rechercher</button>
+                    </div>
+                </div>
+                </form>
+
+
+            </div>
+
+
+            <div ng-if="simpleSearchSuccessMulti" class="table-responsive">
+                <div> Plusieurs résultats correspondent à votre recherche, veuiller selectionner</div>
+                <table class="table table-hover table-bordered" style="background-color: white">
+                    <thead>
+                    <tr>
+                        <th>Prenom</th>
+                        <th>Nom</th>
+                        <th>Defier</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat="player in simpleSearchResultTab |filter:searchPlayer " ng-class="{success: (player.id==userInfos.id) } ">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
+                        <td ng-if="player.id!=userInfos.id">
+                            <a class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
+                        </td>
+                        <td ng-if="player.id==userInfos.id">
+                            <div>VOUS</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <form class="form-horizontal">
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Adversaire</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="adversaire" ng-model="opponentDisplay" placeholder="Selectionnez un adversaire" class="bg-focus form-control" ng-requided="true" data-type="text" disabled>
+                    </div>
+                </div>
+
+            <div class="form-group">
                 <div class="col-md-6">
                     <p class="input-group">
                         <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true"  alt-input-formats="altInputFormats" />
@@ -165,14 +267,15 @@
                     </p>
                 </div>
             </div>
-            <div class="list-group"><a class="btn btn-sm btn-info" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-plus"></i> Créer</a></div>
 
-            <div class="form-group">
-                <label class="col-lg-3 control-label">Adversaire</label>
-                <div class="col-lg-8">
-                    <input type="text" name="adversaire" ng-model="opponentDisplay" placeholder="Selectionnez un adversaire" class="bg-focus form-control" ng-requided="true" data-type="text" disabled>
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" ng-click="editProfile();" class="btn btn-sm btn-info"> <i class="fa fa-fw fa-plus"></i> Créer </button>
+                    </div>
                 </div>
-            </div>
+
+
+            </form>
 
             <p>Suggested players</p>
             <div id="MyPillbox" class="pillbox clearfix m-b">
@@ -185,6 +288,9 @@
             </div>
 
         </uib-tab>
+
+        <uib-tab heading="Graphiques"> </uib-tab>
+        <uib-tab heading="Invitations"> </uib-tab>
 
 
 
