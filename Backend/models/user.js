@@ -909,6 +909,38 @@ User.prototype.suggest = function (callback) {
     });
 };
 
+
+User.getAdv = function (id, callback) {
+
+    var idInt=parseInt(id);
+    var query = [
+        'MATCH (user:User)-[r:JOUE]',
+        '-(m:Match)-[r2:JOUE]-(adv:User)',
+        'WHERE id(user)={id}',
+        'RETURN adv'
+    ].join('\n');
+
+
+    var params = {
+        id: idInt
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such user with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var user = new User(results[0]['adv']);
+        callback(null, user);
+    });
+};
+
 function keysrt(key) {
     return function(a,b){
         if (a[key] > b[key]) return 1;
