@@ -4,10 +4,6 @@
 angular.module('BadminTown')
     .controller('ProfileCtrl', function (UserAPI, $rootScope, $scope, $location, $filter,$cookies) {
 
-        function RandomMoyenne (){
-            return Math.floor((Math.random()*6)+1)+0.5;
-        }
-
         $scope.getMyInfos = function () {
             UserAPI.getUserInfo($scope.userInfos.id)
                 .then(function (data) {
@@ -18,12 +14,12 @@ angular.module('BadminTown')
                         UserAPI.getUserPubInfos($scope.userInfos.id)
                             .then(function (data) {
                                 if (!data.error) {
-                                    $scope.myInfos.noteMoyenne = RandomMoyenne();
-                                    $scope.myInfos.moyenneVolee = RandomMoyenne();
-                                    $scope.myInfos.moyenneFrappe = RandomMoyenne();
-                                    $scope.myInfos.moyenneEndurance = RandomMoyenne();
-                                    $scope.myInfos.moyenneTechnique = RandomMoyenne();
-                                    $scope.myInfos.moyenneFond = RandomMoyenne();
+                                    $scope.myInfos.moyenneVolee=data.moyenneVolee;
+                                    $scope.myInfos.moyenneFrappe=data.moyenneFrappe;
+                                    $scope.myInfos.moyenneEndurance=data.moyenneEndurance;
+                                    $scope.myInfos.moyenneTechnique=data.moyenneTechnique;
+                                    $scope.myInfos.moyenneFond=data.moyenneFond;
+                                    $scope.myInfos.noteMoyenne=data.noteMoyenne;
                                 }
                             });
                     }
@@ -36,13 +32,12 @@ angular.module('BadminTown')
                     if (!data.error) {
 
                         $scope.player=data;
-
-                        $scope.player.noteMoyenne= RandomMoyenne();
-                        $scope.player.moyenneVolee= RandomMoyenne();
-                        $scope.player.moyenneFrappe= RandomMoyenne();
-                        $scope.player.moyenneEndurance= RandomMoyenne();
-                        $scope.player.moyenneTechnique= RandomMoyenne();
-                        $scope.player.moyenneFond= RandomMoyenne();
+                        $scope.player.noteMoyenne=data.noteMoyenne;
+                        $scope.player.moyenneVolee= data.moyenneVolee;
+                        $scope.player.moyenneFrappe= data.moyenneFrappe;
+                        $scope.player.moyenneEndurance= data.moyenneEndurance;
+                        $scope.player.moyenneTechnique= data.moyenneTechnique;
+                        $scope.player.moyenneFond= data.moyenneFond;
 
                     }
                 });
