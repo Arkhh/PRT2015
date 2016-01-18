@@ -34,6 +34,7 @@ angular.module('BadminTown')
             $scope.partials=[];
             $scope.session = $cookies.get('isConnected');
             $scope.userInfos = $cookies.getObject('userInfos');
+            console.log($scope.userInfos);
             isConnected();
             $scope.displayPartial('showProfile');
         }

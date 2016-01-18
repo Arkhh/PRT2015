@@ -49,7 +49,7 @@ User.VALIDATION_INFO = {
     'password':{
         required: true,
         minLength: 5,
-        maxLength: 16,
+        maxLength: 255,
         pattern: /^[A-Za-z0-9_]+$/,
         message: '2-16 characters; letters, numbers, and underscores only.'
     },

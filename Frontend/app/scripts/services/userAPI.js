@@ -15,7 +15,8 @@ angular.module('BadminTown')
                 url            : API_ENDPOINT + '/auth/',
                 data           : {
                     'email'      : userinfo.email,
-                    'password'      : userinfo.password
+                    'password'   : CryptoJS.SHA256(userinfo.password).toString()
+                    //'password'      : userinfo.password
                 }
             });
         }
