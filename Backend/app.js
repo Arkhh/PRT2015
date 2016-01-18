@@ -74,6 +74,7 @@ app.post(routeApi+'/matches/:id',routes.matches.edit);
 app.delete(routeApi+'/matches/:id', routes.matches.del);
 app.get(routeApi+'/matches/users/:id',routes.matches.getByUser);
 app.post(routeApi+'/usersnext/matches',routes.matches.getByUserNext);
+app.post(routeApi+'/matches/result',routes.matches.setResult);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));
