@@ -110,6 +110,30 @@
 
                 </div>
 
+                <div ng-if="multiPlayerResult" class="table-responsive">
+                    <div align="center"><h4> Plusieurs résultats correspondent à votre recherche, veuiller selectionner un des jouuers ci-dessous :</h4></div>
+                    <table class="table table-hover table-bordered" style="background-color: white">
+                        <thead>
+                        <tr>
+                            <th>Prenom</th>
+                            <th>Nom</th>
+                            <th>Afficher</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr ng-repeat="player in multiPlayerResultTab |filter:searchPlayer " ng-class="{success: (player.id==userInfos.id) } ">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
+                            <td ng-if="player.id!=userInfos.id">
+                                <a ng-click="getUserInfo(player.id)" class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
+                            </td>
+                            <td ng-if="player.id==userInfos.id">
+                                <div>VOUS</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="row">
                 <form ng-if="player" class="form-horizontal">
 

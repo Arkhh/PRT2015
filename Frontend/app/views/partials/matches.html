@@ -8,7 +8,7 @@
                 <div align="center">
                     <h2>Matches en cours</h2>
                 </div>
-                <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches">
+                <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches | orderBy: match.date">
                     <div class="media">
                         <div class="row">
                             <div class="col-md-3">
@@ -35,21 +35,21 @@
                                 </div>
 
                                 <div ng-if="!(match.resultat1)" class=" text-success m-t-small">
-                                    <a ng-click="openResult('sm');" class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Entrez votre resultat</a>
+                                    <a ng-click="openResult('sm',match);" class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Entrez votre resultat</a>
                                 </div>
 
-                                <div ng-if="match.resultat1.length>0&&match.resultat2.length>0&&(match.resultat1!=match.resultat2)" class=" text-success m-t-small">
-                                    <div class="alert alert-danger" role="alert">Resultat contraire avec votre adversaire veuillez ré entrer le resultat</div>
-                                    <a class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Modifiez votre resultat</a>
+                                <div ng-if="match.resultat1>0&&match.resultat2>0&&(match.resultat1!=match.resultat2)" class=" text-success m-t-small">
+                                    <div class="alert alert-danger" role="alert">Resultat contraire <span ng-if="match.resultat1==match.idJ1">(victoire)</span> <span ng-if="match.resultat1!=match.idJ1">(defaite)</span> avec votre adversaire veuillez ré entrer le resultat</div>
+                                    <a ng-click="openResult('sm',match);" class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Modifiez votre resultat</a>
                                 </div>
                             </div>
 
-                            <div class="col-md-5">
+                            <div ng-if="!(match.datePast)" class="col-md-5">
                                 <a ng-click="deleteMatch(match.id);" class="btn btn-sm btn-danger pull-right">
                                     <i class="glyphicon glyphicon-remove"></i>
                                     Suprimer
                                 </a>
-                                <a ng-click="openEdit('sm')" class="btn btn-sm btn-info pull-right" style="margin-right:10px;"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
+                                <a ng-click="openEdit('sm',match)" class="btn btn-sm btn-info pull-right" style="margin-right:10px;"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
                             </div>
                         </div>
                     </div>

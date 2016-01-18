@@ -16,6 +16,14 @@ angular.module('BadminTown')
             });
         }
 
+        function updateResult(updateInfo) {
+            return RequestBuilder.getRequestPromise({
+                method         : 'POST',
+                url            : API_ENDPOINT + '/result/matches',
+                data           : updateInfo
+            });
+        }
+
         function getMatchUser(id){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
@@ -35,7 +43,8 @@ angular.module('BadminTown')
         return {
             'getMatchUser'		: getMatchUser,
             'createMatch'        : createMatch,
-            'deleteMatch'		: deleteMatch
+            'deleteMatch'		: deleteMatch,
+            'updateResult'      : updateResult
         };
 
     });
