@@ -62,10 +62,10 @@ exports.show = function (req, res) {
  */
 exports.edit = function (req, res) {
 
-    Matche.get(req.params.id, function (err, matche) {
+    Matche.getCrud(req.params.id, function (err, matche) {
         if (err) return res.status(404).json( {error:err});
 
-        matche.patch(req.body, function (err) {
+        matche.patch(req.body, function (err,resul) {
             if (err) {
                 if (err instanceof errors.UnicityError||err instanceof errors.PropertyError) {
                     return res.status(500).json({
@@ -75,7 +75,7 @@ exports.edit = function (req, res) {
                     return res.status(500).json(err);
                 }
             }
-            return res.json(matche);
+            return res.json(resul);
         });
     });
 };
