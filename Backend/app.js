@@ -51,6 +51,7 @@ app.post(routeApi+'/notation/:id', routes.users.notation);
 app.get(routeApi+'/pub/users', routes.users.pubList);
 app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
 app.get(routeApi+'/suggest/:id', routes.users.suggest);
+app.get(routeApi+'/search/:str', routes.users.search);
 
 
 app.get(routeApi+'/events',routes.events.list);
@@ -73,6 +74,7 @@ app.post(routeApi+'/matches/:id',routes.matches.edit);
 app.delete(routeApi+'/matches/:id', routes.matches.del);
 app.get(routeApi+'/matches/users/:id',routes.matches.getByUser);
 app.post(routeApi+'/usersnext/matches',routes.matches.getByUserNext);
+app.post(routeApi+'/result/matches',routes.matches.setResult);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));

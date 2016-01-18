@@ -84,7 +84,7 @@ exports.edit = function (req, res) {
  * DELETE /matches/:id
  */
 exports.del = function (req, res) {
-    Matche.get(req.params.id, function (err, matche) {
+    Matche.getCrud(req.params.id, function (err, matche) {
         if (err) return res.status(404).json(err);
         matche.del(function (err) {
             if (err) return res.status(500).json(err);
@@ -120,5 +120,21 @@ exports.getByUserNext= function (req,res) {
             });
         }
         return res.json(matches);
+    })
+}
+
+    /**
+     * POST /matches/result
+     */
+
+exports.setResult=function(req,res){
+    Matche.setResult(req.body,function(err,matche){
+        if (err) {
+            return res.status(404).json({
+                pathname: '/matches/result',
+                error: err
+            });
+        }
+        return res.json(matche);
     })
 }

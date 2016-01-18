@@ -203,3 +203,14 @@ exports.adv = function (req, res) {
         return res.json(users);
     })
 };
+
+/**
+ * search /search/:str
+ */
+exports.search = function (req,res) {
+    User.search(req.params.str, function (err, user) {
+        if (err) return (err);
+        console.log("BJONUR3)");
+        return res.json(user);
+        })
+};
