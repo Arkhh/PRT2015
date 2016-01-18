@@ -22,12 +22,7 @@ angular.module('BadminTown')
         }
 
         function onSucessRedirect(data){
-            $scope.userinfos={
-                id:data._node._id,
-                nom:data._node.properties.nom,
-                prenom:data._node.properties.prenom,
-                admin:data._node.properties.admin
-            };
+            $scope.userinfos=data;
             $cookies.put('isConnected', true);
             $cookies.putObject('userInfos',$scope.userinfos);
             $location.path("/home")
@@ -67,6 +62,7 @@ angular.module('BadminTown')
         };
 
         $scope.signUp = function() {
+            $scope.userinfos.password=CryptoJS.SHA256($scope.userinfos.password).toString();
             UserAPI.createUser($scope.userinfos)
                 .then(function(data) {
                     $scope.errors='';

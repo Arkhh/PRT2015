@@ -48,12 +48,18 @@ angular.module('BadminTown')
 
 
         $scope.editProfile= function(){
+            $scope.sucessEdit='';
+            $scope.failEdit='';
+            $scope.myInfos.password=CryptoJS.SHA256($scope.myInfos.newPassword).toString();
             UserAPI.updateUser($scope.myInfos,$scope.userInfos.id)
                 .then(function (data) {
-                    if (!data.error) {
                         $scope.myInfos = data;
-                    }
-                });
+                    $scope.sucessEdit='Profil edité avec succès';
+                },function(err){
+                    $scope.failEdit=err;
+                    //TODO erreur
+
+            });
         };
 
 
@@ -101,6 +107,7 @@ angular.module('BadminTown')
 
         function init() {
             $scope.getMyInfos();
+            console.log($scope.myInfos);
             $scope.player='';
             $scope.searchProcessing=false;
             $scope.ErrorSearch=undefined;

@@ -95,7 +95,8 @@ exports.connect = function (req, res){
         password: req.body.password,
         email: req.body.email}, function (err, user) {
         if (err) return res.status(404).json( {error:[{message: [err]}]});
-        return res.json(user);
+            return res.json(_.extend(user._node.properties,{
+                id: user._node._id}));
     })
 };
 /**

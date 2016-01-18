@@ -4,6 +4,9 @@
         <uib-tabset>
             <uib-tab heading="Informations personelles">
 
+                <div align="center" class="alert alert-success"  ng-if="sucessEdit">{{sucessEdit}} </div>
+                <div align="center" class="alert alert-danger"  ng-if="failEdit">{{failEdit}} </div>
+
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label class="col-lg-3 control-label">Email</label>
@@ -14,7 +17,7 @@
                     <div class="form-group">
                         <label class="col-lg-3 control-label">Password</label>
                         <div class="col-lg-8">
-                            <input ng-type="password" name="password" placeholder="Nouveau mot de passe"  ng-model="myInfos.password" class="bg-focus form-control">
+                            <input ng-type="password" name="password" placeholder="Nouveau mot de passe"  ng-model="myInfos.newPassword" class="bg-focus form-control">
                         </div>
                     </div>
                     <div class="form-group">
