@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<div class="modal-header">
+    <h3 class="modal-title">Votre résultat</h3>
+</div>
+<div class="modal-body">
 
-</body>
-</html>
+    <form>
+    <div class="radio">
+        <label>Victoire</label>
+            <input type="radio" ng-model="result"  value="victoire">
+    </div>
+
+    <div class="radio">
+        <label>Defaite</label>
+            <input type="radio" ng-model="result"  value="defaite">
+    </div>
+        <div class="modal-footer">
+            <button ng-click="ok()" class="btn btn-primary" type="submit">Modifier</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Annuler</button>
+        </div>
+    </form>
+</div>
+
