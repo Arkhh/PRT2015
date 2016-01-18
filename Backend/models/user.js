@@ -395,7 +395,7 @@ User.create = function (props, callback) {
 
     props=_.extend(props,{
         admin: false,
-        points: '1000',
+        points: 1000,
         totalVolee: 5,
         totalFond: 5,
         totalFrappe: 5,
@@ -940,6 +940,47 @@ User.getAdv = function (id, callback) {
         callback(null, user);
     });
 };
+
+User.setPoint=function(id,point){
+    var query = [
+        'MATCH (user:User)',
+        'WHERE id(user)={id}',
+        'set user+={points:user.points+{point}}',
+        'RETURN user'
+    ].join('\n');
+
+
+    var params = {
+        id: id,
+        point:point
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+       /* if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such user with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var user = new User(results[0]['user']);
+        callback(null, user);*/
+    });
+};
+
+/*
+ 'MATCH (user:User)',
+ 'MATCH (user2:User)',
+ 'WHERE id(user)={idJ1}',
+ 'AND id(user2)={idJ2}',
+ 'set user+={points:user.points+{gain}}',
+ 'set user2+={points:user2.points-{perte}}',
+ 'RETURN user,user2'
+ */
+
 
 function keysrt(key) {
     return function(a,b){
