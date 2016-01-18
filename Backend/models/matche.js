@@ -567,7 +567,7 @@ Matche.setResult = function (props, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('Error set resultat uer');
+            var error=new errors.PropertyError('Error set resultat user');
             err.push(error);
             return callback(err);
         }

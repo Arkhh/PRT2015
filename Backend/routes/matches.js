@@ -131,7 +131,7 @@ exports.setResult=function(req,res){
     Matche.setResult(req.body,function(err,matche){
         if (err) {
             return res.status(404).json({
-                pathname: '/matches/usersnext',
+                pathname: '/matches/result',
                 error: err
             });
         }
