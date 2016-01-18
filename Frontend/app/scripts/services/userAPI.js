@@ -68,7 +68,7 @@ angular.module('BadminTown')
         function getUserByName(str){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
-                url            : API_ENDPOINT + '/search/users/'+str
+                url            : API_ENDPOINT + '/search/'+str
             });
         }
 

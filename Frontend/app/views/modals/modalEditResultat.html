@@ -3,15 +3,15 @@
 </div>
 <div class="modal-body">
 
-    <form>
-    <div class="radio">
+    <form class="form-horizontal">
+    <div class="radio form-group">
         <label>Victoire</label>
-            <input type="radio" ng-model="result"  value="victoire">
+            <input type="radio" ng-model="result"  value="victoire" class="col-md-3">
     </div>
 
-    <div class="radio">
+    <div class="radio form-group">
         <label>Defaite</label>
-            <input type="radio" ng-model="result"  value="defaite">
+            <input type="radio" ng-model="result"  value="defaite"  class="col-md-3">
     </div>
         <div class="modal-footer">
             <button ng-click="ok()" class="btn btn-primary" type="submit">Modifier</button>

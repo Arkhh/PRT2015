@@ -209,8 +209,7 @@ exports.adv = function (req, res) {
  */
 exports.search = function (req,res) {
     User.search(req.params.str, function (err, user) {
-        if (err) return (err);
-        console.log("BJONUR3)");
+        if (err) return res.status(500).json(err);
         return res.json(user);
         })
 };
