@@ -1,5 +1,3 @@
-<section class="panel">
-
     <uib-tabset>
 
 
@@ -7,64 +5,52 @@
         <uib-tab heading="Matches">
 
             <ul class="list-group col-md-6">
-                <div align="center"><h2>Matches en cours</h2></div>
-                <li class="list-group-item">
+                <div align="center">
+                    <h2>Matches en cours</h2>
+                </div>
+                <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches">
                     <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
                         <div class="row">
-                        <div class="col-md-3">
-                            <div><a href="#" class="h5">Chris Fox</a></div>
-                            <small class="text-muted">about 2 minutes ago</small>
-                        </div>
-
-                        <div class="col-md-2">Resultat
-                            <div class=" text-success m-t-small">
-                                <small>Victoire</small>
-                                <i class="fa fa-circle"></i>
-                                <small>(Resultat temporaire)</small>
+                            <div class="col-md-3">
+                                <div><a class="h5">{{match.prenom}} {{match.nom}}</a></div>
+                                <small class="text-muted">{{match.dateStr}}</small>
                             </div>
-                        </div>
 
-                        <div class="col-md-5">
-                        <a class="btn btn-sm btn-danger pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-trash"></i> Suprimer</a>
-                        <a class="btn btn-sm btn-info pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
-                        </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-success m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Amanda Conlan</a></div>
-                            <small class="text-muted">about 2 hours ago</small>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-warning m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Dan Doorack</a></div>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-danger m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Lauren Taylor</a></div>
-                            <small class="text-muted">about 2 minutes ago</small>
+                            <div class="col-md-4" ng-if="match.datePast">
+                                <span style="margin-left:60px;" align="center">Resultat</span>
+                                <div ng-if="(match.resultat1)&&(match.resultat2=='')" class=" text-success m-t-small">
+                                    <span ng-if="match.resultat1==userInfos.id">
+                                    <small>Victoire</small>
+                                    <i class="fa fa-circle"></i>
+                                    <small>(Resultat temporaire)</small>
+                                    </span>
+
+                                </div>
+                                <div ng-if="(match.resultat1)&&(match.resultat2=='')" class=" text-danger m-t-small">
+                                    <span ng-if="match.resultat1!=userInfos.id">
+                                    <small>Défaite</small>
+                                    <i class="fa fa-circle"></i>
+                                    <small>(Resultat temporaire)</small>
+                                    </span>
+                                </div>
+
+                                <div ng-if="!(match.resultat1)" class=" text-success m-t-small">
+                                    <a ng-click="openResult('sm');" class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Entrez votre resultat</a>
+                                </div>
+
+                                <div ng-if="match.resultat1.length>0&&match.resultat2.length>0&&(match.resultat1!=match.resultat2)" class=" text-success m-t-small">
+                                    <div class="alert alert-danger" role="alert">Resultat contraire avec votre adversaire veuillez ré entrer le resultat</div>
+                                    <a class="btn btn-sm btn-info pull-right"><i class="fa fa-fw fa-pencil"></i>Modifiez votre resultat</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <a ng-click="deleteMatch(match.id);" class="btn btn-sm btn-danger pull-right">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                    Suprimer
+                                </a>
+                                <a ng-click="openEdit('sm')" class="btn btn-sm btn-info pull-right" style="margin-right:10px;"><i class="fa fa-fw fa-pencil"></i> Modifier</a>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -72,73 +58,41 @@
 
             </ul>
 
-
             <ul class="list-group col-md-6">
-                <div align="center"><h2>Historique</h2></div>
-                <li class="list-group-item">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
+                <div align="center"><h2>Historique (5 derniers)</h2></div>
+
+                <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
+                    <div class="media ">
 
                         <div class="row">
                             <div class="col-md-3">
-                                <div><a href="#" class="h5">Chris Fox</a></div>
-                                <small class="text-muted">about 2 minutes ago</small>
+                                <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
+                                <small class="text-muted">{{match.date}}</small>
                             </div>
 
-                            <div class="col-md-2">Resultat
+                            <div  ng-if="match.resultat=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
                                 <div class=" text-success m-t-small">
-                                    <small>Victoire</small>
+                                    <small>{{match.resultat}}</small>
                                     <i class="fa fa-circle"></i>
-                                    <small>(+15)</small>
+                                    <small>({{match.recompense}})</small>
+                                </div>
+                            </div>
+                            <div ng-if="match.resultat!=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
+                                <div class=" text-danger m-t-small">
+                                    <small>{{match.resultat}}</small>
+                                    <i class="fa fa-circle"></i>
+                                    <small>({{match.recompense}})</small>
                                 </div>
                             </div>
 
-                                <div class="col-md-5">
+                            <div ng-if="match.aNoter1===''" class="col-md-5">
                                 <a class="btn btn-sm btn-success pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
-                                </div>
                             </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-success m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Amanda Conlan</a></div>
-                            <small class="text-muted">about 2 hours ago</small>
                         </div>
                     </div>
                 </li>
-                <li class="list-group-item">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-warning m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Dan Doorack</a></div>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item bg">
-                    <div class="media">
-                        <span class="pull-left thumb-small"><img src="images/avatar.jpg" alt="John said" class="img-rounded"></span>
-                        <div class="pull-right text-danger m-t-small">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="media-body">
-                            <div><a href="#" class="h5">Lauren Taylor</a></div>
-                            <small class="text-muted">about 2 minutes ago</small>
-                        </div>
-                    </div>
-                </li>
-                <a class="btn btn-sm btn-default center-block"><i class="fa fa-fw fa-plus"></i>Voir plus</a>
+
             </ul>
-
-
 
         </uib-tab>
 
@@ -166,7 +120,7 @@
                     <label class="col-lg-3 control-label">Sexe</label>
                     <div class="col-lg-4">
                         <select name="account" ng-model="myInfos.sexe" class="form-control">
-                            <option value=""></option>
+                            <option value="">Indifferent</option>
                             <option value="H">Homme</option>
                             <option value="F">Femme</option>
                         </select>
@@ -191,6 +145,7 @@
                             <option value="S">Simple</option>
                             <option value="D">Double</option>
                             <option value="T">Tout</option>
+                            <option value="">Tout</option>
                         </select>
                     </div>
                 </div>
@@ -290,12 +245,48 @@
         </uib-tab>
 
         <uib-tab heading="Graphiques"> </uib-tab>
-        <uib-tab heading="Invitations"> </uib-tab>
+        <uib-tab heading="Historique">
+                <ul class="list-group col-md-6">
+                    <div align="center"><h2>Historique</h2></div>
+
+                    <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
+                        <div class="media ">
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
+                                    <small class="text-muted">{{match.date}}</small>
+                                </div>
+
+                                <div  ng-if="match.resultat=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
+                                    <div class=" text-success m-t-small">
+                                        <small>{{match.resultat}}</small>
+                                        <i class="fa fa-circle"></i>
+                                        <small>({{match.recompense}})</small>
+                                    </div>
+                                </div>
+                                <div ng-if="match.resultat!=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
+                                    <div class=" text-danger m-t-small">
+                                        <small>{{match.resultat}}</small>
+                                        <i class="fa fa-circle"></i>
+                                        <small>({{match.recompense}})</small>
+                                    </div>
+                                </div>
+
+                                <div ng-if="match.aNoter1===''" class="col-md-5">
+                                    <a class="btn btn-sm btn-success pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <a class="btn btn-sm btn-default center-block"><i class="fa fa-fw fa-plus"></i>Voir plus</a>
+                </ul>
+
+        </uib-tab>
 
 
 
 
     </uib-tabset>
-
-
-</section>

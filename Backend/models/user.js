@@ -754,27 +754,17 @@ User.prototype.readRel = function (nomSkill,callback){
         nomSkill: nomSkill
     };
 
-    /*console.log("query");
-    console.log(query);
-    console.log("params");
-    console.log(params);*/
     db.cypher({
         query: query,
         params: params
     }, function (err, results) {
-        console.log(results);
         if (isConstraintViolation(err)) {
-            //si l'email est déjà pris
             err = new errors.UnicityError('Quelle erreur mettre ???');
         }
         if (err) return err;
-       // console.log('results');
-       // console.log(results);
-        callback(null, results);
-        //return ('Okay');
-        //callback(null, 'Rel Volee Creee');
-        //var user = new User(results[0]['user']);
-        //callback(null, user);
+
+       return callback(null, results);
+
     });
 };
 
@@ -782,13 +772,12 @@ User.prototype.readRel = function (nomSkill,callback){
 User.notation = function (note, rel, callback){
 
     var noteInt = parseInt(note);
-    console.log("noteInt");
-    console.log(noteInt);
 
-    if (noteInt > 5) {
+
+    if (noteInt > 10) {
         //si l'email est déjà pris
-        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
-        callback(err, null);
+        var err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
+        return callback(err, null);
     }
 
     var newTotal = rel[0].r.properties.total + noteInt;
@@ -1024,6 +1013,7 @@ function keysrt(key) {
     }
 }
 
+//someArrayOfObjects.sort(keysrt('text'));
 //FONCTION DE RECHERCHE
 User.search = function (str, callback) {
 

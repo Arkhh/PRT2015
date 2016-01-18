@@ -19,23 +19,23 @@ angular.module('BadminTown')
         function getMatchUser(id){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
-                url            : API_ENDPOINT + '/games/user/'+id
+                url            : API_ENDPOINT + '/matches/users/'+id
             });
         }
-        /*
-         function resetPassword(email){
-         return RequestBuilder.getRequestPromise({
-         method         : 'DELETE',
-         url            : USER_API_ENDPOINT + '/password/' + email
-         });
-         }*/
+
+         function deleteMatch(id){
+             return RequestBuilder.getRequestPromise({
+                 method         : 'DELETE',
+                 url            : API_ENDPOINT + '/matches/'+id
+             });
+         }
 
 
 
         return {
             'getMatchUser'		: getMatchUser,
-            'createMatch'        : createMatch
-            //'resetPassword'		: resetPassword
+            'createMatch'        : createMatch,
+            'deleteMatch'		: deleteMatch
         };
 
     });
