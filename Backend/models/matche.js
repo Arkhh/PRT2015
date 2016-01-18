@@ -4,6 +4,7 @@
 var neo4j = require('neo4j');
 var errors = require('./errors');
 var _ =require('underscore');
+var User = require('./user');
 
 var db = new neo4j.GraphDatabase({
     // Support specifying database info via environment variables,
@@ -353,6 +354,38 @@ Matche.create = function (props, callback) {
     });
 };
 
+Matche.getCrud = function (id, callback) {
+
+    var idInt=parseInt(id);
+
+
+    var query = [
+        'MATCH (match:Match)',
+        'WHERE id(match) = {id}',
+        'RETURN match',
+    ].join('\n');
+
+
+    var params = {
+        id: idInt
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such match with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var match = new Matche(results[0]['match']);
+        callback(null, match);
+    });
+};
+
 Matche.get = function (id, callback) {
 
     var idInt=parseInt(id);
@@ -505,3 +538,83 @@ Matche.getByUserNext = function (props, callback) {
         callback(null, matches);
     });
 };
+
+Matche.setResult = function (props, callback) {
+
+    var idInt=parseInt(props.id);
+    var idIntm=parseInt(props.idm);
+    var resultat=parseInt(props.resultat);
+
+    var query = [
+        'MATCH (user:User)-[r:JOUE]-(match:Match)-[r2:JOUE]-(u2:User)',
+        'WHERE id(user)={id}',
+        'AND id(match)={idm}',
+        'SET r+={resultat:{resultat}}',
+        'RETURN match,r,r2'
+    ].join('\n');
+
+
+    var params = {
+        id: idInt,
+        idm:idIntm,
+        resultat:resultat
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('Error set resultat user');
+            err.push(error);
+            return callback(err);
+        }
+
+        var matche = getUserJson(results[0]);
+
+        if (matche.resultat1===matche.resultat2){
+            var query = [
+                'MATCH (user:User)-[r:JOUE]-(match:Match)-[r2:JOUE]-(u2:User)',
+                'WHERE id(user)={id}',
+                'AND id(match)={idm}',
+                'SET match+={resultat:{resultat}}',
+                'RETURN match,r,r2'
+            ].join('\n');
+
+            var params = {
+                id: idInt,
+                idm:idIntm,
+                resultat:resultat
+            };
+            db.cypher({
+                query: query,
+                params: params
+            }, function (err2, results) {
+                if (err2) return callback(err2);
+                if (!results.length) {
+                    var err2 = [];
+                    var error2 = new errors.PropertyError('Error set resultat match');
+                    err2.push(error2);
+                    return callback(err2);
+                }
+
+                var matche2 = getUserJson(results[0]);
+                if (matche2.resultat1===matche2.resultat) {
+
+                    User.setPoint(matche2.idJ1,parseInt(matche2.gainJ1)) ;
+                    User.setPoint(matche2.idJ2,parseInt(matche2.perteJ2*-1));
+                }
+                else{
+                    User.setPoint(matche2.idJ1,parseInt(matche2.perteJ1*-1)) ;
+                    User.setPoint(matche2.idJ2,parseInt(matche2.gainJ2));
+                }
+
+                callback(null, matche2);
+            });
+        }
+        else callback(null, matche);
+    });
+};
+

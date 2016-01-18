@@ -132,14 +132,12 @@ exports.notation = function (req, res) {
     User.get(req.params.id, function (err, user) {
         if (err) return res.status(404).json(err);
         user.readRel(req.body.nomSkill, function (err, rel) {
-            console.log("SORTIE DANS LE SEARCH SKILL")
             if (err) return res.status(404).json(err);
-            console.log("rel");
-            console.log(rel[0]);
+            console.log("mafraj");
             User.notation(req.body.note, rel, function (err, rela) {
-                if (err) return err;
+                if (err) return res.status(500).json(err);
                 return res.json(rela);
-            })
+            });
             //return res.json(user);
         });
     });
@@ -204,4 +202,15 @@ exports.adv = function (req, res) {
         });
         return res.json(users);
     })
+};
+
+/**
+ * search /search/:str
+ */
+exports.search = function (req,res) {
+    User.search(req.params.str, function (err, user) {
+        if (err) return (err);
+        console.log("BJONUR3)");
+        return res.json(user);
+        })
 };
