@@ -51,6 +51,7 @@ app.post(routeApi+'/notation/:id', routes.users.notation);
 app.get(routeApi+'/pub/users', routes.users.pubList);
 app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
 app.get(routeApi+'/suggest/:id', routes.users.suggest);
+app.get(routeApi+'/search/:str', routes.users.search);
 
 
 app.get(routeApi+'/events',routes.events.list);

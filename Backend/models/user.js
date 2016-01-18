@@ -257,6 +257,7 @@ function createJsonId(res){
         mainForte: res[0].u.properties.mainForte,
         type: res[0].u.properties.type,
         points: res[0].u.properties.points,
+        sexe: res[0].u.properties.sexe,
         moyenneVolee: moyenneVolee,
         moyenneFrappe: moyenneFrappe,
         moyenneEndurance: moyenneEndurance,
@@ -265,6 +266,40 @@ function createJsonId(res){
         noteMoyenne: noteMoyenne
     }
     return tab;
+};
+
+function createJsonSearch(res){
+    var i = 0;
+    var tabReponse = [];
+    while (i<res.length){
+        var moyenne1 = res[i].r1.properties.moyenne;
+        var moyenne2 = res[i].r2.properties.moyenne;
+        var moyenne3 = res[i].r3.properties.moyenne;
+        var moyenne4 = res[i].r4.properties.moyenne;
+        var moyenne5 = res[i].r5.properties.moyenne;
+        var noteMoyenne = (moyenne1 + moyenne2 + moyenne3 + moyenne4 + moyenne5)/5;
+        // while
+        var tab= {
+            id: res[i].u._id,
+            nom: res[i].u.properties.nom,
+            prenom: res[i].u.properties.prenom,
+            mainForte: res[i].u.properties.mainForte,
+            type: res[i].u.properties.type,
+            points: res[i].u.properties.points,
+            sexe: res[i].u.properties.sexe,
+            moyenneVolee: moyenne1,
+            moyenneFrappe: moyenne2,
+            moyenneEndurance: moyenne3,
+            moyenneTechnique: moyenne4,
+            moyenneFond: moyenne5,
+            noteMoyenne: noteMoyenne
+        }
+        tabReponse.push(tab);
+        i++;
+    }
+    //console.log("tabReponse");
+    //console.log(tabReponse);
+    return tabReponse;
 };
 
 function createJsonMoy(res){
@@ -804,8 +839,6 @@ User.notation = function (note, rel, callback){
 //SUGGESTION DE JOUEURS
 User.prototype.suggest = function (callback) {
 
-
-
     var query = [
         "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
         "WHERE id(u) = {id} AND s1.nom = 'Volee' AND s2.nom = 'Frappe' AND s3.nom = 'Technique' AND s4.nom = 'Endurance' AND s5.nom = 'Fond' " +
@@ -941,6 +974,7 @@ User.getAdv = function (id, callback) {
     });
 };
 
+//fonction permettant le tri du tableau
 function keysrt(key) {
     return function(a,b){
         if (a[key] > b[key]) return 1;
@@ -949,4 +983,54 @@ function keysrt(key) {
     }
 }
 
-//someArrayOfObjects.sort(keysrt('text'));
+//FONCTION DE RECHERCHE
+User.search = function (str, callback) {
+
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE s1.nom = 'Volee' AND s2.nom = 'Frappe' AND s3.nom = 'Technique' AND s4.nom = 'Endurance' AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 " +
+        "MATCH (u)-[r1:RelationEvaluation]->(s1) " +
+        "MATCH (u)-[r2:RelationEvaluation]->(s2) " +
+        "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
+        "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
+        "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
+        "WHERE u.nom =~ '(?i).*" + str + ".*' OR u.prenom =~ '(?i).*"+ str +".*' " +
+        "RETURN u,r1,r2,r3,r4,r5"
+    ].join('\n');
+
+
+    console.log("query");
+    console.log(query);
+    db.cypher({
+        query: query
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such user with ' + str + 'in his name/lastname');
+            err.push(error);
+            return callback(err);
+        }
+        console.log("results.length");
+        console.log(results.length);
+        if (results.length === 1){
+            var user = new User(results[0]['user']);
+            console.log("results[0]['user']");
+            console.log(results[0].u);
+            var tabReponse = createJsonSearch(results);
+            console.log("tabReponse");
+            console.log(tabReponse[0]);
+            return callback(null, tabReponse[0]);
+        }
+        console.log("results[0]['user']");
+        console.log(results[0]['user']);
+        var i = 0;
+        var tabReponse = createJsonSearch(results);
+        /*while (i<tabReponse.length){
+            tabReponse.push(results[i]['user']);
+            i++;
+        }*/
+        return callback(null, tabReponse);
+    });
+};
