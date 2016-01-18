@@ -27,6 +27,8 @@ angular.module('BadminTown')
         };
 
         $scope.getUserInfo = function(id){
+            $scope.multiPlayerResult=false;
+            $scope.multiPlayerResultTab='';
             UserAPI.getUserPubInfos(id)
                 .then(function (data) {
                     if (!data.error) {
@@ -46,12 +48,18 @@ angular.module('BadminTown')
 
 
         $scope.editProfile= function(){
+            $scope.sucessEdit='';
+            $scope.failEdit='';
+            $scope.myInfos.password=CryptoJS.SHA256($scope.myInfos.newPassword).toString();
             UserAPI.updateUser($scope.myInfos,$scope.userInfos.id)
                 .then(function (data) {
-                    if (!data.error) {
                         $scope.myInfos = data;
-                    }
-                });
+                    $scope.sucessEdit='Profil edité avec succès';
+                },function(err){
+                    $scope.failEdit=err;
+                    //TODO erreur
+
+            });
         };
 
 
@@ -71,18 +79,27 @@ angular.module('BadminTown')
             UserAPI.getUserByName(searchText)
                 .then(function (data) {
 
-                    if (data.length>0) { //TODO check si plusieurs resultats...
+                    $scope.player='';
 
+                    if (!(Array.isArray(data))) {
                         $scope.getUserInfo(data.id);
-                        $scope.displayProcessing=false;
-                        $scope.displayErrorSearch=false;
                         $scope.searchProcessing=false;
                         $scope.ErrorSearch=undefined;
 
                     }
+                    else{
+                        $scope.searchProcessing=false;
+                        $scope.ErrorSearch=undefined;
+                        $scope.multiPlayerResult=true;
+                        $scope.multiPlayerResultTab=data;
+                    }
                 },function(err){
+                    console.log(err);
+                    $scope.player='';
                     $scope.searchProcessing=false;
                     $scope.ErrorSearch=err;
+                    $scope.multiPlayerResult=false;
+                    $scope.multiPlayerResultTab='';
             })
 
 
@@ -90,9 +107,12 @@ angular.module('BadminTown')
 
         function init() {
             $scope.getMyInfos();
+            console.log($scope.myInfos);
             $scope.player='';
             $scope.searchProcessing=false;
             $scope.ErrorSearch=undefined;
+            $scope.multiPlayerResult=false;
+            $scope.multiPlayerResultTab='';
         }
 
         init();

@@ -95,7 +95,8 @@ exports.connect = function (req, res){
         password: req.body.password,
         email: req.body.email}, function (err, user) {
         if (err) return res.status(404).json( {error:[{message: [err]}]});
-        return res.json(user);
+            return res.json(_.extend(user._node.properties,{
+                id: user._node._id}));
     })
 };
 /**
@@ -209,8 +210,7 @@ exports.adv = function (req, res) {
  */
 exports.search = function (req,res) {
     User.search(req.params.str, function (err, user) {
-        if (err) return (err);
-        console.log("BJONUR3)");
+        if (err) return res.status(500).json(err);
         return res.json(user);
         })
 };

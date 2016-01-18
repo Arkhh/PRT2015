@@ -155,6 +155,17 @@ Matche.VALIDATION_INFO = {
 };
 
 
+Matche.VALIDATION_INFO_PATCH = {
+    'date': {
+        required: true,
+        minLength: 1,
+        maxLength: 20,
+        pattern: /^[0-9]+$/,
+        message: 'time stamp'
+    },
+
+
+};
 Object.defineProperty(Matche.prototype, 'id', {
     get: function () {
         return this._node._id;
@@ -213,6 +224,29 @@ function validate(props, required) {
     return safeProps;
 }
 
+function validatePatch(props, required) {
+    var safeProps = {};
+    var TabErrors ={error:[]};
+    var error= '';
+
+    for (var prop in Matche.VALIDATION_INFO_PATCH) {
+        error=null;
+        var val = props[prop];
+        error=validateProp(prop, val, required);
+        if(error){
+            TabErrors.error.push(error);
+        }else {
+            safeProps[prop] = val;
+        }
+
+    }
+
+    if(TabErrors.error.length>0){
+        return TabErrors;
+    }
+    return safeProps;
+}
+
 // Validates the given property based on the validation info above.
 // By default, ignores null/undefined/empty values, but you can pass `true` for
 // the `required` param to enforce that any required properties are present.
@@ -250,7 +284,7 @@ Matche.prototype.patch = function (props, callback) {
 
 
 
-    validProps=validate(props,true);
+    validProps=validatePatch(props,false);
 
     if(validProps.error){
         errorTab.push( new errors.PropertyError(validProps.error));
@@ -258,9 +292,9 @@ Matche.prototype.patch = function (props, callback) {
     }
 
     var query = [
-        'MATCH (match:Match) WHERE id(match)= {id}',
+        'MATCH (match:Match)-[r:JOUE]-() WHERE id(match)= {id}',
         'SET match += {props}',
-        'RETURN match',
+        'RETURN match,r',
     ].join('\n');
 
 
@@ -286,10 +320,8 @@ Matche.prototype.patch = function (props, callback) {
             err = new Error('Le match avec l\'id: ' + this.id +'n\'existe pas dans la base');
             return callback(err);
         }
-        // Met à jour le noeud avec les dernieres modifications
-        self._node = results[0]['match'];
-
-        callback(null);
+        var matche = getJson(results[0],results[1]);
+        callback(null,matche);
     });
 };
 

@@ -8,14 +8,14 @@ angular.module('BadminTown')
             MatchAPI.getMatchUser($scope.userInfos.id)
                 .then(function(data){
                     angular.forEach(data, function(value) {
-                        value.datePast=Date.create(parseInt(value.date)).isPast();
-                        value.dateStr=Date.create(parseInt(value.date)).relative('fr');
+                        value.date=parseInt(value.date);
+                        value.datePast=Date.create(value.date).isPast();
+                        value.dateStr=Date.create(value.date).relative('fr');
                         UserAPI.getUserPubInfos(value.idJ2)
                             .then(function(dataUserInfo){
                                 value.nom=dataUserInfo.nom;
                                 value.prenom=dataUserInfo.prenom;
                                 $scope.matches.push(value);
-                                console.log($scope.matches);
                             },function(err){
 
                             });
@@ -33,7 +33,7 @@ angular.module('BadminTown')
 
         $scope.animationsEnabled = true;
 
-        $scope.openEdit = function (size) {
+        $scope.openEdit = function (size,match) {
 
             var modalInstance = $uibModal.open({
                 animation: $scope.animationsEnabled,
@@ -42,14 +42,18 @@ angular.module('BadminTown')
                 size: size
             });
 
-            modalInstance.result.then(function (selectedItem) {
-                console.log(selectedItem);
+            modalInstance.result.then(function (newDate) {
+                console.log(newDate);
             }, function () {
-                console.log('Modal dismissed at: ' + new Date());
             });
         };
 
-        $scope.openResult = function (size) {
+        $scope.openResult = function (size,match) {
+
+            console.log(match);
+
+
+            $scope.editResultMatch=match;
 
             var modalInstance = $uibModal.open({
                 animation: $scope.animationsEnabled,
@@ -58,10 +62,25 @@ angular.module('BadminTown')
                 size: size
             });
 
-            modalInstance.result.then(function (selectedItem) {
-                console.log(selectedItem);
+            modalInstance.result.then(function (result) {
+
+
+                if(result==='victoire'){
+                    match.resultJ1=match.idJ1;
+                }
+                else {
+                    match.resultJ1=match.idJ2;
+
+                }
+
+                MatchAPI.updateResult({id:match.idJ1,idm:match.id,resultat:match.resultJ1})
+                    .then(function(data){
+                        init();
+                    },function(err){
+
+                    });
+
             }, function () {
-                console.log('Modal dismissed at: ' + new Date());
             });
         };
 
@@ -151,15 +170,6 @@ angular.module('BadminTown')
                 })
         };
 
-        $scope.getInfos = function () {
-            MatchAPI.getUserInfo($scope.userInfos.id)
-                .then(function (data) {
-                    if (!data.error) {
-                        //$cookies.remove('userInfos');
-                        //$cookies.putObject('userInfos',$scope.userinfos);
-                    }
-                });
-        };
 
         $scope.close = function(id){
             delPlayer(id);
@@ -201,7 +211,7 @@ angular.module('BadminTown')
         $scope.deleteMatch = function(id){
             MatchAPI.deleteMatch(id)
                 .then(function(){
-                    $scope.getMatchesById()
+                    init();
 
                 },function(err){
 

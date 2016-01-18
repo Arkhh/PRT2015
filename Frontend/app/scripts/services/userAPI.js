@@ -15,7 +15,8 @@ angular.module('BadminTown')
                 url            : API_ENDPOINT + '/auth/',
                 data           : {
                     'email'      : userinfo.email,
-                    'password'      : userinfo.password
+                    'password'   : CryptoJS.SHA256(userinfo.password).toString()
+                    //'password'      : userinfo.password
                 }
             });
         }
@@ -68,7 +69,7 @@ angular.module('BadminTown')
         function getUserByName(str){
             return RequestBuilder.getRequestPromise({
                 method         : 'GET',
-                url            : API_ENDPOINT + '/search/users/'+str
+                url            : API_ENDPOINT + '/search/'+str
             });
         }
 
