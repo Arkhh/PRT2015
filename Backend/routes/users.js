@@ -190,6 +190,7 @@ exports.suggest = function (req,res) {
         if (err) return res.status(404).json(err);
         user.suggest(function (err, users){
             if (err) return res.status(500).json(err);
+            console.log(users);
             user.suggestMatch(function (err, usereuh){
                 if (err) return res.status(500).json(err);
                 var result=users.concat(usereuh);
@@ -230,7 +231,7 @@ exports.search = function (req,res) {
 /**
  * suggestAdvanced /suggest/:id
  */
-
+/*
 //PREND EN COMPTE LES MOYENNES SUGGESTION
 exports.suggestAdvanced = function (req,res) {
     User.get(req.params.id, function (err, user) {
@@ -246,23 +247,22 @@ exports.suggestAdvanced = function (req,res) {
  * search /search/:str
  */
 // SUGGESTION PREND EN COMTPE STRING, SEXE, MAINFORTE
+/*
 exports.suggestSSMF = function (req,res) {
     User.search(req.body.str, function (err, user) {
         if (err) return res.status(404).json(err);
-        console.log("req.body");
-        console.log(req.body);
+        if(user.length=0){
+            return res.json('Pas de résultat, veuillez élargir vos critères')
+        }
         User.suggestSSMF(req.body, user, function (err, usereuh){
             if (err) return res.status(500).json(err);
-            return res.json(usereuh);
+            if(usereuh.length=0){
+                return res.json('Pas de résultat, veuillez élargir vos critères')
+            }
+            user.suggestAdvanced(req.body, function (err,users){
+                if (err) return res.status(500).json(err);
+                return res.json(users);
+            });
         })
     })
-};
-
-
-exports.suggestMatch = function (req,res) {
-    User.get(req.params.id, function (err, user) {
-        if (err) return res.status(404).json(err);
-        console.log(user);
-
-    })
-};
+};*/

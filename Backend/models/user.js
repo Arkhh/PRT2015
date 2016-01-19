@@ -1628,7 +1628,7 @@ User.prototype.suggestMatch = function (callback){
     var idTest = this.id;
 
     var query = [
-        "MATCH (u:User)-[j:JOUE*..8]-(u1:User) " +
+        "MATCH (u:User)-[j:JOUE*..4]-(u1:User) " +
         "WHERE id(u) = {id} AND id(u)<>id(u1) " +
         "RETURN u1"
     ].join('\n');
@@ -1643,14 +1643,17 @@ User.prototype.suggestMatch = function (callback){
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            console.log("results");
-            console.log(results);
             return callback(null,[]);
         }
+
         var tabRes = [];
         var i = 0;
         while (i<results.length){
-            tabRes.push(results[i].u1._id);
+            if(!tabRes.indexOf((results[i].u1._id)))
+            {
+                tabRes.push(results[i].u1._id);
+
+            }
             i++;
         }
 
