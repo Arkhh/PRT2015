@@ -1065,3 +1065,34 @@ User.search = function (str, callback) {
         return callback(null, tabReponse);
     });
 };
+
+//fonction permettant le tri du tableau
+User.getNbNote=function(id,callback){
+    var idInt=parseInt(id);
+    var query = [
+        'MATCH (user:User)',
+        '-[r:RelationEvaluation]-()',
+        'WHERE id(user)={id}',
+        'RETURN sum(r.nbEval) as nbNote'
+    ].join('\n');
+
+
+    var params = {
+        id: idInt,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+         if (err) return callback(err);
+         if (!results.length) {
+         var err=[];
+         var error=new errors.PropertyError('No such user with ID: ' + id);
+         err.push(error);
+         return callback(err);
+         }
+         var nbNote = results;
+         callback(null, nbNote);
+    });
+};
