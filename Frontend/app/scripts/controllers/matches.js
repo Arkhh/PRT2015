@@ -4,7 +4,9 @@
 angular.module('BadminTown')
     .controller('MatchCtrl', function (MatchAPI,UserAPI, $rootScope, $scope, $location, $filter,$cookies,$uibModal) {
 
+
         $scope.getMatchesById = function(){
+            $scope.matches=[];
             MatchAPI.getMatchUser($scope.userInfos.id)
                 .then(function(data){
                     angular.forEach(data, function(value) {
@@ -16,6 +18,80 @@ angular.module('BadminTown')
                                 value.nom=dataUserInfo.nom;
                                 value.prenom=dataUserInfo.prenom;
                                 $scope.matches.push(value);
+                                $scope.matches=$filter('orderBy')( $scope.matches, 'date',true);
+                            },function(err){
+
+                            });
+
+                    });
+                },function(err){
+
+                })
+            ;
+
+        };
+
+        $scope.getSuggestedPlayers = function(id){
+
+            MatchAPI.getSuggestion($scope.userInfos.id)
+                .then(function(data) {
+                    angular.forEach(data, function (value) {
+                        UserAPI.getUserPubInfos(value)
+                            .then(function (data) {
+                                $scope.suggestPlayers.push(data);
+                            }, function (err) {
+
+                            });
+
+
+                    });
+                }, function (err) {
+
+                });
+        };
+
+
+        $scope.getNextMatches = function(){
+            $scope.ArrayMax=$scope.matches;
+            $scope.ArrayMax=$filter('orderBy')($scope.ArrayMax, 'date');
+            console.log($scope.ArrayMax[0]);
+            MatchAPI.getNextFive($scope.ArrayMax[0].id,$scope.userInfos.id)
+                .then(function(data){
+                    angular.forEach(data, function(value) {
+                        value.date=parseInt(value.date);
+                        value.datePast=Date.create(value.date).isPast();
+                        value.dateStr=Date.create(value.date).relative('fr');
+                        UserAPI.getUserPubInfos(value.idJ2)
+                            .then(function(dataUserInfo){
+                                value.nom=dataUserInfo.nom;
+                                value.prenom=dataUserInfo.prenom;
+                                if(($scope.matches.indexOf(value)<0)){
+                                    $scope.matches.push(value);
+                                }
+                            },function(err){
+
+                            });
+
+                    });
+                },function(err){
+
+                })
+            ;
+
+        };
+
+        $scope.getHistoById = function(){
+            $scope.histoMatches=[];
+            MatchAPI.getLastTen($scope.userInfos.id)
+                .then(function(data){
+                    angular.forEach(data, function(value) {
+                        value.date=parseInt(value.date);
+                        value.dateStr=Date.create(value.date).relative('fr');
+                        UserAPI.getUserPubInfos(value.idJ2)
+                            .then(function(dataUserInfo){
+                                value.nom=dataUserInfo.nom;
+                                value.prenom=dataUserInfo.prenom;
+                                $scope.histoMatches.push(value);
                             },function(err){
 
                             });
@@ -31,6 +107,12 @@ angular.module('BadminTown')
         init();
 
 
+        $scope.selectOpponentFromTab = function(player){
+            $scope.opponent=player;
+            $scope.opponentDisplay=player.nom+' '+player.prenom;
+        };
+
+
         $scope.animationsEnabled = true;
 
         $scope.openEdit = function (size,match) {
@@ -43,7 +125,18 @@ angular.module('BadminTown')
             });
 
             modalInstance.result.then(function (newDate) {
-                console.log(newDate);
+
+                var newInfos = {id: match.id, date: newDate}
+                MatchAPI.updateMatch(newInfos)
+                    .then(function(data){
+                        console.log(data);
+                        init();
+                    },function(err){
+
+                    });
+
+
+
             }, function () {
             });
         };
@@ -53,7 +146,6 @@ angular.module('BadminTown')
             console.log(match);
 
 
-            $scope.editResultMatch=match;
 
             var modalInstance = $uibModal.open({
                 animation: $scope.animationsEnabled,
@@ -85,59 +177,63 @@ angular.module('BadminTown')
         };
 
 
+        $scope.openNotes = function (size,match) {
+
+
+
+            var modalInstance = $uibModal.open({
+                animation: $scope.animationsEnabled,
+                templateUrl: 'views/modals/modalNoteMatch.html',
+                controller: 'NoterMatchCtrl',
+                size: size
+            });
+
+            modalInstance.result.then(function (notes) {
+
+                angular.forEach(notes, function(eval) {
+
+                    MatchAPI.noterAdv(match.idJ1,match.id,eval,match.idJ2)
+                        .then(function(data){
+
+                            $scope.histoMatches[$scope.histoMatches.indexOf(match)].aNoter1='true';
+
+                        },function(err){
+
+                        });
+                }, function () {
+
+                    }
+                );
+
+            });
+        };
+
+
         function init(){
 
-            $scope.items = ['item1', 'item2', 'item3'];
+            console.log("init");
+            $scope.createMatchVar={
+                datePicker:'',
+                idJ1:'',
+                idJ2:'',
+                gainJ1:0,
+                perteJ1:0,
+                gainJ2:0,
+                perteJ2:0,
+                dateAPI:0
+            };
+            $scope.createMatchVar.datePicker=Date.create(Date.create('in three hours').long());
+            $scope.dt = Date.create('in three hours').format('{yyyy}-{MM}-{dd}T{{HH}}:{{mm}}');
 
-
-            $scope.dateToday=Date.create('today');
-            $scope.players=[];
-
-            $scope.players.push({
-                id:'123',
-                nom:'bop',
-                prenom:'zamel'
-            });
-            $scope.players.push({
-                id:'5',
-                nom:'bop2',
-                prenom:'zamel2'
-            });
-
-
-            $scope.histoMatches=[];
-
-            $scope.histoMatches.push({
-                idMatch:'5',
-                idJ1:'70',
-                idJ2:'68',
-                date:Date.create(1452271844000).relative('fr'),
-                resultatJ1:'70',
-                resultatJ2:'68',
-                resultat:'',
-                noteJ1:'false',
-                noteJ2:'false',
-                gainJ1:15,
-                gainJ2:10,
-                perteJ1:15,
-                perteJ2:10
-            });
-
-            $scope.histoMatches.push({
-                id:'6',
-                nom:'bop2',
-                prenom:'zamel2',
-                date: Date.create(1452271844000).relative('fr'),
-                resultat:'D',
-                note:'false',
-                recompense:-10
-            });
-
-            $scope.opponentCreate={id:'',nom:'',prenom:''};
+            $scope.suggestPlayers=[];
+            $scope.opponent='';
             $scope.opponentDisplay='';
             $scope.matches=[];
-
+            $scope.histoMatches=[];
             $scope.getMatchesById();
+            $scope.getHistoById();
+            $scope.getSuggestedPlayers();
+            $scope.basePoints=20;
 
         }
 
@@ -157,16 +253,35 @@ angular.module('BadminTown')
             UserAPI.getUserByName(simpleSearchText)
                 .then(function (data) {
 
-                    if (data.length>0) { //TODO check si plusieurs resultats...
+                    $scope.player='';
 
-                        $scope.getUserInfo(data.id);
+                    if (!(Array.isArray(data))) {
+                        UserAPI.getUserPubInfos(data.id)
+                            .then(function(data){
+
+                                $scope.opponentDisplay=data.nom+' '+data.prenom;
+                                $scope.opponent=data;
+                            },function(err){
+
+                            });
                         $scope.searchProcessing=false;
                         $scope.ErrorSearch=undefined;
+                        $scope.simpleSearchSuccessMulti=false;
+                        $scope.simpleSearchResultTab=[];
 
+
+                    }
+                    else{
+                        $scope.searchProcessing=false;
+                        $scope.ErrorSearch=undefined;
+                        $scope.simpleSearchSuccessMulti=true;
+                        $scope.simpleSearchResultTab=data;
                     }
                 },function(err){
                     $scope.searchProcessing=false;
                     $scope.ErrorSearch=err;
+                    $scope.multiPlayerResult=false;
+                    $scope.multiPlayerResultTab='';
                 })
         };
 
@@ -176,35 +291,65 @@ angular.module('BadminTown')
         };
 
         function delPlayer(id){
-            angular.forEach($scope.players, function(value) {
-                if(value.id===id){
-                    $scope.players.splice($scope.players[value],1);
+            angular.forEach($scope.suggestPlayers, function(value) {
+                if(value.id==id){
+                    $scope.suggestPlayers.splice($scope.suggestPlayers.indexOf(value),1);
                 }
             });
         }
 
         function getPlayer(id){
             var index=-1;
-            angular.forEach($scope.players, function(value) {
+            angular.forEach($scope.suggestPlayers, function(value) {
                 if(parseInt(value.id)===parseInt(id)){
-                    index = $scope.players.indexOf(value);
+                    index = $scope.suggestPlayers.indexOf(value);
                 }
             });
             return index;
         }
 
         $scope.select = function(id){
-            $scope.opponentDisplay='';
-            $scope.opponentCreate=$scope.players[getPlayer(id)];
-            $scope.opponentDisplay=$scope.opponentCreate.nom+' '+$scope.opponentCreate.prenom
+            $scope.opponent=$scope.suggestPlayers[getPlayer(id)];
+            $scope.opponentDisplay=$scope.opponent.nom+' '+$scope.opponent.prenom;
+            $scope.createMatchVar.idJ2=$scope.opponent.id;
         };
 
         $scope.createMatch = function(){
-            MatchAPI.createMatch()
+
+            if($scope.createMatchProcessing===true){
+                return;
+            }
+            $scope.createMatchProcessing=true;
+
+            if(!$scope.opponent){
+                $scope.createMatchError='Veuilez selectionner un adversaire';
+                return ;
+            }
+            if($scope.opponent.id==$scope.userInfos.id){
+                $scope.createMatchError='Vous ne pouvez pas jouer contre vous même';
+                return;
+            }
+
+            //formatage des données
+
+            $scope.createMatchVar.date=Date.parse(Date.create($scope.createMatchVar.datePicker).toISOString()).toString();
+            $scope.createMatchVar.idJ1=$scope.userInfos.id;
+            $scope.createMatchVar.idJ2=$scope.opponent.id;
+            $scope.createMatchVar.perteJ2=Math.round(($scope.opponent.points/$scope.userInfos.points)*$scope.basePoints); // si le J2 a + de points que le J1 alors il perd plus,
+            $scope.createMatchVar.perteJ1=Math.round(($scope.userInfos.points/$scope.opponent.points)*$scope.basePoints); //si il en a moins il en perd moins,
+            $scope.createMatchVar.gainJ1=Math.round(($scope.opponent.points/$scope.userInfos.points)*$scope.basePoints);  //c'est un coéficient qui multiplie le gain de base posé à 20.
+            $scope.createMatchVar.gainJ2=Math.round(($scope.userInfos.points/$scope.opponent.points)*$scope.basePoints);
+
+
+            MatchAPI.createMatch($scope.createMatchVar)
                 .then(function(data){
-
+                    console.log(data);
+                    $scope.createMatchProcessing=false;
+                    $scope.createMatchError='';
+                    init();
                 },function(err){
-
+                    console.log(err);
+                    $scope.createMatchProcessing=false;
                 });
         };
 
@@ -216,8 +361,9 @@ angular.module('BadminTown')
                 },function(err){
 
                 });
-        }
+        };
+
+//            $scope.createMatchProcessing=false;
 
 
-
-});
+    });

@@ -1,15 +1,15 @@
 /**
- * Created by Thomas on 18/01/2016.
+ * Created by Thomas on 19/01/2016.
  */
 angular.module('BadminTown')
-    .controller('EditMatchCtrl', function ($scope, $uibModalInstance) {
+    .controller('DefierCtrl', function ($scope, $uibModalInstance) {
 
 
-        $scope.editDate=Date.create(Date.create('in three hours').long());
+        $scope.matchDate=Date.create(Date.create('in three hours').long());
         $scope.dt = Date.create('in three hours').format('{yyyy}-{MM}-{dd}T{{HH}}:{{mm}}');
 
         $scope.ok = function () {
-            $scope.dateResult=Date.parse(Date.create($scope.editDate).toISOString()).toString();
+            $scope.dateResult=Date.parse(Date.create($scope.matchDate).toISOString()).toString();
             $uibModalInstance.close($scope.dateResult);
         };
 

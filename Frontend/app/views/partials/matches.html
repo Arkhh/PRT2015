@@ -2,9 +2,12 @@
 
 
 
-        <uib-tab heading="Matches">
+        <uib-tab heading="Matches" >
 
-            <ul class="list-group col-md-6">
+            <div align="center" class="alert alert-success" ng-if="matches.length<1">Pas de matches </div>
+
+
+            <ul ng-if="matches.length>0" class="list-group col-md-6">
                 <div align="center">
                     <h2>Matches en cours</h2>
                 </div>
@@ -54,12 +57,12 @@
                         </div>
                     </div>
                 </li>
-                <a class="btn btn-sm btn-default center-block "><i class="fa fa-fw fa-plus"></i>Voir plus</a>
+                <a ng-click="getNextMatches();" class="btn btn-sm btn-default center-block "><i class="fa fa-fw fa-plus"></i>Voir plus</a>
 
             </ul>
 
             <ul class="list-group col-md-6">
-                <div align="center"><h2>Historique (5 derniers)</h2></div>
+                <div align="center"><h2>Historique (10 derniers)</h2></div>
 
                 <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
                     <div class="media ">
@@ -67,26 +70,28 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
-                                <small class="text-muted">{{match.date}}</small>
+                                <small class="text-muted">{{match.dateStr}}</small>
                             </div>
 
-                            <div  ng-if="match.resultat=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
+                            <div  ng-if="match.resultat==userInfos.id" class="col-md-4" ng-class="{'pull-right': (match.aNoter1=='true')}" >Resultat
                                 <div class=" text-success m-t-small">
-                                    <small>{{match.resultat}}</small>
+                                    <small>Victoire</small>
                                     <i class="fa fa-circle"></i>
-                                    <small>({{match.recompense}})</small>
+                                    <small ng-if="match.idJ1==userInfos.id">(+{{match.gainJ1}} points)</small>
+                                    <small ng-if="match.idJ2==userInfos.id">(+{{match.gainJ2}} points)</small>
                                 </div>
                             </div>
-                            <div ng-if="match.resultat!=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
+                            <div ng-if="match.resultat!=userInfos.id" class="col-md-4" ng-class="{'pull-right': (match.aNoter1=='true')}" >Resultat
                                 <div class=" text-danger m-t-small">
-                                    <small>{{match.resultat}}</small>
+                                    <small>Défaite</small>
                                     <i class="fa fa-circle"></i>
-                                    <small>({{match.recompense}})</small>
+                                    <small ng-if="match.idJ1==userInfos.id">(-{{match.perteJ1}} points)</small>
+                                    <small ng-if="match.idJ2==userInfos.id">(-{{match.perteJ2}} points)</small>
                                 </div>
                             </div>
 
                             <div ng-if="match.aNoter1===''" class="col-md-5">
-                                <a class="btn btn-sm btn-success pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
+                                <a ng-click="openNotes('lg',match);" class="btn btn-sm btn-success pull-right"><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
                             </div>
                         </div>
                     </div>
@@ -95,6 +100,22 @@
             </ul>
 
         </uib-tab>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -110,8 +131,9 @@
                 <div   class="checkbox"> <label> <input ng-model="advanced" type="checkbox" name="advancedSearch"> Recheche avancée </label> </div>
             </form>
 
-            <div class="alert alert-danger" ng-if="ErrorSearch" role="alert">{{ErrorSearch}}</div>
-            <div class="alert alert-danger" ng-if="searchResult0" role="alert">Votre recherche n'a retourné aucun résultat, veuillez réduire vos critères.</div>
+            <div align="center" class="alert alert-danger" ng-if="ErrorSearch" role="alert">{{ErrorSearch}}</div>
+            <div align="center" class="alert alert-danger" ng-if="createMatchError" role="alert">{{createMatchError}}</div>
+            <div align="center" class="alert alert-danger" ng-if="searchResult0" role="alert">Votre recherche n'a retourné aucun résultat, veuillez réduire vos critères.</div>
 
 
             <div ng-if="advanced">
@@ -193,7 +215,7 @@
 
                     <tr ng-repeat="player in simpleSearchResultTab |filter:searchPlayer " ng-class="{success: (player.id==userInfos.id) } ">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
                         <td ng-if="player.id!=userInfos.id">
-                            <a class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
+                            <a ng-click="selectOpponentFromTab(player);"class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
                         </td>
                         <td ng-if="player.id==userInfos.id">
                             <div>VOUS</div>
@@ -203,46 +225,76 @@
                 </table>
             </div>
 
-            <form class="form-horizontal">
+            <form class="form-horizontal" ng-submit="createMatch();">
 
+                <p>Suggestions de joueurs</p>
+                <div id="MyPillbox" class="pillbox clearfix m-b">
+                    <ul>
+                        <li ng-repeat="player in suggestPlayers" class="label" ng-class="{'bg-danger': player.id%2, 'bg-default': player.id%3, 'bg-success': player.id>50 , 'bg-warning': player.nom.length>5 }"><span ng-click="select(player.id);">{{player.nom}} {{player.prenom}}</span> &nbsp; <i ng-click="close(player.id);" class="fa fa-times"></i></li>
+                    </ul>
+                </div>
+                <form>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Adversaire</label>
                     <div class="col-lg-8">
-                        <input type="text" name="adversaire" ng-model="opponentDisplay" placeholder="Selectionnez un adversaire" class="bg-focus form-control" ng-requided="true" data-type="text" disabled>
+                        <input type="text" name="adversaire" ng-model="opponentDisplay" placeholder="Selectionnez un adversaire" class="bg-focus form-control" ng-requided="true" data-type="text"  disabled>
                     </div>
+                    <div ng-if="opponent">
+                    <label class="col-lg-4 control-label">Note Moyenne</label>
+                    <input-stars  max="10" ng-model="opponent.noteMoyenne" readonly></input-stars><br/></div>
                 </div>
 
             <div class="form-group">
-                <div class="col-md-6">
-                    <p class="input-group">
-                        <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true"  alt-input-formats="altInputFormats" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-                    </p>
-                </div>
+                <div class="col-lg-8">
+                    <label class="col-lg-5 control-label">Date :</label>
+                    <input type="datetime-local" ng-model="createMatchVar.datePicker" class="form-control" min="{{dt}}" required style="width:250px;"  >
             </div>
+                </div>
+
+
 
                 <div class="form-group">
-                    <div class="col-lg-9 col-lg-offset-3">
-                        <button type="submit" ng-click="editProfile();" class="btn btn-sm btn-info"> <i class="fa fa-fw fa-plus"></i> Créer </button>
+                    <div class="col-lg-9 col-lg-offset-5">
+                        <button type="submit"  class="btn btn-sm btn-info"> <i class="fa fa-fw fa-plus"></i> Défier </button>
                     </div>
                 </div>
+                </form>
 
 
             </form>
 
-            <p>Suggested players</p>
-            <div id="MyPillbox" class="pillbox clearfix m-b">
-                <ul>
-                    <li class="label bg-default">Item One</li>
-                    <li class="label bg-success">Item Two</li>
-                    <li class="label bg-warning">Item Three</li>
-                    <li ng-repeat="player in players" class="label bg-danger"><span ng-click="select(player.id);">{{player.nom}} {{player.prenom}}</span> &nbsp; <i ng-click="close(player.id);" class="fa fa-times"></i></li>
-                </ul>
-            </div>
+
 
         </uib-tab>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         <uib-tab heading="Graphiques"> </uib-tab>
         <uib-tab heading="Historique">
@@ -274,7 +326,7 @@
                                 </div>
 
                                 <div ng-if="match.aNoter1===''" class="col-md-5">
-                                    <a class="btn btn-sm btn-success pull-right" data-toggle="modal" href="#modal"><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
+                                    <a ng-click="openNotes('lg',match);" class="btn btn-sm btn-success pull-right" ><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
                                 </div>
                             </div>
                         </div>

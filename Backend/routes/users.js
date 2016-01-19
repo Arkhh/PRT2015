@@ -135,7 +135,6 @@ exports.notation = function (req, res) {
         if (err) return res.status(404).json(err);
         user.readRel(req.body.nomSkill, function (err, rel) {
             if (err) return res.status(404).json(err);
-            console.log("mafraj");
             User.notation(req.body.note, rel, function (err, rela) {
                 if (err) return res.status(500).json(err);
                 Matche.setAnote(req.body.idJ,req.body.idm,function (err,matche){

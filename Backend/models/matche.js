@@ -446,7 +446,6 @@ Matche.get = function (id, callback) {
             err.push(error);
             return callback(err);
         }
-        console.log(results);
         var matche = getJson(results[0],results[1]);
         callback(null, matche);
     });
@@ -512,7 +511,6 @@ Matche.getByUserValide = function (id, callback) {
         }
         var i=0;
         var matches = [];
-        console.log(results);
         while (i < results.length) {
             matches.push(getUserJson(results[i]));
             i++;
@@ -566,7 +564,6 @@ Matche.getByUserValideNext = function (props, callback) {
             i++;
             //  console.log(matches);
         }
-        console.log(matches);
         callback(null, matches);
     });
 };
@@ -604,7 +601,6 @@ Matche.getByUserNonValide = function (id, callback) {
         }
         var i=0;
         var matches = [];
-        console.log(results);
         while (i < results.length) {
             matches.push(getUserJson(results[i]));
             i++;
@@ -659,7 +655,6 @@ Matche.getByUserNonValideNext = function (props, callback) {
             i++;
             //  console.log(matches);
         }
-        console.log(matches);
         callback(null, matches);
     });
 };
@@ -696,7 +691,6 @@ Matche.getByUserNonValideTot = function (id, callback) {
         }
         var i=0;
         var matches = [];
-        console.log(results);
         while (i < results.length) {
             matches.push(getUserJson(results[i]));
             i++;
@@ -708,7 +702,6 @@ Matche.getByUserNonValideTot = function (id, callback) {
 };
 
 Matche.getBetween = function (props, callback) {
-    console.log(props);
     var idJ1=parseInt(props.idJ1);
     var idJ2=parseInt(props.idJ2);
 
@@ -814,12 +807,13 @@ Matche.setResult = function (props, callback) {
                 }
 
                 var matche2 = getUserJson(results[0]);
-                if (matche2.resultat1===matche2.resultat) {
+                if (matche2.resultat==matche2.idJ1) {
 
                     User.setPoint(matche2.idJ1,parseInt(matche2.gainJ1)) ;
                     User.setPoint(matche2.idJ2,parseInt(matche2.perteJ2*-1));
                 }
                 else{
+                    console.log("DEUXIEME SET");
                     User.setPoint(matche2.idJ1,parseInt(matche2.perteJ1*-1)) ;
                     User.setPoint(matche2.idJ2,parseInt(matche2.gainJ2));
                 }
@@ -845,7 +839,7 @@ Matche.setAnote = function (idJ,idm, callback) {
 
     var params = {
         idJ: idj,
-        idm:idm,
+        idm:idm
     };
 
     db.cypher({

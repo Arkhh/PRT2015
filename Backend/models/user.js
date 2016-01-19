@@ -518,8 +518,6 @@ User.pubList = function(callback){
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        console.log("results");
-        console.log(results);
         var users = createJson(results);
        /* var users = results.map(function (result) {
             console.log("users");
@@ -674,10 +672,7 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         noteInf: noteInf
     };
 
-    console.log("nomSkill");
-    console.log(nomSkill);
-    console.log("noteCherchee");
-    console.log(intNoteCherchee);
+
     //console.log("roundNoteCherchee");
     //console.log(intNoteCherchee);
 
@@ -712,11 +707,11 @@ User.prototype.createRel = function (){
         "MATCH (u:User),(a:Skill),(b:Skill),(c:Skill),(d:Skill),(e:Skill) " +
         "WHERE id(u) = {id} AND a.nom = 'Endurance' " +
         "AND b.nom = 'Frappe' AND c.nom = 'Volee' AND d.nom = 'Fond' AND e.nom = 'Technique' " +
-        "CREATE (u)-[r0:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(a) " +
-        "CREATE (u)-[r1:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(b) " +
-        "CREATE (u)-[r2:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(c) " +
-        "CREATE (u)-[r3:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(d) " +
-        "CREATE (u)-[r4:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(e) " +
+        "CREATE (u)-[r0:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(a) " +
+        "CREATE (u)-[r1:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(b) " +
+        "CREATE (u)-[r2:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(c) " +
+        "CREATE (u)-[r3:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(d) " +
+        "CREATE (u)-[r4:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(e) " +
         "RETURN r0,r1,r2,r3,r4"
     ].join('\n');
 
@@ -781,14 +776,11 @@ User.notation = function (note, rel, callback){
     }
 
     var newTotal = rel[0].r.properties.total + noteInt;
-    console.log("total");
-    console.log(newTotal);
+
     var newNbEval = rel[0].r.properties.nbEval + 1;
-    console.log("newNbEval");
-    console.log(newNbEval);
+
     var newMoyenne = (newTotal/newNbEval);
-    console.log("newMoyenne");
-    console.log(newMoyenne);
+
 
 
     var query = [
@@ -806,10 +798,7 @@ User.notation = function (note, rel, callback){
         newTotal: newTotal
     };
 
-    console.log("query");
-    console.log(query);
-    console.log("params");
-    console.log(params);
+
 
     db.cypher({
         query: query,
@@ -842,7 +831,7 @@ User.prototype.suggest = function (callback) {
 
     var params = {
         id: this.id
-    }
+    };
 
     db.cypher({
         query: query,
@@ -877,7 +866,7 @@ User.prototype.suggest = function (callback) {
                 controle.push(result);
                 result.forEach(function(ids){
                     tabId.push(ids);
-                })
+                });
                 itemsProcessed++;
                 if(itemsProcessed === tabSkills.length) {
                     //TODO trier tabID
@@ -889,7 +878,6 @@ User.prototype.suggest = function (callback) {
                     for (var i = 0; i < tabId.length; i++) {
                         if (tabId[i] != courant) {
                             if (cnt > 0) {
-                                console.log(courant + ' est present --> ' + cnt + ' fois');
                                 objetSoluce = {id: courant, nb: cnt};
                                 tableauRep.push(objetSoluce);
                             }
@@ -900,7 +888,6 @@ User.prototype.suggest = function (callback) {
                         }
                     }
                     if (cnt > 0) {
-                        console.log(courant + ' est present --> ' + cnt + ' fois');
                         objetSoluce = {id: courant, nb: cnt};
                         tableauRep.push(objetSoluce);
                     }
@@ -908,12 +895,10 @@ User.prototype.suggest = function (callback) {
                     newTabRep = tableauRep.sort(keysrt('nb'));
                     var lastTabRep = [];
                     lastTabRep = newTabRep.slice(0,8);
-                    console.log("lastTab");
                     var tabFinal = [];
                     for(j=0; j<lastTabRep.length; j++){
                         tabFinal.push(lastTabRep[j].id);
                     }
-                    console.log(tabFinal);
                     return callback(null, tabFinal);
                 }
                 }
@@ -965,6 +950,9 @@ User.getAdv = function (id, callback) {
 
 //fonction permettant le tri du tableau
 User.setPoint=function(id,point){
+
+    console.log("point dans fonction");
+    console.log(point);
     var query = [
         'MATCH (user:User)',
         'WHERE id(user)={id}',
@@ -1031,8 +1019,7 @@ User.search = function (str, callback) {
     ].join('\n');
 
 
-    console.log("query");
-    console.log(query);
+
     db.cypher({
         query: query
     }, function (err, results) {
@@ -1043,19 +1030,13 @@ User.search = function (str, callback) {
             err.push(error);
             return callback(err);
         }
-        console.log("results.length");
-        console.log(results.length);
+
         if (results.length === 1){
             var user = new User(results[0]['user']);
-            console.log("results[0]['user']");
-            console.log(results[0].u);
             var tabReponse = createJsonSearch(results);
-            console.log("tabReponse");
-            console.log(tabReponse[0]);
             return callback(null, tabReponse[0]);
         }
-        console.log("results[0]['user']");
-        console.log(results[0]['user']);
+
         var i = 0;
         var tabReponse = createJsonSearch(results);
         /*while (i<tabReponse.length){
