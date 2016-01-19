@@ -228,7 +228,10 @@ function createJson(res){
             prenom: res[i].u.properties.prenom,
             mainForte: res[i].u.properties.mainForte,
             points: parseInt(res[i].u.properties.points),
-            noteMoyenne: noteMoyenne
+            noteMoyenne: noteMoyenne,
+            nbEval:res[i].nbEval,
+            nbMatch:res[i].nbMatch,
+            nbVictoire:res[i].nbVictoire
         }
         tabReponse.push(tab);
         i++;
@@ -282,7 +285,10 @@ function createJsonId(res){
         moyenneEndurance: moyenneEndurance,
         moyenneTechnique: moyenneTechnique,
         moyenneFond: moyenneFond,
-        noteMoyenne: noteMoyenne
+        noteMoyenne: noteMoyenne,
+        nbEval:res[0].nbEval,
+        nbMatch:res[0].nbMatch,
+        nbVictoire:res[0].nbVictoire
     }
     return tab;
 };
@@ -671,15 +677,20 @@ User.pubList = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
     ].join('\n');
 
     db.cypher({
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        console.log("results");
-        console.log(results);
+
         var users = createJson(results);
        /* var users = results.map(function (result) {
             console.log("users");
@@ -700,7 +711,13 @@ User.prototype.pubListId = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
+
     ].join('\n');
 
     var params = {
@@ -1594,7 +1611,7 @@ User.suggestSSMF = function (props, data, callback) {
     console.log(props);
     var params = {
         props: props
-    }
+    };
 
     console.log("LAFEMMEPIRATE");
     console.log(queryFinale);
@@ -1628,38 +1645,33 @@ User.suggestSSMF = function (props, data, callback) {
     })
 };
 
-User.prototype.suggestMatch = function (callback){
-    var tabInter = [];
-    var j=0;
-    var idTest = this.id;
 
-    var query = [
-        "MATCH (u:User)-[j:JOUE*..8]-(u1:User) " +
-        "WHERE id(u) = {id} AND id(u)<>id(u1) " +
-        "RETURN u1"
-    ].join('\n');
+    User.getStat=function(id,callback){
+        var idInt=parseInt(id);
+        var query = [
+            'MATCH (user:User)',
+            '-[r:RelationEvaluation]-()',
+            'WHERE id(user)={id}',
+            'RETURN sum(r.nbEval) as nbNote'
+        ].join('\n');
 
-    var params = {
-        id: idTest
+
+        var params = {
+            id: idInt
+        };
+
+        db.cypher({
+            query: query,
+            params: params
+        }, function (err, results) {
+            if (err) return callback(err);
+            if (!results.length) {
+                var err=[];
+                var error=new errors.PropertyError('No such user with ID: ' + id);
+                err.push(error);
+                return callback(err);
+            }
+            var nbNote = results;
+            callback(null, nbNote);
+        });
     };
-
-    db.cypher({
-        query: query,
-        params: params
-    }, function (err, results) {
-        if (err) return callback(err);
-        if (!results.length) {
-            console.log("results");
-            console.log(results);
-            return callback(null,[]);
-        }
-        var tabRes = [];
-        var i = 0;
-        while (i<results.length){
-            tabRes.push(results[i].u1._id);
-            i++;
-        }
-
-        return callback(null, tabRes);
-    });
-}

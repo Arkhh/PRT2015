@@ -267,3 +267,12 @@ exports.suggestMatch = function (req,res) {
 
     })
 };
+/**
+GET /totalenote/users/:id
+*/
+exports.getNbNote=function(req,res){
+    User.getNbNote(req.params.id, function (err, user) {
+        if (err) return res.status(500).json(err);
+        return res.json(user);
+    })
+};
