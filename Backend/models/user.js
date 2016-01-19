@@ -228,7 +228,10 @@ function createJson(res){
             prenom: res[i].u.properties.prenom,
             mainForte: res[i].u.properties.mainForte,
             points: parseInt(res[i].u.properties.points),
-            noteMoyenne: noteMoyenne
+            noteMoyenne: noteMoyenne,
+            nbEval:res[i].nbEval,
+            nbMatch:res[i].nbMatch,
+            nbVictoire:res[i].nbVictoire
         }
         tabReponse.push(tab);
         i++;
@@ -263,7 +266,10 @@ function createJsonId(res){
         moyenneEndurance: moyenneEndurance,
         moyenneTechnique: moyenneTechnique,
         moyenneFond: moyenneFond,
-        noteMoyenne: noteMoyenne
+        noteMoyenne: noteMoyenne,
+        nbEval:res[0].nbEval,
+        nbMatch:res[0].nbMatch,
+        nbVictoire:res[0].nbVictoire
     }
     return tab;
 };
@@ -511,15 +517,20 @@ User.pubList = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
     ].join('\n');
 
     db.cypher({
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        console.log("results");
-        console.log(results);
+
         var users = createJson(results);
        /* var users = results.map(function (result) {
             console.log("users");
@@ -540,7 +551,13 @@ User.prototype.pubListId = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
+
     ].join('\n');
 
     var params = {
@@ -1067,7 +1084,7 @@ User.search = function (str, callback) {
 };
 
 //fonction permettant le tri du tableau
-User.getNbNote=function(id,callback){
+User.getStat=function(id,callback){
     var idInt=parseInt(id);
     var query = [
         'MATCH (user:User)',
