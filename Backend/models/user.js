@@ -242,6 +242,25 @@ function createJson(res){
     return tabReponse;
 };
 
+function createJsonGetAll(res){
+    var i = 0;
+    var tabReponse = [];
+    while (i<res.length){
+        var tab= {
+            id: res[i].user._id,
+            nom: res[i].user.properties.nom,
+            prenom: res[i].user.properties.prenom,
+            mainForte: res[i].user.properties.mainForte,
+            sexe: res[i].user.properties.sexe,
+            points: parseInt(res[i].user.properties.points),
+            admin: res[i].user.properties.admin
+        }
+        tabReponse.push(tab);
+        i++;
+    }
+    return tabReponse;
+};
+
 function createJsonId(res){
     var moyenneVolee = res[0].r1.properties.moyenne;
     var moyenneFrappe = res[0].r2.properties.moyenne;
@@ -497,6 +516,8 @@ User.get = function (id, callback) {
             return callback(err);
         }
         var user = new User(results[0]['user']);
+        console.log("user");
+        console.log(user);
         callback(null, user);
     });
 };
@@ -573,9 +594,9 @@ User.getAll = function (callback) {
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        var users = results.map(function (result) {
-            return new User(result['user']);
-        });
+        console.log("results");
+        console.log(results[0].user._id);
+        var users = createJsonGetAll(results);
         callback(null, users);
     });
 };
