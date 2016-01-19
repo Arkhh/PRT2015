@@ -123,6 +123,22 @@ function isConstraintViolation(err) {
         err.neo4j.code === 'Neo.ClientError.Schema.ConstraintViolation';
 };*/
 
+function createJsonGetAll(res){
+    var i = 0;
+    var tabReponse = [];
+    while (i<res.length){
+        var tab= {
+            id: res[i]._id,
+            description: res[i].properties.description,
+            name: res[i].properties.name,
+            date: res[i].properties.date
+        }
+        tabReponse.push(tab);
+        i++;
+    }
+    return tabReponse;
+};
+
 // Public instance methods:
 //Modifie la news en bdd
 Neww.prototype.patch = function (props, callback) {
@@ -290,9 +306,9 @@ Neww.getAll = function (callback) {
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        var news = results.map(function (result) {
-            return new Neww(result['new']);
-        });
+        //console.log("results");
+        //console.log(results[0]._id);
+        var users = createJsonGetAll(results);
         callback(null, news);
     });
 };
