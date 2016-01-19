@@ -9,12 +9,12 @@ angular.module('BadminTown')
         $scope.getLatestNews = function () {
             newsAPI.getNews($scope.userInfos.id)
                 .then(function (data) {
-                    if (!data.error) {
                         angular.forEach(data, function(value) {
-                            value._node.properties.date=parseInt(value._node.properties.date);
-                            $scope.newsTab.push(value._node.properties);
+                            value.date=parseInt(value.date);
+                            $scope.newsTab.push(value);
                         });
-                    }
+                },function(err){
+                    console.log(err);
                 });
 
         };

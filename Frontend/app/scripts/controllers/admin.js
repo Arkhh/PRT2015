@@ -10,17 +10,7 @@ angular.module('BadminTown')
             AdminAPI.getAllUsersInfos()
                 .then(function (data) {
                     if (data) {
-
-
-                        angular.forEach(data, function(user) {
-                            var userproperties=user._node.properties;
-                            userproperties.id=user._node._id;
-                            $scope.usersTab.push(userproperties);
-                            console.log($scope.usersTab);
-                        });
-
-
-
+                            $scope.usersTab=data;
                     }
                 }, function(){
 
