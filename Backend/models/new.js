@@ -128,10 +128,10 @@ function createJsonGetAll(res){
     var tabReponse = [];
     while (i<res.length){
         var tab= {
-            id: res[i]._id,
-            description: res[i].properties.description,
-            name: res[i].properties.name,
-            date: res[i].properties.date
+            id: res[i].new._id,
+            description: res[i].new.properties.description,
+            name: res[i].new.properties.name,
+            date: res[i].new.properties.date
         }
         tabReponse.push(tab);
         i++;
@@ -306,9 +306,7 @@ Neww.getAll = function (callback) {
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-        //console.log("results");
-        //console.log(results[0]._id);
-        var users = createJsonGetAll(results);
+        var news = createJsonGetAll(results);
         callback(null, news);
     });
 };
