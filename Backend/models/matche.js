@@ -480,7 +480,7 @@ Matche.getAll = function (callback) {
 };
 
 
-Matche.getByUser = function (id, callback) {
+Matche.getByUserValide = function (id, callback) {
 
     var idInt=parseInt(id);
 
@@ -488,7 +488,7 @@ Matche.getByUser = function (id, callback) {
         'MATCH (user:User)-[r:JOUE]',
         '-(match:Match)',
         '-[r2:JOUE]-(u:User)',
-        'WHERE id(user)={id} AND id(u)<>{id}',
+        "WHERE id(user)={id} AND id(u)<>{id} AND match.resultat<>''",
         'RETURN match,r,r2',
         'ORDER BY match.date desc',
         'LIMIT 10'
@@ -523,7 +523,7 @@ Matche.getByUser = function (id, callback) {
     });
 };
 
-Matche.getByUserNext = function (props, callback) {
+Matche.getByUserValideNext = function (props, callback) {
 
     var idInt=parseInt(props.id);
     var idIntm=parseInt(props.idm);
@@ -534,7 +534,7 @@ Matche.getByUserNext = function (props, callback) {
         'MATCH (user:User)-[r:JOUE]',
         '-(match:Match)',
         '-[r2:JOUE]-(u:User)',
-        'WHERE id(user)={id} AND id(u)<>{id}',
+        "WHERE id(user)={id} AND id(u)<>{id} AND match.resultat<>''",
         'AND id(mpre)={idm}',
         'AND match.date<mpre.date',
         'RETURN match,r,r2',
@@ -567,6 +567,187 @@ Matche.getByUserNext = function (props, callback) {
             //  console.log(matches);
         }
         console.log(matches);
+        callback(null, matches);
+    });
+};
+
+
+Matche.getByUserNonValide = function (id, callback) {
+
+    var idInt=parseInt(id);
+
+    var query = [
+        'MATCH (user:User)-[r:JOUE]',
+        '-(match:Match)',
+        '-[r2:JOUE]-(u:User)',
+        "WHERE id(user)={id} AND id(u)<>{id} AND match.resultat=''",
+        'RETURN match,r,r2',
+        'ORDER BY match.date desc',
+        'LIMIT 10'
+    ].join('\n');
+
+
+    var params = {
+        id: idInt
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such player with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var i=0;
+        var matches = [];
+        console.log(results);
+        while (i < results.length) {
+            matches.push(getUserJson(results[i]));
+            i++;
+
+        }
+
+        callback(null, matches);
+    });
+};
+
+
+Matche.getByUserNonValideNext = function (props, callback) {
+
+    var idInt=parseInt(props.id);
+    var idIntm=parseInt(props.idm);
+
+    var query = [
+
+        'MATCH (mpre:Match)',
+        'MATCH (user:User)-[r:JOUE]',
+        '-(match:Match)',
+        '-[r2:JOUE]-(u:User)',
+        "WHERE id(user)={id} AND id(u)<>{id} AND match.resultat=''",
+        'AND id(mpre)={idm}',
+        'AND match.date<mpre.date',
+        'RETURN match,r,r2',
+        'ORDER BY match.date desc',
+        'LIMIT 10'
+    ].join('\n');
+
+
+    var params = {
+        id: idInt,
+        idm:idIntm
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such player with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var i=0;
+        var matches = [];
+        while (i < results.length) {
+            matches.push(getUserJson(results[i]));
+            i++;
+            //  console.log(matches);
+        }
+        console.log(matches);
+        callback(null, matches);
+    });
+};
+
+Matche.getByUserNonValideTot = function (id, callback) {
+
+    var idInt=parseInt(id);
+
+    var query = [
+        'MATCH (user:User)-[r:JOUE]',
+        '-(match:Match)',
+        '-[r2:JOUE]-(u:User)',
+        "WHERE id(user)={id} AND id(u)<>{id} AND match.resultat=''",
+        'RETURN match,r,r2',
+        'ORDER BY match.date desc',
+
+    ].join('\n');
+
+
+    var params = {
+        id: idInt
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such player with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var i=0;
+        var matches = [];
+        console.log(results);
+        while (i < results.length) {
+            matches.push(getUserJson(results[i]));
+            i++;
+
+        }
+
+        callback(null, matches);
+    });
+};
+
+Matche.getBetween = function (props, callback) {
+    console.log(props);
+    var idJ1=parseInt(props.idJ1);
+    var idJ2=parseInt(props.idJ2);
+
+    var query = [
+        'MATCH (user:User)-[r:JOUE]',
+        '-(match:Match)',
+        '-[r2:JOUE]-(u:User)',
+        'WHERE id(user)={idJ1} AND id(u)={idJ2} ',
+        'RETURN match,r,r2',
+        'ORDER BY match.date desc',
+
+    ].join('\n');
+
+
+    var params = {
+        idJ1: idJ1,
+        idJ2: idJ2
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err=[];
+            var error=new errors.PropertyError('No such player with ID: ' + id);
+            err.push(error);
+            return callback(err);
+        }
+        var i=0;
+        var matches = [];
+        console.log(results);
+        while (i < results.length) {
+            matches.push(getUserJson(results[i]));
+            i++;
+
+        }
+
         callback(null, matches);
     });
 };
@@ -650,3 +831,39 @@ Matche.setResult = function (props, callback) {
     });
 };
 
+Matche.setAnote = function (idJ,idm, callback) {
+
+    var idj=parseInt(idJ);
+    var idm=parseInt(idm);
+    var query = [
+        'MATCH (user:User)-[r:JOUE]-(match:Match)-[r2:JOUE]-(u2:User)',
+        'WHERE id(user)={idJ}',
+        'AND id(match)={idm}',
+        'SET r+={aNoter:"true"}',
+        'RETURN match,r,r2'
+    ].join('\n');
+
+    var params = {
+        idJ: idj,
+        idm:idm,
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            var err = [];
+            var error = new errors.PropertyError('Error set resultat match');
+            err.push(error);
+            return callback(err);
+        }
+        console.log(results);
+        var matche = getUserJson(results[0]);
+
+
+        callback(null, matche);
+    });
+
+};
