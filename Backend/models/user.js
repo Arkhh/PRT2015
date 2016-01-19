@@ -319,6 +319,145 @@ function createJsonMoy(res){
     return tab;
 };
 
+function createJsonVolee(res, borneInf, borneSup){
+
+    /*console.log("jsonVolee");
+    console.log(res);
+    console.log("taille");
+    console.log(res.length);*/
+    /*console.log("borneInf");
+    console.log(borneInf);
+    console.log("borneSup");
+    console.log(borneSup);*/
+    //console.log(res[0].properties.moyenne);
+    if(res.length != 0){
+        var maVariable = 0;
+        var monTableau = [];
+        while (maVariable<res.length){
+            var moyenneVolee = res[maVariable].r1.properties.moyenne;
+            console.log("moyenneVolee");
+            console.log(moyenneVolee);
+
+
+            if((borneInf<moyenneVolee)&&(moyenneVolee<borneSup)){
+                var tab = {
+                    nomSkill: "Volee",
+                    moyenne: moyenneVolee
+                }
+                monTableau.push(tab);
+            }
+            maVariable++;
+            /*console.log("tab");
+            console.log(tab);*/
+        }
+        console.log("MON TABLEAU VOLEE");
+        var tchou = 0;
+        while(tchou<monTableau.length){
+            console.log(monTableau[tchou]);
+            tchou++;
+        }
+        return monTableau;
+    }
+    //console.log("je passe ici");
+    return res;
+}
+
+function createJsonFrappe(res, borneInf, borneSup){
+    console.log("res.length");
+    console.log(res.length);
+
+    if(res.length != 0){
+        var maVariable = 0;
+        var monTableau = [];
+        while (maVariable<res.length){
+            var moyenneFrappe = res[maVariable].r2.properties.moyenne;
+            if(borneInf < moyenneFrappe < borneSup){
+                var tab = {
+                    nomSkill: "Frappe",
+                    moyenne: moyenneFrappe
+                }
+                monTableau.push(tab);
+            }
+            maVariable++;
+        }
+        //console.log("tab");
+        //console.log(tab);
+        return monTableau;
+    }
+    return res;
+}
+
+function createJsonTec(res, borneInf, borneSup){
+    /*console.log("res.length");
+    console.log(res.length);*/
+
+    if(res.length != 0){
+        var maVariable = 0;
+        var monTableau = [];
+        while (maVariable<res.length){
+            var moyenneTec = res[maVariable].r3.properties.moyenne;
+            if(borneInf < moyenneTec < borneSup){
+                var tab = {
+                    nomSkill: "Technique",
+                    moyenne: moyenneTec
+                }
+                monTableau.push(tab);
+            }
+            maVariable++;
+        }
+        //console.log("tab");
+        //console.log(tab);
+        return monTableau;
+    }
+    return res;
+}
+
+function createJsonEnd(res, borneInf, borneSup){
+
+    if(res.length != 0){
+        var maVariable = 0;
+        var monTableau = [];
+        while (maVariable<res.length){
+            var moyenneEnd = res[maVariable].r4.properties.moyenne;
+            if(borneInf < moyenneEnd < borneSup){
+                var tab = {
+                    nomSkill: "Endurance",
+                    moyenne: moyenneEnd
+                }
+                monTableau.push(tab);
+            }
+            maVariable++;
+        }
+        //console.log("tab");
+        //console.log(tab);
+        return monTableau;
+    }
+    return res;
+}
+
+function createJsonEndurance(res, borneInf, borneSup){
+
+    if(res.length != 0){
+        var maVariable = 0;
+        var monTableau = [];
+        while (maVariable<res.length){
+            var moyenneFond = res[maVariable].r5.properties.moyenne;
+            if(borneInf < moyenneFond < borneSup){
+                var tab = {
+                    nomSkill: "Fond",
+                    moyenne: moyenneFond
+                }
+                monTableau.push(tab);
+            }
+            maVariable++;
+        }
+        //console.log("tab");
+        //console.log(tab);
+        return monTableau;
+    }
+    return res;
+}
+
 //tabReponse.push(results[i].u.properties
 
 User.prototype.isAdmin = function() {
@@ -625,15 +764,17 @@ db.createConstraint({
 
 // FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
 User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
-/*
+
     console.log("id");
     console.log(id);
     console.log("NOM");
     console.log(nomSkill);
     console.log("note")
-    console.log(noteCherchee)*/
+    console.log(noteCherchee)
 
     var intNoteCherchee = parseInt(noteCherchee);
+    console.log("intNoteCherchee");
+    console.log(intNoteCherchee);
     if (intNoteCherchee - 2 < 0){
         var noteInf = 0;
 
@@ -648,12 +789,12 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         var noteSup = intNoteCherchee + 2;
     }
 
-
-    if (intNoteCherchee > 5) {
+   // console.log("Bonsoir");
+    /*if (intNoteCherchee > 5) {
         //si l'email est déjà pris
         err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
         return(err);
-    }
+    }*/
 
     var query = [
         "MATCH (u:User),(s:Skill) " +
@@ -662,22 +803,25 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         "id(u) <> {id} " +
         "WITH u,s " +
         "MATCH (u)-[r:RelationEvaluation]->(s) " +
-        "WHERE {noteInf} < {noteCherchee} < {noteSup} " +
+        "WHERE {noteInf} < r.moyenne < {noteSup} " +
         "RETURN u"
     ].join('\n');
 
     var params = {
         nomSkill: nomSkill,
-        noteCherchee: intNoteCherchee,
         id: id,
         noteSup: noteSup,
         noteInf: noteInf
     };
-
+    console.log ("CE QUE JE VEUX VOIR");
+    console.log("query");
+    console.log(query);
+    console.log("params");
+    console.log(params);
     console.log("nomSkill");
     console.log(nomSkill);
-    console.log("noteCherchee");
-    console.log(intNoteCherchee);
+    //console.log("noteCherchee");
+    //console.log(intNoteCherchee);
     //console.log("roundNoteCherchee");
     //console.log(intNoteCherchee);
 
@@ -712,11 +856,11 @@ User.prototype.createRel = function (){
         "MATCH (u:User),(a:Skill),(b:Skill),(c:Skill),(d:Skill),(e:Skill) " +
         "WHERE id(u) = {id} AND a.nom = 'Endurance' " +
         "AND b.nom = 'Frappe' AND c.nom = 'Volee' AND d.nom = 'Fond' AND e.nom = 'Technique' " +
-        "CREATE (u)-[r0:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(a) " +
-        "CREATE (u)-[r1:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(b) " +
-        "CREATE (u)-[r2:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(c) " +
-        "CREATE (u)-[r3:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(d) " +
-        "CREATE (u)-[r4:RelationEvaluation { moyenne: 0, nbEval: 0, total: 0 }]->(e) " +
+        "CREATE (u)-[r0:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(a) " +
+        "CREATE (u)-[r1:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(b) " +
+        "CREATE (u)-[r2:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(c) " +
+        "CREATE (u)-[r3:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(d) " +
+        "CREATE (u)-[r4:RelationEvaluation { moyenne: 5, nbEval: 1, total: 5 }]->(e) " +
         "RETURN r0,r1,r2,r3,r4"
     ].join('\n');
 
@@ -906,8 +1050,10 @@ User.prototype.suggest = function (callback) {
                     }
                     var newTabRep = [];
                     newTabRep = tableauRep.sort(keysrt('nb'));
+                    console.log("newTabRep");
+                    console.log(newTabRep);
                     var lastTabRep = [];
-                    lastTabRep = newTabRep.slice(0,8);
+                    lastTabRep = newTabRep.slice(newTabRep.length - 8,newTabRep.length);
                     console.log("lastTab");
                     var tabFinal = [];
                     for(j=0; j<lastTabRep.length; j++){
@@ -1014,7 +1160,7 @@ function keysrt(key) {
 }
 
 //someArrayOfObjects.sort(keysrt('text'));
-//FONCTION DE RECHERCHE
+//FONCTION DE RECHERCHE PAR STRING
 User.search = function (str, callback) {
 
     var query = [
@@ -1045,7 +1191,7 @@ User.search = function (str, callback) {
         }
         console.log("results.length");
         console.log(results.length);
-        if (results.length === 1){
+        /*if (results.length === 1){
             var user = new User(results[0]['user']);
             console.log("results[0]['user']");
             console.log(results[0].u);
@@ -1053,7 +1199,7 @@ User.search = function (str, callback) {
             console.log("tabReponse");
             console.log(tabReponse[0]);
             return callback(null, tabReponse[0]);
-        }
+        }*/
         console.log("results[0]['user']");
         console.log(results[0]['user']);
         var i = 0;
@@ -1065,3 +1211,429 @@ User.search = function (str, callback) {
         return callback(null, tabReponse);
     });
 };
+
+//SUGGESTION DE JOUEURS AVANCEE MOYENNE
+User.prototype.suggestAdvanced = function (props,callback) {
+
+    //////CLAUSE INITIALE
+    var query = [
+        "MATCH (u:User),(s1:Skill),(s2:Skill),(s3:Skill),(s4:Skill),(s5:Skill) " +
+        "WHERE id(u) = {id} AND s1.nom = 'Volee' AND s2.nom = 'Frappe' AND s3.nom = 'Technique' AND s4.nom = 'Endurance' AND s5.nom = 'Fond' " +
+        "WITH u,s1,s2,s3,s4,s5 "
+        ]
+    var queryFinale = query;
+    //////CLAUSE MATCH
+    if(props.skillVolee != null){
+
+        var queryVolee = [
+            "MATCH (User)-[r1:RelationEvaluation]->(s1) "
+        ]
+        queryFinale = queryFinale + queryVolee;
+    }
+    if(props.skillFrappe != null){
+        var queryFrappe = [
+            "MATCH (User)-[r2:RelationEvaluation]->(s2) "
+        ]
+        queryFinale = queryFinale + queryFrappe;
+    }
+    if(props.skillTechnique != null){
+        var queryTechnique = [
+            "MATCH (User)-[r3:RelationEvaluation]->(s3) "
+        ]
+        queryFinale = queryFinale + queryTechnique;
+    }
+    if(props.skillEndurance != null){
+        var queryEndurance = [
+            "MATCH (User)-[r4:RelationEvaluation]->(s4) "
+        ]
+        queryFinale = queryFinale + queryEndurance;
+    }
+    if(props.skillFond != null){
+        var queryFond = [
+            "MATCH (User)-[r5:RelationEvaluation]->(s5) "
+        ]
+        queryFinale = queryFinale + queryFond;
+    }
+    /////CLAUSE WHERE
+    if(props.skillVolee != null){
+        var intVoleeInf = Math.abs(parseInt(props.skillVolee) - 1);
+        var intVoleeSup = Math.abs(parseInt(props.skillVolee) + 1);
+        var queryVolee = [
+            "WHERE " + intVoleeInf + " < r1.moyenne < " + intVoleeSup + " "
+        ]
+        queryFinale = queryFinale + queryVolee;
+    }
+    if(props.skillFrappe != null){
+        var intFrappeInf = Math.abs(parseInt(props.skillFrappe) - 1);
+        var intFrappeSup = Math.abs(parseInt(props.skillFrappe) + 1);
+        if(props.skillVolee != null){
+            var queryFrappe = [
+                "OR " + intFrappeInf + " < r2.moyenne < " + intFrappeSup + " "
+            ]
+        }
+        else {
+            var queryFrappe = [
+                "WHERE " + intFrappeInf + " < r2.moyenne < " + intFrappeSup + " "
+            ]
+        }
+        queryFinale = queryFinale + queryFrappe;
+    }
+    if(props.skillTechnique != null){
+        var intTechniqueInf = Math.abs(parseInt(props.skillTechnique) - 1);
+        var intTechniqueSup = Math.abs(parseInt(props.skillTechnique) + 1);
+        if(props.skillVolee != null || props.skillFrappe != null){
+            var queryTechnique = [
+                "OR " + intTechniqueInf + " < r3.moyenne < " + intTechniqueSup + " "
+            ]
+        }
+        else {
+            var queryTechnique = [
+                "WHERE " + intTechniqueInf + " < r3.moyenne < " + intTechniqueSup + " "
+            ]
+        }
+        queryFinale = queryFinale + queryTechnique;
+    }
+    if(props.skillEndurance != null){
+        var intEnduranceInf = Math.abs(parseInt(props.skillEndurance) - 1);
+        var intEnduranceSup = Math.abs(parseInt(props.skillEndurance) + 1);
+        if(props.skillVolee != null || props.skillFrappe != null || props.skillTechnique != null){
+            var queryEndurance = [
+                "OR " + intEnduranceInf + " < r4.moyenne < " + intEnduranceSup + " "
+            ]
+        }
+        var queryEndurance = [
+            "WHERE " + intEnduranceInf + " < r4.moyenne < " + intEnduranceSup + " "
+        ]
+        queryFinale = queryFinale + queryEndurance;
+    }
+    if(props.skillFond != null){
+        var intFondInf = Math.abs(parseInt(props.skillFond) - 1);
+        var intFondSup = Math.abs(parseInt(props.skillFond) + 1);
+        if(props.skillVolee != null || props.skillFrappe != null || props.skillTechnique != null || props.skillEndurance != null) {
+            var queryFond = [
+                "OR " + intFondInf + " < r4.moyenne < " + intFondSup + " "
+            ]
+        }
+        var queryFond = [
+                "WHERE " + intFondInf + " < r5.moyenne < " + intFondSup + " "
+        ]
+        queryFinale = queryFinale + queryFond;
+    }
+    /////CLAUSE FIN
+    var queryFin = [
+        "RETURN u"
+    ]
+    queryFinale = queryFinale + queryFin;
+
+    if(props.skillVolee != null){
+        var queryVoleeFin = [
+            ",r1"
+        ]
+        queryFinale = queryFinale + queryVoleeFin;
+    }
+    if(props.skillFrappe != null){
+        var queryFrappeFin = [
+            ",r2"
+        ]
+        queryFinale = queryFinale + queryFrappeFin;
+    }
+    if(props.skillTechnique != null){
+        var queryTechniqueFin = [
+            ",r3"
+        ]
+        queryFinale = queryFinale + queryTechniqueFin;
+    }
+    if(props.skillEndurance != null){
+        var queryVoleeFin = [
+            ",r4"
+        ]
+        queryFinale = queryFinale + queryEnduranceFin;
+    }
+    if(props.skillFond != null){
+        var queryFondFin = [
+            ",r5"
+        ]
+        queryFinale = queryFinale + queryFondFin;
+    }
+
+
+    var params = {
+        id: this.id,
+        props: props
+    }
+
+    /*console.log("queryFinale");
+    console.log(queryFinale);
+    console.log("params");
+    console.log(params);*/
+   // console.log("params");
+   // console.log(params);
+    db.cypher({
+        query: queryFinale,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+
+        /*var o = 0;
+        while (o<results.length){
+            console.log("results[o]");
+            console.log(results[o]);
+            o++
+        }*/
+
+        var users = [];
+      //  console.log("results");
+       // console.log(results);
+        if(props.skillVolee != null){
+            users.push(createJsonVolee(results,intVoleeInf,intVoleeSup));
+        }
+        if(props.skillFrappe != null){
+            users.push(createJsonFrappe(results,intFrappeInf,intFrappeSup));
+        }
+        if(props.skillTechnique != null){
+            users.push(createJsonTec(results,intTechniqueInf,intTechniqueSup));
+        }
+        if(props.skillEndurance != null){
+            users.push(createJsonEnd(results,intTechniqueInf,intTechniqueSup));
+        }
+        if(props.skillFond != null){
+            users.push(createJsonFond(results,intFondInf,intFondSup));
+        }
+
+        //ON EN EST ICI
+        var tabSkills = [];
+        var taille = 0;
+        /*console.log("TESTONS UN PEU");
+        console.log(users[0][0]);*/
+        // CA QUI BLOQUE CONNAIT PAS NOMSKILL
+        while(taille<users.length){
+            var taille2 = 0;
+            while(taille2<users[taille].length){
+                tabSkills.push(
+                    users[taille][taille2]
+                );
+                taille2++;
+            }
+            taille++;
+        }
+
+        var z=0;
+        while (z<tabSkills.length) {
+            console.log(users[z]);
+            z++;
+        }
+
+    /////si pas de resultat
+        if(results.length === 0){
+            var tabVide = [];
+            return callback(null, tabVide);
+        }
+        ////////
+
+        var idUser = results[0].u._id;
+
+     //   console.log("idUser");
+      //  console.log(idUser);
+        var tabId = [];
+        //tabId.push(tabSkills.forEach(User.searchSkillLevel(this.id, nomSkill, moyenne, callback)));
+
+        var i = 0;
+        var itemsProcessed =0;
+
+
+
+
+        tabSkills.forEach (function (skill){
+            User.searchSkillLevel(idUser, skill.nomSkill, skill.moyenne, function(err,result){
+                        var controle = [];
+                        //controle.push(result);
+                        result.forEach(function(ids){
+                            tabId.push(ids);
+                        })
+                        itemsProcessed++;
+                        if(itemsProcessed === tabSkills.length) {
+                            //TODO trier tabID
+                            tabId.sort();
+                            var courant = null;
+                            var cnt = 0;
+                            var objetSoluce = {};
+                            var tableauRep=[];
+                            for (var i = 0; i < tabId.length; i++) {
+                                if (tabId[i] != courant) {
+                                    if (cnt > 0) {
+                                        //console.log(courant + ' est present --> ' + cnt + ' fois');
+                                        objetSoluce = {id: courant, nb: cnt};
+                                        tableauRep.push(objetSoluce);
+                                    }
+                                    courant = tabId[i];
+                                    cnt = 1;
+                                } else {
+                                    cnt++;
+                                }
+                            }
+                            if (cnt > 0) {
+                                //console.log(courant + ' est present --> ' + cnt + ' fois');
+                                objetSoluce = {id: courant, nb: cnt};
+                                tableauRep.push(objetSoluce);
+                            }
+                            var newTabRep = [];
+                            newTabRep = tableauRep.sort(keysrt('nb'));
+                            var lastTabRep = [];
+                            lastTabRep = newTabRep.slice(newTabRep.length - 8,newTabRep.length);
+                            console.log("lastTab");
+                            var tabFinal = [];
+                            for(j=0; j<lastTabRep.length; j++){
+                                tabFinal.push(lastTabRep[j].id);
+                            }
+                            return callback(null,tabFinal);
+                        }
+                    }
+                )
+
+            }
+        )
+    });
+};
+
+User.suggestSSMF = function (props, data, callback) {
+
+    console.log("je suis la");
+    tabId = [];
+    var i = 0;
+    while (i < data.length) {
+        //console.log("");
+        tabId.push(data[i].id);
+        i++;
+    }
+    console.log("et ici");
+
+    var loul = 0;
+    console.log("tabId");
+    while (loul<tabId.length){
+        console.log(tabId[loul]);
+        loul++;
+    }
+    if (props.mainForte != null && props.sexe != null) {
+        var query = [
+            "MATCH (u:User) " +
+            "WHERE u.mainForte = {props}.mainForte AND u.sexe = {props}.sexe AND ("]
+    }
+    console.log("props.sexe");
+    console.log(props.sexe);
+    if (props.mainForte != null && props.sexe === undefined) {
+        console.log("je passe par la");
+        var query = [
+            "MATCH (u:User) " +
+            "WHERE u.mainForte = {props}.mainForte AND ("
+        ].join('\n');
+    }
+    if (props.mainForte === undefined && props.sexe != null) {
+        console.log("je passe par hahahahaha");
+        var query = [
+            "MATCH (u:User) " +
+            "WHERE u.sexe = {props}.sexe AND ("
+        ].join('\n');
+    }
+
+    if (props.mainForte === undefined && props.sexe === undefined) {
+        var query = [
+            "MATCH (u:User) WHERE ("
+        ].join('\n');
+    }
+    var queryFinale = query;
+    console.log("queryFinale");
+    console.log(queryFinale);
+    var j = 0;
+    var jBis = 0;
+    while (j < tabId.length) {
+        if (j > 0) {
+            var queryTransition = [
+                "OR "
+            ]
+            queryFinale = queryFinale + queryTransition;
+        }
+
+        var queryMilieu = [
+            "id(u) = " + tabId[j] + " "
+        ]
+        queryFinale = queryFinale + queryMilieu;
+        j++;
+        jBis++;
+    }
+    var queryReturn = [
+        ") RETURN u"
+    ].join('\n');
+    queryFinale = queryFinale + queryReturn;
+    console.log("props");
+    console.log(props);
+    var params = {
+        props: props
+    }
+
+    console.log("LAFEMMEPIRATE");
+    console.log(queryFinale);
+    console.log("params");
+    console.log(params);
+    db.cypher({
+        query: queryFinale,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            console.log("jentre ici");
+            var err=[];
+            var error=new errors.PropertyError('Pas de correspondance a la recherche voulue');
+            err.push(error);
+            return callback(err);
+        }
+        console.log("results");
+        console.log(results[0].u.properties);
+        var lastV = 0;
+        var tabReponse = [];
+        console.log("results.length");
+        console.log(results.length);
+
+        while (lastV<results.length){
+            tabReponse.push(results[lastV].u);
+            lastV++;
+        }
+        //var user = new User(results[0]['user']);
+        return callback(null, tabReponse);
+    })
+};
+
+User.prototype.suggestMatch = function (callback){
+    var tabInter = [];
+    var j=0;
+    var idTest = this.id;
+
+    var query = [
+        "MATCH (u:User)-[j:JOUE*..8]-(u1:User) " +
+        "WHERE id(u) = {id} AND id(u)<>id(u1) " +
+        "RETURN u1"
+    ].join('\n');
+
+    var params = {
+        id: idTest
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            console.log("results");
+            console.log(results);
+            return callback(null,[]);
+        }
+        var tabRes = [];
+        var i = 0;
+        while (i<results.length){
+            tabRes.push(results[i].u1._id);
+            i++;
+        }
+
+        return callback(null, tabRes);
+    });
+}
