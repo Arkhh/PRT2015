@@ -52,7 +52,9 @@ app.get(routeApi+'/pub/users', routes.users.pubList);
 app.get(routeApi+'/pub/users/:id', routes.users.pubListId);
 app.get(routeApi+'/suggest/:id', routes.users.suggest);
 app.get(routeApi+'/search/:str', routes.users.search);
-
+app.post(routeApi+'/suggestAdvanced/:id', routes.users.suggestAdvanced);
+app.post(routeApi+'/suggestSSMF/', routes.users.suggestSSMF);
+app.get(routeApi+'/suggestMatch/:id', routes.users.suggestMatch);
 
 app.get(routeApi+'/events',routes.events.list);
 app.get(routeApi+'/events/:id',routes.events.show);
