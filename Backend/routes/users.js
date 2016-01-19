@@ -5,6 +5,7 @@ var URL = require('url');
 
 var errors = require('../models/errors');
 var User = require('../models/user');
+var Matche =require('../models/matche');
 var _ =require('underscore');
 
 
@@ -137,7 +138,11 @@ exports.notation = function (req, res) {
             console.log("mafraj");
             User.notation(req.body.note, rel, function (err, rela) {
                 if (err) return res.status(500).json(err);
-                return res.json(rela);
+                Matche.setAnote(req.body.idJ,req.body.idm,function (err,matche){
+                    if (err) return res.status(500).json(err);
+                    return res.json(matche);
+                });
+               // return res.json(rela);
             });
             //return res.json(user);
         });

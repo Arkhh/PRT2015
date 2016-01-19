@@ -72,8 +72,12 @@ app.get(routeApi+'/matches/:id',routes.matches.show);
 app.post(routeApi+'/matches',routes.matches.create);
 app.post(routeApi+'/matches/:id',routes.matches.edit);
 app.delete(routeApi+'/matches/:id', routes.matches.del);
-app.get(routeApi+'/matches/users/:id',routes.matches.getByUser);
-app.post(routeApi+'/usersnext/matches',routes.matches.getByUserNext);
+app.get(routeApi+'/histo/users/:id',routes.matches.getByUserValide);
+app.post(routeApi+'/usersnext/histo',routes.matches.getByUserValideNext);
+app.get(routeApi+'/unvalid/matches/users/:id',routes.matches.getByUserNonValide);
+app.post(routeApi+'/unvalid/usersnext/matches',routes.matches.getByUserNonValideNext);
+app.get(routeApi+'/all/unvalid/matches/users/:id',routes.matches.getByUserNonValideTot);
+app.post(routeApi+'/betweenUser/matches',routes.matches.getBetween);
 app.post(routeApi+'/result/matches',routes.matches.setResult);
 
 http.createServer(app).listen(app.get('port'), function(){

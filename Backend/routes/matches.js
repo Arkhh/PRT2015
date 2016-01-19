@@ -94,10 +94,10 @@ exports.del = function (req, res) {
 };
 
 /**
- * GET /matches/users/:id
+ * GET /histo/users/:id
  */
-exports.getByUser = function (req, res) {
-    Matche.getByUser(req.params.id, function (err, matches) {
+exports.getByUserValide = function (req, res) {
+    Matche.getByUserValide(req.params.id, function (err, matches) {
         if (err) {
             return res.status(404).json({
                 pathname: '/matches/users/:id',
@@ -109,23 +109,84 @@ exports.getByUser = function (req, res) {
 };
 
 /**
- * POST /matches/usersnext
+ * POST /usersnext/histo
  */
-exports.getByUserNext= function (req,res) {
-    Matche.getByUserNext(req.body, function (err, matches) {
+exports.getByUserValideNext= function (req,res) {
+    Matche.getByUserValideNext(req.body, function (err, matches) {
         if (err) {
             return res.status(404).json({
-                pathname: '/matches/usersnext',
+                pathname: '/usersnext/histo',
                 error: err
             });
         }
         return res.json(matches);
     })
-}
+};
+/**
+ * GET /unvalid/matches/users/:id
+ */
+exports.getByUserNonValide = function (req, res) {
+    Matche.getByUserNonValide(req.params.id, function (err, matches) {
+        if (err) {
+            return res.status(404).json({
+                pathname: '/matches/users/:id',
+                error: err
+            });
+        }
+        return res.json(matches);
+    })
+};
 
-    /**
-     * POST /matches/result
-     */
+/**
+ * POST /unvalid/usersnext/matches
+ */
+exports.getByUserNonValideNext= function (req,res) {
+    Matche.getByUserNonValideNext(req.body, function (err, matches) {
+        if (err) {
+            return res.status(404).json({
+                pathname: '/unvalid/usersnext/matches',
+                error: err
+            });
+        }
+        return res.json(matches);
+    })
+};
+
+/**
+ * GET /unvalid/matches/users/:id
+ */
+exports.getByUserNonValideTot= function (req,res) {
+    Matche.getByUserNonValideTot(req.params.id, function (err, matches) {
+        if (err) {
+            return res.status(404).json({
+                pathname: '/all/unvalid/matches/users/:id',
+                error: err
+            });
+        }
+        return res.json(matches);
+    })
+};
+
+/**
+ * POST /matches/between
+ */
+exports.getBetween= function (req,res) {
+    Matche.getBetween(req.body, function (err, matches) {
+        if (err) {
+            return res.status(404).json({
+                pathname: '/matches/between',
+                error: err
+            });
+        }
+        return res.json(matches);
+    })
+};
+
+
+
+/**
+ * POST /matches/result
+ * */
 
 exports.setResult=function(req,res){
     Matche.setResult(req.body,function(err,matche){
@@ -137,4 +198,4 @@ exports.setResult=function(req,res){
         }
         return res.json(matche);
     })
-}
+};
