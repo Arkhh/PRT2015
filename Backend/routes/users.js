@@ -191,7 +191,11 @@ exports.suggest = function (req,res) {
         if (err) return res.status(404).json(err);
         user.suggest(function (err, users){
             if (err) return res.status(500).json(err);
-            return res.json(users);
+            user.suggestMatch(function (err, usereuh){
+                if (err) return res.status(500).json(err);
+                var result=users.concat(usereuh);
+                return res.json(result);
+            })
         })
     })
 };
@@ -213,9 +217,53 @@ exports.adv = function (req, res) {
 /**
  * search /search/:str
  */
+//FONCTION RECHERCHE
 exports.search = function (req,res) {
     User.search(req.params.str, function (err, user) {
         if (err) return res.status(500).json(err);
+        console.log("user.length");
+        console.log(user.length);
         return res.json(user);
         })
+};
+
+//SUGGESTION DE JOUEUR
+/**
+ * suggestAdvanced /suggest/:id
+ */
+
+//PREND EN COMPTE LES MOYENNES SUGGESTION
+exports.suggestAdvanced = function (req,res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        user.suggestAdvanced(req.body, function (err,users){
+            if (err) return res.status(500).json(err);
+            return res.json(users);
+        })
+    })
+};
+
+/**
+ * search /search/:str
+ */
+// SUGGESTION PREND EN COMTPE STRING, SEXE, MAINFORTE
+exports.suggestSSMF = function (req,res) {
+    User.search(req.body.str, function (err, user) {
+        if (err) return res.status(404).json(err);
+        console.log("req.body");
+        console.log(req.body);
+        User.suggestSSMF(req.body, user, function (err, usereuh){
+            if (err) return res.status(500).json(err);
+            return res.json(usereuh);
+        })
+    })
+};
+
+
+exports.suggestMatch = function (req,res) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return res.status(404).json(err);
+        console.log(user);
+
+    })
 };
