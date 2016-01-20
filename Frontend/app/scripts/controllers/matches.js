@@ -215,7 +215,7 @@ angular.module('BadminTown')
             }
         };
 
-        
+
 
         function init(){
 
@@ -230,7 +230,7 @@ angular.module('BadminTown')
             $scope.advanced=false;
 
             $scope.searchCriteria={
-                noteMoyenne:0,
+                noteMoyenne:5,
                 mainForte:'',
                 sexe:''
         };
