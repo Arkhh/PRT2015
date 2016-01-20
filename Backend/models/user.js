@@ -231,7 +231,8 @@ function createJson(res){
             noteMoyenne: noteMoyenne,
             nbEval:res[i].nbEval,
             nbMatch:res[i].nbMatch,
-            nbVictoire:res[i].nbVictoire
+            nbVictoire:res[i].nbVictoire,
+            nbDefaite:res[i].nbDefaite
         }
         tabReponse.push(tab);
         i++;
@@ -288,7 +289,8 @@ function createJsonId(res){
         noteMoyenne: noteMoyenne,
         nbEval:res[0].nbEval,
         nbMatch:res[0].nbMatch,
-        nbVictoire:res[0].nbVictoire
+        nbVictoire:res[0].nbVictoire,
+        nbDefaite:res[0].nbDefaite
     }
     return tab;
 };
@@ -683,7 +685,9 @@ User.pubList = function(callback){
         "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
         "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
         "WHERE id(u)=m2.resultat "+
-        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
+        "OPTIONAL MATCH (u)-[d:JOUE]-(m3:Match) "+
+        "WHERE id(u)<>m3.resultat AND m3.resultat<>'' "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire ,count(distinct(d)) as nbDefaite"
     ].join('\n');
 
     db.cypher({
@@ -715,7 +719,9 @@ User.prototype.pubListId = function(callback){
         "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
         "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
         "WHERE id(u)=m2.resultat "+
-        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
+        "OPTIONAL MATCH (u)-[d:JOUE]-(m3:Match) "+
+        "WHERE id(u)<>m3.resultat AND m3.resultat<>'' "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire,count(distinct(d)) as nbDefaite"
 
     ].join('\n');
 
@@ -1117,10 +1123,10 @@ User.getAdv = function (id, callback) {
 
     var idInt=parseInt(id);
     var query = [
-        'MATCH (user:User)-[r:JOUE]',
-        '-(m:Match)-[r2:JOUE]-(adv:User)',
-        'WHERE id(user)={id}',
-        'RETURN adv'
+        'MATCH (u:User)-[r:JOUE]',
+        '-(m:Match)-[r2:JOUE]-(user:User)',
+        'WHERE id(u)={id}',
+        'RETURN distinct(user)'
     ].join('\n');
 
 
@@ -1139,8 +1145,9 @@ User.getAdv = function (id, callback) {
             err.push(error);
             return callback(err);
         }
-        var user = new User(results[0]['adv']);
-        callback(null, user);
+
+        var users=createJsonGetAll(results)
+        callback(null, users);
     });
 };
 
