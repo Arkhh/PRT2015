@@ -190,10 +190,9 @@ exports.suggest = function (req,res) {
         if (err) return res.status(404).json(err);
         user.suggest(function (err, users){
             if (err) return res.status(500).json(err);
-            console.log(users);
-            user.suggestMatch(function (err, usereuh){
+            user.suggestMatch(users,function (err, usereuh){
                 if (err) return res.status(500).json(err);
-                var result=users.concat(usereuh);
+                var result=usereuh;
                 return res.json(result);
             })
         })
