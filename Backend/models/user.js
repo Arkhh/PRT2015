@@ -367,8 +367,7 @@ function createJsonVolee(res, borneInf, borneSup){
         var monTableau = [];
         while (maVariable<res.length){
             var moyenneVolee = res[maVariable].r1.properties.moyenne;
-            console.log("moyenneVolee");
-            console.log(moyenneVolee);
+
 
 
             if((borneInf<moyenneVolee)&&(moyenneVolee<borneSup)){
@@ -382,7 +381,6 @@ function createJsonVolee(res, borneInf, borneSup){
             /*console.log("tab");
             console.log(tab);*/
         }
-        console.log("MON TABLEAU VOLEE");
         var tchou = 0;
         while(tchou<monTableau.length){
             console.log(monTableau[tchou]);
@@ -395,8 +393,7 @@ function createJsonVolee(res, borneInf, borneSup){
 }
 
 function createJsonFrappe(res, borneInf, borneSup){
-    console.log("res.length");
-    console.log(res.length);
+
 
     if(res.length != 0){
         var maVariable = 0;
@@ -813,36 +810,20 @@ db.createConstraint({
 // FONCTION DE RECHERCHE DE JOUEURS CORRESPONDANT A LA MOYENNE VOULUE DANS UN SKILL CHOISI
 User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
 
-    console.log("id");
-    console.log(id);
-    console.log("NOM");
-    console.log(nomSkill);
-    console.log("note")
-    console.log(noteCherchee)
-
     var intNoteCherchee = parseInt(noteCherchee);
-    console.log("intNoteCherchee");
-    console.log(intNoteCherchee);
-    if (intNoteCherchee - 2 < 0){
+    if (intNoteCherchee - 3 < 0){
         var noteInf = 0;
 
     }
     else {
-        var noteInf = intNoteCherchee - 2;
+        var noteInf = intNoteCherchee - 3;
     }
-    if (intNoteCherchee + 2 > 10){
+    if (intNoteCherchee + 3 > 10){
         var noteSup = 10;
     }
     else {
-        var noteSup = intNoteCherchee + 2;
+        var noteSup = intNoteCherchee + 3;
     }
-
-   // console.log("Bonsoir");
-    /*if (intNoteCherchee > 5) {
-        //si l'email est déjà pris
-        err = new errors.UnicityError('La note ne peut dépasser 5 !!!');
-        return(err);
-    }*/
 
     var query = [
         "MATCH (u:User),(s:Skill) " +
@@ -862,18 +843,6 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         noteInf: noteInf
     };
 
-    console.log ("CE QUE JE VEUX VOIR");
-    console.log("query");
-    console.log(query);
-    console.log("params");
-    console.log(params);
-    console.log("nomSkill");
-    console.log(nomSkill);
-    //console.log("noteCherchee");
-    //console.log(intNoteCherchee);
-    //console.log("roundNoteCherchee");
-    //console.log(intNoteCherchee);
-
     db.cypher({
         query: query,
         params: params
@@ -887,6 +856,8 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         var i=0;
         var tabReponse = [];
 
+        console.log("ids....");
+        console.log(tabReponse);
         while(i<results.length){
             //tabReponse.push(results[i].u.properties); //pour juste les données des noeuds
             //tabReponse.push(results[i].u); //Pour données des noeuds + id
@@ -1100,8 +1071,7 @@ User.prototype.suggest = function (callback) {
                     console.log(newTabRep);
                     var lastTabRep = [];
 
-                    lastTabRep = newTabRep.slice(newTabRep.length - 8,newTabRep.length);
-                    console.log("lastTab");
+                    lastTabRep = newTabRep.slice(newTabRep.length - (newTabRep.length/2),newTabRep.length);
                     var tabFinal = [];
                     for(j=0; j<lastTabRep.length; j++){
                         tabFinal.push(lastTabRep[j].id);
@@ -1112,12 +1082,7 @@ User.prototype.suggest = function (callback) {
             )
 
         }
-        )
-
-
-
-      //  tabSkills.forEach(function(skill) { console.log("hello"); tabId.push(User.searchSkillLevel(idUser, skill.nomSkill, skill.moyenne)) });
-      //  console.log("hello2");
+        );
 
 
     });
@@ -1159,8 +1124,7 @@ User.getAdv = function (id, callback) {
 //fonction permettant le tri du tableau
 User.setPoint=function(id,point){
 
-    console.log("point dans fonction");
-    console.log(point);
+
     var query = [
         'MATCH (user:User)',
         'WHERE id(user)={id}',
@@ -1227,8 +1191,6 @@ User.search = function (str, callback) {
     ].join('\n');
 
 
-    console.log("query");
-    console.log(query);
     db.cypher({
         query: query
     }, function (err, results) {
@@ -1239,25 +1201,11 @@ User.search = function (str, callback) {
             err.push(error);
             return callback(err);
         }
-        console.log("results.length");
-        console.log(results.length);
-        /*if (results.length === 1){
-         var user = new User(results[0]['user']);
-         console.log("results[0]['user']");
-         console.log(results[0].u);
-         var tabReponse = createJsonSearch(results);
-         console.log("tabReponse");
-         console.log(tabReponse[0]);
-         return callback(null, tabReponse[0]);
-         }*/
-        console.log("results[0]['user']");
-        console.log(results[0]['user']);
+
+
         var i = 0;
         var tabReponse = createJsonSearch(results);
-        /*while (i<tabReponse.length){
-         tabReponse.push(results[i]['user']);
-         i++;
-         }*/
+
         return callback(null, tabReponse);
     });
 };
@@ -1411,30 +1359,17 @@ User.prototype.suggestAdvanced = function (props,callback) {
     var params = {
         id: this.id,
         props: props
-    }
+    };
 
-    /*console.log("queryFinale");
-    console.log(queryFinale);
-    console.log("params");
-    console.log(params);*/
-   // console.log("params");
-   // console.log(params);
+
     db.cypher({
         query: queryFinale,
         params: params
     }, function (err, results) {
         if (err) return callback(err);
 
-        /*var o = 0;
-        while (o<results.length){
-            console.log("results[o]");
-            console.log(results[o]);
-            o++
-        }*/
-
         var users = [];
-      //  console.log("results");
-       // console.log(results);
+
         if(props.skillVolee != null){
             users.push(createJsonVolee(results,intVoleeInf,intVoleeSup));
         }
@@ -1451,12 +1386,9 @@ User.prototype.suggestAdvanced = function (props,callback) {
             users.push(createJsonFond(results,intFondInf,intFondSup));
         }
 
-        //ON EN EST ICI
         var tabSkills = [];
         var taille = 0;
-        /*console.log("TESTONS UN PEU");
-        console.log(users[0][0]);*/
-        // CA QUI BLOQUE CONNAIT PAS NOMSKILL
+
         while(taille<users.length){
             var taille2 = 0;
             while(taille2<users[taille].length){
@@ -1470,7 +1402,6 @@ User.prototype.suggestAdvanced = function (props,callback) {
 
         var z=0;
         while (z<tabSkills.length) {
-            console.log(users[z]);
             z++;
         }
 
@@ -1483,8 +1414,7 @@ User.prototype.suggestAdvanced = function (props,callback) {
 
         var idUser = results[0].u._id;
 
-     //   console.log("idUser");
-      //  console.log(idUser);
+
         var tabId = [];
         //tabId.push(tabSkills.forEach(User.searchSkillLevel(this.id, nomSkill, moyenne, callback)));
 
@@ -1531,7 +1461,6 @@ User.prototype.suggestAdvanced = function (props,callback) {
                             newTabRep = tableauRep.sort(keysrt('nb'));
                             var lastTabRep = [];
                             lastTabRep = newTabRep.slice(newTabRep.length - 8,newTabRep.length);
-                            console.log("lastTab");
                             var tabFinal = [];
                             for(j=0; j<lastTabRep.length; j++){
                                 tabFinal.push(lastTabRep[j].id);
@@ -1577,7 +1506,7 @@ User.getStat=function(id,callback){
 };
 
 
-User.prototype.suggestMatch = function (callback){
+User.prototype.suggestMatch = function (tabRes,callback){
     var tabInter = [];
     var j=0;
     var idTest = this.id;
@@ -1598,19 +1527,16 @@ User.prototype.suggestMatch = function (callback){
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            console.log("results");
-            console.log(results);
+
             return callback(null,[]);
         }
-        console.log("results");
-        console.log(results);
-        var tabRes = [];
+
+
         var i = 0;
         while (i<results.length){
-            if(!tabRes.indexOf((results[i].u1._id)))
+            if(!(_.contains(tabRes,results[i].u1._id)))
             {
                 tabRes.push(results[i].u1._id);
-
             }
             i++;
         }
