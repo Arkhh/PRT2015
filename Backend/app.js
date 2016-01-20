@@ -45,6 +45,7 @@ app.post(routeApi+'/users/:id', routes.users.edit);
 app.delete(routeApi+'/users/:id', routes.users.del);
 app.post(routeApi+'/auth/', routes.users.connect);
 app.get(routeApi+'/adv/users/:id',routes.users.adv);
+app.get(routeApi+'/totalenote/users/:id',routes.users.getNbNote);
 
 app.post(routeApi+'/searchSkillLevel/:id', routes.users.searchSkillLvl);
 app.post(routeApi+'/notation/:id', routes.users.notation);

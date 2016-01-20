@@ -85,8 +85,8 @@ angular.module('BadminTown')
 
                     $scope.player='';
 
-                    if (!(Array.isArray(data))) {
-                        $scope.getUserInfo(data.id);
+                    if (!(Array.isArray(data))||data.length==1) {
+                        $scope.getUserInfo(data[0].id);
                         $scope.searchProcessing=false;
                         $scope.ErrorSearch=undefined;
 

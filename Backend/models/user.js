@@ -228,7 +228,10 @@ function createJson(res){
             prenom: res[i].u.properties.prenom,
             mainForte: res[i].u.properties.mainForte,
             points: parseInt(res[i].u.properties.points),
-            noteMoyenne: noteMoyenne
+            noteMoyenne: noteMoyenne,
+            nbEval:res[i].nbEval,
+            nbMatch:res[i].nbMatch,
+            nbVictoire:res[i].nbVictoire
         }
         tabReponse.push(tab);
         i++;
@@ -282,7 +285,10 @@ function createJsonId(res){
         moyenneEndurance: moyenneEndurance,
         moyenneTechnique: moyenneTechnique,
         moyenneFond: moyenneFond,
-        noteMoyenne: noteMoyenne
+        noteMoyenne: noteMoyenne,
+        nbEval:res[0].nbEval,
+        nbMatch:res[0].nbMatch,
+        nbVictoire:res[0].nbVictoire
     }
     return tab;
 };
@@ -671,7 +677,13 @@ User.pubList = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
     ].join('\n');
 
     db.cypher({
@@ -698,7 +710,13 @@ User.prototype.pubListId = function(callback){
         "MATCH (u)-[r3:RelationEvaluation]->(s3) " +
         "MATCH (u)-[r4:RelationEvaluation]->(s4) " +
         "MATCH (u)-[r5:RelationEvaluation]->(s5) " +
-        "RETURN u,r1,r2,r3,r4,r5"
+        "OPTIONAL MATCH (u) "+
+        "-[r:RelationEvaluation]-() "+
+        "OPTIONAL Match (u)-[j:JOUE]-(m:Match) "+
+        "OPTIONAL Match (u)-[v:JOUE]-(m2:Match) "+
+        "WHERE id(u)=m2.resultat "+
+        "RETURN u,r1,r2,r3,r4,r5,sum(distinct(r).nbEval)as nbEval,count(distinct(j)) as nbMatch,count(distinct(v)) as nbVictoire"
+
     ].join('\n');
 
     var params = {
@@ -1233,6 +1251,7 @@ User.search = function (str, callback) {
 };
 
 //SUGGESTION DE JOUEURS AVANCEE MOYENNE
+
 User.prototype.suggestAdvanced = function (props,callback) {
 
     //////CLAUSE INITIALE
@@ -1515,112 +1534,36 @@ User.prototype.suggestAdvanced = function (props,callback) {
     });
 };
 
-User.suggestSSMF = function (props, data, callback) {
-
-    console.log("je suis la");
-    tabId = [];
-    var i = 0;
-    while (i < data.length) {
-        //console.log("");
-        tabId.push(data[i].id);
-        i++;
-    }
-    console.log("et ici");
-
-    var loul = 0;
-    console.log("tabId");
-    while (loul<tabId.length){
-        console.log(tabId[loul]);
-        loul++;
-    }
-    if (props.mainForte != null && props.sexe != null) {
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.mainForte = {props}.mainForte AND u.sexe = {props}.sexe AND ("]
-    }
-    console.log("props.sexe");
-    console.log(props.sexe);
-    if (props.mainForte != null && props.sexe === undefined) {
-        console.log("je passe par la");
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.mainForte = {props}.mainForte AND ("
-        ].join('\n');
-    }
-    if (props.mainForte === undefined && props.sexe != null) {
-        console.log("je passe par hahahahaha");
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.sexe = {props}.sexe AND ("
-        ].join('\n');
-    }
-
-    if (props.mainForte === undefined && props.sexe === undefined) {
-        var query = [
-            "MATCH (u:User) WHERE ("
-        ].join('\n');
-    }
-    var queryFinale = query;
-    console.log("queryFinale");
-    console.log(queryFinale);
-    var j = 0;
-    var jBis = 0;
-    while (j < tabId.length) {
-        if (j > 0) {
-            var queryTransition = [
-                "OR "
-            ]
-            queryFinale = queryFinale + queryTransition;
-        }
-
-        var queryMilieu = [
-            "id(u) = " + tabId[j] + " "
-        ]
-        queryFinale = queryFinale + queryMilieu;
-        j++;
-        jBis++;
-    }
-    var queryReturn = [
-        ") RETURN u"
+User.getStat=function(id,callback){
+    var idInt=parseInt(id);
+    var query = [
+        'MATCH (user:User)',
+        '-[r:RelationEvaluation]-()',
+        'WHERE id(user)={id}',
+        'RETURN sum(r.nbEval) as nbNote'
     ].join('\n');
-    queryFinale = queryFinale + queryReturn;
-    console.log("props");
-    console.log(props);
-    var params = {
-        props: props
-    }
 
-    console.log("LAFEMMEPIRATE");
-    console.log(queryFinale);
-    console.log("params");
-    console.log(params);
+
+    var params = {
+        id: idInt
+    };
+
     db.cypher({
-        query: queryFinale,
+        query: query,
         params: params
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            console.log("jentre ici");
             var err=[];
-            var error=new errors.PropertyError('Pas de correspondance a la recherche voulue');
+            var error=new errors.PropertyError('No such user with ID: ' + id);
             err.push(error);
             return callback(err);
         }
-        console.log("results");
-        console.log(results[0].u.properties);
-        var lastV = 0;
-        var tabReponse = [];
-        console.log("results.length");
-        console.log(results.length);
-
-        while (lastV<results.length){
-            tabReponse.push(results[lastV].u);
-            lastV++;
-        }
-        //var user = new User(results[0]['user']);
-        return callback(null, tabReponse);
-    })
+        var nbNote = results;
+        callback(null, nbNote);
+    });
 };
+
 
 User.prototype.suggestMatch = function (callback){
     var tabInter = [];
@@ -1643,9 +1586,12 @@ User.prototype.suggestMatch = function (callback){
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
+            console.log("results");
+            console.log(results);
             return callback(null,[]);
         }
-
+        console.log("results");
+        console.log(results);
         var tabRes = [];
         var i = 0;
         while (i<results.length){
