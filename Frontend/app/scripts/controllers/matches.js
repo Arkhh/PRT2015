@@ -220,12 +220,8 @@ angular.module('BadminTown')
         function init(){
 
 
-            $scope.pieOptions = {thickness: 50};
-            $scope.pieChartData = [
-                {label: "one", value: 12.2, color: "red"},
-                {label: "two", value: 45, color: "#00ff00"},
-                {label: "three", value: 10, color: "rgb(0, 0, 255)"}
-            ];
+            $scope.pieOptionsMyHisto = {thickness: 18};
+
 
             $scope.advanced=false;
 
@@ -415,6 +411,55 @@ angular.module('BadminTown')
 
 
         };
+
+        $scope.getMyData=function(){
+            UserAPI.getUserPubInfos($scope.userInfos.id)
+                .then(function(data){
+                    $scope.pieChartDataHisto = [
+                        {label: "Victoire", value: data.nbVictoire, color: "#2ca02c"},
+                        {label: "Defaite", value: data.nbDefaite, color: "#d62728"},
+                        {label: "A jouer", value: (data.nbMatch-(data.nbVictoire+data.nbDefaite)), color: "8c564b"}
+                    ];
+                    $scope.getAdv();
+                },function(err){
+
+                });
+
+        };
+
+        $scope.getAdv=function(){
+
+            $scope.tabAdv=[];
+            UserAPI.getAdv($scope.userInfos.id)
+                .then(function(data){
+
+                    $scope.tabAdv=data;
+
+                },function(err){
+                    console.log(err);
+
+                });
+
+
+
+        };
+
+        $scope.getHistoData=function(player){
+
+            UserAPI.getHistoAdv($scope.userInfos.id,player.id)
+                .then(function(data){
+                    $scope.pieChartDataAdv = [
+                        {label: "Victoire", value: data[0].nbVictoireJ1, color: "#2ca02c"},
+                        {label: "Defaite", value: data[0].nbVictoireJ2, color: "#d62728"},
+                        {label: "A jouer", value: data[0].nbMatch, color: "8c564b"}
+                    ];
+                    $scope.advHisto=player;
+
+                },function(){
+
+                })
+
+        }
 
 
 

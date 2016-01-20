@@ -22,6 +22,7 @@ angular.module('BadminTown')
                                     $scope.myInfos.moyenneTechnique=data.moyenneTechnique;
                                     $scope.myInfos.moyenneFond=data.moyenneFond;
                                     $scope.myInfos.noteMoyenne=data.noteMoyenne;
+                                    $scope.myInfos.nbEval=(data.nbEval-1)/5;
                                 }
                             });
                     }
@@ -44,6 +45,18 @@ angular.module('BadminTown')
                         $scope.player.moyenneEndurance= data.moyenneEndurance;
                         $scope.player.moyenneTechnique= data.moyenneTechnique;
                         $scope.player.moyenneFond= data.moyenneFond;
+
+                        console.log(data.nbVictoire);
+                        console.log(data.nbDefaite);
+                        console.log(data.nbMatch);
+                        $scope.pieChartPlayer = [
+                            {label: "Victoire", value: data.nbVictoire, color: "#2ca02c"},
+                            {label: "Defaite", value: data.nbDefaite, color: "#d62728"},
+                            {label: "A jouer", value: (data.nbMatch-(data.nbVictoire+data.nbDefaite)), color: "8c564b"}
+                        ];
+                        console.log($scope.pieChartPlayer);
+                        $scope.pieOptionsPlayer = {thickness: 15};
+
 
                     }
                 });

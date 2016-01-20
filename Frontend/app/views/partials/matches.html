@@ -298,10 +298,43 @@
         </uib-tab>
 
 
-        <uib-tab heading="Graphiques">
+        <uib-tab heading="Graphiques" ng-click="getMyData();">
 
 
-            <pie-chart data="pieChartData" options="pieOptions"></pie-chart>
+            <div align="left" class="col-md-4">
+                <h4> Statistiques globales personelles</h4>
+
+            <pie-chart   style="width:300px; height:300px" data="pieChartDataHisto" options="pieOptionsMyHisto"></pie-chart>
+
+            </div>
+
+            <div ng-if="tabAdv.length>0" class="table-responsive">
+                <h4>Liste des adversaires </h4>
+                <table class="table table-hover table-bordered" style="background-color: white">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prenom</th>
+                        <th>Historique</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr ng-repeat="adv in tabAdv ">  <td>{{adv.nom}}</td><td>{{adv.prenom}}</td>
+                        <td>
+                            <a ng-click="getHistoData(adv);"class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Voir graphiques </a>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div align="right" class="col-md-4">
+                <h4> Historique des confrontations VS {{advHisto.prenom}} {{advHisto.nom}} </h4>
+
+                <pie-chart   style="width:300px; height:300px" data="pieChartDataAdv" options="pieOptionsMyHisto"></pie-chart>
+
+            </div>
 
         </uib-tab>
 

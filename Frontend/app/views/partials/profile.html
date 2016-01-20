@@ -83,6 +83,8 @@
                     <label class="col-lg-3 control-label">Général</label>
                     <input-stars  max="10" ng-model="myInfos.noteMoyenne" readonly></input-stars><br/>
 
+                    <h4 class="col-lg-offset-3 col-md-3">Nombre d'evaluations: {{myInfos.nbEval}}</h4>
+
 
                 </form>
 
@@ -176,17 +178,24 @@
                     <label class="col-lg-4 control-label">Volée</label>
                         <input-stars  max="10" ng-model="player.moyenneVolee" readonly></input-stars><br/>
                     <label class="col-lg-4 control-label">Fond</label>
-                        <input-stars  max="10" ng-model="player.moyenneFond"></input-stars><br/>
+                        <input-stars  max="10" ng-model="player.moyenneFond" readonly></input-stars><br/>
                     <label class="col-lg-4 control-label">Endurance</label>
-                        <input-stars  max="10" ng-model="player.moyenneEndurance"></input-stars><br/>
+                        <input-stars  max="10" ng-model="player.moyenneEndurance" readonly></input-stars><br/>
                     <label class="col-lg-4 control-label">Technique</label>
-                        <input-stars  max="10" ng-model="player.moyenneTechnique"></input-stars><br/>
+                        <input-stars  max="10" ng-model="player.moyenneTechnique" readonly></input-stars><br/>
                     <label class="col-lg-4 control-label">Frappe</label>
-                        <input-stars  max="10" ng-model="player.moyenneFrappe"></input-stars><br/>
+                        <input-stars  max="10" ng-model="player.moyenneFrappe" readonly></input-stars><br/>
                     <label class="col-lg-4 control-label">Général</label>
-                        <input-stars  max="10" ng-model="player.noteMoyenne"></input-stars><br/>
+                        <input-stars  max="10" ng-model="player.noteMoyenne" readonly></input-stars><br/>
+
+                    <h4 class="col-lg-offset-3 col-md-3">Nombre d'evaluations: {{player.nbEval}}</h4>
+
+
                 </form>
-        </div>
+                    <pie-chart  data="pieChartPlayer" options="pieOptionsPlayer"></pie-chart>
+
+                </div>
+
 
             </uib-tab>
 
