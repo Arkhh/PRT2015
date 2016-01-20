@@ -18,10 +18,10 @@ angular.module('BadminTown')
                                 value.nom=dataUserInfo.nom;
                                 value.prenom=dataUserInfo.prenom;
                                 $scope.matches.push(value);
-                                $scope.matches=$filter('orderBy')( $scope.matches, 'date',true);
                             },function(err){
 
                             });
+
 
                     });
                 },function(err){
@@ -209,9 +209,30 @@ angular.module('BadminTown')
         };
 
 
+        $scope.greaterThan = function(prop, val){
+            return function(item){
+                return item[prop] > val;
+            }
+        };
+
+
+
         function init(){
 
-            console.log("init");
+
+            $scope.pieOptionsMyHisto = {thickness: 18};
+
+
+            $scope.advanced=false;
+
+            $scope.searchCriteria={
+                noteMoyenne:5,
+                mainForte:'',
+                sexe:''
+        };
+
+
+            $scope.searchPlayer='';
             $scope.createMatchVar={
                 datePicker:'',
                 idJ1:'',
@@ -255,8 +276,8 @@ angular.module('BadminTown')
 
                     $scope.player='';
 
-                    if (!(Array.isArray(data))) {
-                        UserAPI.getUserPubInfos(data.id)
+                    if (!(Array.isArray(data))||data.length==1) {
+                        UserAPI.getUserPubInfos(data[0].id)
                             .then(function(data){
 
                                 $scope.opponentDisplay=data.nom+' '+data.prenom;
@@ -316,10 +337,11 @@ angular.module('BadminTown')
 
         $scope.createMatch = function(){
 
+            $scope.createMatchSucess=false;
+
             if($scope.createMatchProcessing===true){
                 return;
             }
-            $scope.createMatchProcessing=true;
 
             if(!$scope.opponent){
                 $scope.createMatchError='Veuilez selectionner un adversaire';
@@ -329,6 +351,10 @@ angular.module('BadminTown')
                 $scope.createMatchError='Vous ne pouvez pas jouer contre vous même';
                 return;
             }
+
+            $scope.createMatchProcessing=true;
+
+
 
             //formatage des données
 
@@ -343,13 +369,14 @@ angular.module('BadminTown')
 
             MatchAPI.createMatch($scope.createMatchVar)
                 .then(function(data){
-                    console.log(data);
                     $scope.createMatchProcessing=false;
                     $scope.createMatchError='';
+                    $scope.createMatchSucess=true;
                     init();
                 },function(err){
                     console.log(err);
                     $scope.createMatchProcessing=false;
+                    $scope.createMatchSucess=false;
                 });
         };
 
@@ -363,7 +390,77 @@ angular.module('BadminTown')
                 });
         };
 
-//            $scope.createMatchProcessing=false;
+        $scope.initAdvanced= function(){
+            $scope.listUsersAllUnfiltered=[];
+            UserAPI.getRanking()
+                .then(function(data){
+                    angular.forEach(data, function(value) {
+                        if(!value.sexe){
+                            value.sexe='';
+                        }
+
+                           if(!value.mainForte){
+                            value.mainForte='';
+                        }
+
+                    });
+                    $scope.listUsersAllUnfiltered=data;
+                },function(err){
+                    console.log(err);
+                });
+
+
+        };
+
+        $scope.getMyData=function(){
+            UserAPI.getUserPubInfos($scope.userInfos.id)
+                .then(function(data){
+                    $scope.pieChartDataHisto = [
+                        {label: "Victoire", value: data.nbVictoire, color: "#2ca02c"},
+                        {label: "Defaite", value: data.nbDefaite, color: "#d62728"},
+                        {label: "A jouer", value: (data.nbMatch-(data.nbVictoire+data.nbDefaite)), color: "8c564b"}
+                    ];
+                    $scope.getAdv();
+                },function(err){
+
+                });
+
+        };
+
+        $scope.getAdv=function(){
+
+            $scope.tabAdv=[];
+            UserAPI.getAdv($scope.userInfos.id)
+                .then(function(data){
+
+                    $scope.tabAdv=data;
+
+                },function(err){
+                    console.log(err);
+
+                });
+
+
+
+        };
+
+        $scope.getHistoData=function(player){
+
+            UserAPI.getHistoAdv($scope.userInfos.id,player.id)
+                .then(function(data){
+                    $scope.pieChartDataAdv = [
+                        {label: "Victoire", value: data[0].nbVictoireJ1, color: "#2ca02c"},
+                        {label: "Defaite", value: data[0].nbVictoireJ2, color: "#d62728"},
+                        {label: "A jouer", value: data[0].nbMatch, color: "8c564b"}
+                    ];
+                    $scope.advHisto=player;
+
+                },function(){
+
+                })
+
+        }
+
 
 
     });

@@ -66,6 +66,23 @@ angular.module('BadminTown')
             });
         }
 
+        function getAdv(id){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/adv/users/'+id
+            });
+        }
+
+        function getHistoAdv(idJ1,idJ2) {
+            return RequestBuilder.getRequestPromise({
+                method         : 'POST',
+                url            : API_ENDPOINT + '/betweenUser/matches',
+                data           : {
+                    idJ1:idJ1,
+                    idJ2:idJ2
+                }
+            });
+        }
 
 
         return {
@@ -75,8 +92,10 @@ angular.module('BadminTown')
             'getUserByName'	: getUserByName,
             'createUser'        : createUser,
             'updateUser'        : updateUser,
+            'getAdv'            : getAdv,
+            'getHistoAdv'       : getHistoAdv,
             'getRanking'        : getRanking
-            //'resetPassword'		: resetPassword
+
         };
 
     });

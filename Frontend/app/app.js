@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('BadminTown', ['ngRoute','ngCookies','ui.bootstrap','angular-input-stars','ngQuill'])
+angular.module('BadminTown', ['ngRoute','ngCookies','ui.bootstrap','angular-input-stars','ngQuill','n3-pie-chart'])
     .config(function ( $routeProvider ) {
         $routeProvider
             .when('/', {
