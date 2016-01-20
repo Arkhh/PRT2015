@@ -504,10 +504,7 @@ Matche.getByUserValide = function (id, callback) {
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            var err=[];
-            var error=new errors.PropertyError('No such player with ID: ' + id);
-            err.push(error);
-            return callback(err);
+            return callback(null,[]);
         }
         var i=0;
         var matches = [];
@@ -643,10 +640,8 @@ Matche.getByUserNonValideNext = function (props, callback) {
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            var err=[];
-            var error=new errors.PropertyError('No such player with ID: ' + id);
-            err.push(error);
-            return callback(err);
+
+            return callback(null,[]);
         }
         var i=0;
         var matches = [];

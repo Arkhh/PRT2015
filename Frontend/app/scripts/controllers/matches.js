@@ -18,10 +18,10 @@ angular.module('BadminTown')
                                 value.nom=dataUserInfo.nom;
                                 value.prenom=dataUserInfo.prenom;
                                 $scope.matches.push(value);
-                                $scope.matches=$filter('orderBy')( $scope.matches, 'date',true);
                             },function(err){
 
                             });
+
 
                     });
                 },function(err){
@@ -209,9 +209,34 @@ angular.module('BadminTown')
         };
 
 
+        $scope.greaterThan = function(prop, val){
+            return function(item){
+                return item[prop] > val;
+            }
+        };
+
+        
+
         function init(){
 
-            console.log("init");
+
+            $scope.pieOptions = {thickness: 50};
+            $scope.pieChartData = [
+                {label: "one", value: 12.2, color: "red"},
+                {label: "two", value: 45, color: "#00ff00"},
+                {label: "three", value: 10, color: "rgb(0, 0, 255)"}
+            ];
+
+            $scope.advanced=false;
+
+            $scope.searchCriteria={
+                noteMoyenne:0,
+                mainForte:'',
+                sexe:''
+        };
+
+
+            $scope.searchPlayer='';
             $scope.createMatchVar={
                 datePicker:'',
                 idJ1:'',
@@ -255,8 +280,8 @@ angular.module('BadminTown')
 
                     $scope.player='';
 
-                    if (!(Array.isArray(data))) {
-                        UserAPI.getUserPubInfos(data.id)
+                    if (!(Array.isArray(data))||data.length==1) {
+                        UserAPI.getUserPubInfos(data[0].id)
                             .then(function(data){
 
                                 $scope.opponentDisplay=data.nom+' '+data.prenom;
@@ -316,10 +341,11 @@ angular.module('BadminTown')
 
         $scope.createMatch = function(){
 
+            $scope.createMatchSucess=false;
+
             if($scope.createMatchProcessing===true){
                 return;
             }
-            $scope.createMatchProcessing=true;
 
             if(!$scope.opponent){
                 $scope.createMatchError='Veuilez selectionner un adversaire';
@@ -329,6 +355,10 @@ angular.module('BadminTown')
                 $scope.createMatchError='Vous ne pouvez pas jouer contre vous même';
                 return;
             }
+
+            $scope.createMatchProcessing=true;
+
+
 
             //formatage des données
 
@@ -343,13 +373,14 @@ angular.module('BadminTown')
 
             MatchAPI.createMatch($scope.createMatchVar)
                 .then(function(data){
-                    console.log(data);
                     $scope.createMatchProcessing=false;
                     $scope.createMatchError='';
+                    $scope.createMatchSucess=true;
                     init();
                 },function(err){
                     console.log(err);
                     $scope.createMatchProcessing=false;
+                    $scope.createMatchSucess=false;
                 });
         };
 
@@ -363,7 +394,28 @@ angular.module('BadminTown')
                 });
         };
 
-//            $scope.createMatchProcessing=false;
+        $scope.initAdvanced= function(){
+            $scope.listUsersAllUnfiltered=[];
+            UserAPI.getRanking()
+                .then(function(data){
+                    angular.forEach(data, function(value) {
+                        if(!value.sexe){
+                            value.sexe='';
+                        }
+
+                           if(!value.mainForte){
+                            value.mainForte='';
+                        }
+
+                    });
+                    $scope.listUsersAllUnfiltered=data;
+                },function(err){
+                    console.log(err);
+                });
+
+
+        };
+
 
 
     });

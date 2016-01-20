@@ -231,8 +231,9 @@ function createJson(res){
             noteMoyenne: noteMoyenne,
             nbEval:res[i].nbEval,
             nbMatch:res[i].nbMatch,
-            nbVictoire:res[i].nbVictoire
-        }
+            nbVictoire:res[i].nbVictoire,
+            sexe:res[i].u.properties.sexe
+        };
         tabReponse.push(tab);
         i++;
     }
@@ -256,8 +257,10 @@ function createJsonGetAll(res){
             mainForte: res[i].user.properties.mainForte,
             sexe: res[i].user.properties.sexe,
             points: parseInt(res[i].user.properties.points),
-            admin: res[i].user.properties.admin
-        }
+            admin: res[i].user.properties.admin,
+            email: res[i].user.properties.email
+
+        };
         tabReponse.push(tab);
         i++;
     }

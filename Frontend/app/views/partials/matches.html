@@ -5,13 +5,14 @@
         <uib-tab heading="Matches" >
 
             <div align="center" class="alert alert-success" ng-if="matches.length<1">Pas de matches </div>
+            <div align="center" class="alert alert-success" ng-if="histoMatches.length<1">Pas de matches dans l'historique </div>
 
 
             <ul ng-if="matches.length>0" class="list-group col-md-6">
                 <div align="center">
                     <h2>Matches en cours</h2>
                 </div>
-                <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches | orderBy: match.date">
+                <li class="list-group-item" ng-class="{bg:(matches.indexOf(match)%2==1)}"  ng-repeat="match in matches | orderBy: 'date'">
                     <div class="media">
                         <div class="row">
                             <div class="col-md-3">
@@ -61,7 +62,7 @@
 
             </ul>
 
-            <ul class="list-group col-md-6">
+            <ul ng-if="histoMatches.length>0" class="list-group col-md-6">
                 <div align="center"><h2>Historique (10 derniers)</h2></div>
 
                 <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
@@ -69,7 +70,7 @@
 
                         <div class="row">
                             <div class="col-md-3">
-                                <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
+                                <div><a class="h5">{{match.prenom}} {{match.nom}}</a></div>
                                 <small class="text-muted">{{match.dateStr}}</small>
                             </div>
 
@@ -123,25 +124,26 @@
 
         <uib-tab heading="Creer match">
 
-            <form class="navbar-form  shift" align="center" ng-submit="processSearch(simpleSearchText);">
+            <form ng-if="!(advanced)" class="navbar-form  shift" align="center" ng-submit="processSearch(simpleSearchText);">
                     <span align="center">
                     <input type="text" name="name" ng-model="simpleSearchText" placeholder="Recherche joueur" ng-required="true">
                     <button type="submit" class="btn btn-sm btn-link"><span  style="font-size: 20px;" class="fa fa-search text-muted"></span> </button>
                     </span>
-                <div   class="checkbox"> <label> <input ng-model="advanced" type="checkbox" name="advancedSearch"> Recheche avancée </label> </div>
             </form>
+            <div  align="center" class="checkbox" ng-click="initAdvanced();"> <label> <input ng-model="advanced" type="checkbox" name="advancedSearch"> Recheche avancée </label> </div>
+
 
             <div align="center" class="alert alert-danger" ng-if="ErrorSearch" role="alert">{{ErrorSearch}}</div>
             <div align="center" class="alert alert-danger" ng-if="createMatchError" role="alert">{{createMatchError}}</div>
             <div align="center" class="alert alert-danger" ng-if="searchResult0" role="alert">Votre recherche n'a retourné aucun résultat, veuillez réduire vos critères.</div>
 
 
-            <div ng-if="advanced">
+            <div ng-if="advanced" class="row col-md-6">
                 <form class="form-horizontal">
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Sexe</label>
                     <div class="col-lg-4">
-                        <select name="account" ng-model="myInfos.sexe" class="form-control">
+                        <select name="account" ng-model="searchCriteria.sexe" class="form-control">
                             <option value="">Indifferent</option>
                             <option value="H">Homme</option>
                             <option value="F">Femme</option>
@@ -152,7 +154,7 @@
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Main forte</label>
                     <div class="col-lg-4">
-                        <select name="account" ng-model="myInfos.mainForte" class="form-control">
+                        <select name="account" ng-model="searchCriteria.mainForte" class="form-control">
                             <option value="">Indifferent</option>
                             <option value="G">Gauche</option>
                             <option value="D">Droite</option>
@@ -160,48 +162,23 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="col-lg-3 control-label">Type de joueur</label>
-                    <div class="col-lg-4">
-                        <select name="account" ng-model="myInfos.type" class="form-control">
-                            <option value="S">Simple</option>
-                            <option value="D">Double</option>
-                            <option value="T">Tout</option>
-                            <option value="">Tout</option>
-                        </select>
-                    </div>
-                </div>
+
 
                 <div style="margin-top:40px;" class="form-group">
                     <div class="col-lg-9 col-lg-offset-3">
-                        <h4>Notes minimum :</h4>
+                        <h4>Note minimum :</h4>
                     </div>
                 </div>
-                <label class="col-lg-3 control-label">Volée</label>
-                <input-stars  max="10" ng-model="myInfos.moyenneVolee" ></input-stars><br/>
-                <label class="col-lg-3 control-label">Fond</label>
-                <input-stars  max="10" ng-model="myInfos.moyenneFond" ></input-stars><br/>
-                <label class="col-lg-3 control-label">Endurance</label>
-                <input-stars  max="10" ng-model="myInfos.moyenneEndurance" ></input-stars><br/>
-                <label class="col-lg-3 control-label">Technique</label>
-                <input-stars  max="10" ng-model="myInfos.moyenneTechnique" ></input-stars><br/>
-                <label class="col-lg-3 control-label">Frappe</label>
-                <input-stars  max="10" ng-model="myInfos.moyenneFrappe" ></input-stars><br/>
                 <label class="col-lg-3 control-label">Général</label>
-                <input-stars  max="10" ng-model="myInfos.noteMoyenne" ></input-stars><br/>
+                <input-stars  max="10" ng-model="searchCriteria.noteMoyenne" ></input-stars><br/>
 
-                <div class="form-group">
-                    <div class="col-lg-9 col-lg-offset-3">
-                        <button type="submit" ng-click="editProfile();" class="btn btn-primary">Rechercher</button>
-                    </div>
-                </div>
                 </form>
 
 
             </div>
 
 
-            <div ng-if="simpleSearchSuccessMulti" class="table-responsive">
+            <div ng-if="simpleSearchSuccessMulti&&(!advanced)" class="table-responsive">
                 <div> Plusieurs résultats correspondent à votre recherche, veuiller selectionner</div>
                 <table class="table table-hover table-bordered" style="background-color: white">
                     <thead>
@@ -213,7 +190,7 @@
                     </thead>
                     <tbody>
 
-                    <tr ng-repeat="player in simpleSearchResultTab |filter:searchPlayer " ng-class="{success: (player.id==userInfos.id) } ">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
+                    <tr ng-repeat="player in simpleSearchResultTab " ng-class="{success: (player.id==userInfos.id) } ">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
                         <td ng-if="player.id!=userInfos.id">
                             <a ng-click="selectOpponentFromTab(player);"class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
                         </td>
@@ -225,22 +202,64 @@
                 </table>
             </div>
 
+            <form ng-show="advanced">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+
+                        <input type="text" class="form-control" placeholder="Recherche par prenom"  ng-model="searchPlayer">
+
+                    </div>
+                </div>
+            </form>
+
+
+
+
+            <div ng-show="advanced&&listUsersAllUnfiltered && (searchPlayer.length>0||searchCriteria.sexe.length>0||searchCriteria.mainForte>0||searchCriteria.noteMoyenne>0)" class="table-responsive">
+
+                <table class="table table-hover table-bordered" style="background-color: white">
+                    <thead>
+                    <tr>
+                        <th>Prenom</th>
+                        <th>Nom</th>
+                        <th>Sexe</th>
+                        <th>Main Forte</th>
+                        <th>Defier</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- filter:searchPlayer , prenom: searchPlayer, sexe:searchCriteria.sexe ({nom: searchPlayer} || {prenom: searchPlayer})&&-->
+                    <tr ng-repeat="player in listUsersAllUnfiltered | filter:{sexe: searchCriteria.sexe, mainForte: searchCriteria.mainForte} | filter: greaterThan('noteMoyenne', searchCriteria.noteMoyenne-1 ) | filter:{prenom: searchPlayer } " ng-if="player.id!=userInfos.id">  <td>{{player.prenom}}</td><td>{{player.nom}}</td>
+
+                        <td>{{player.sexe}}</td>
+                        <td>{{player.mainForte}}</td>
+                        <td>
+                            <a ng-click="selectOpponentFromTab(player);" class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Selectionner </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+
+
+
             <form class="form-horizontal" ng-submit="createMatch();">
 
-                <p>Suggestions de joueurs</p>
-                <div id="MyPillbox" class="pillbox clearfix m-b">
-                    <ul>
-                        <li ng-repeat="player in suggestPlayers" class="label" ng-class="{'bg-danger': player.id%2, 'bg-default': player.id%3, 'bg-success': player.id>50 , 'bg-warning': player.nom.length>5 }"><span ng-click="select(player.id);">{{player.nom}} {{player.prenom}}</span> &nbsp; <i ng-click="close(player.id);" class="fa fa-times"></i></li>
-                    </ul>
-                </div>
+
                 <form>
                 <div class="form-group">
-                    <label class="col-lg-3 control-label">Adversaire</label>
-                    <div class="col-lg-8">
+                    <div class="col-lg-5 col-lg-offset-3">
+                        <label class="control-label">Adversaire</label>
                         <input type="text" name="adversaire" ng-model="opponentDisplay" placeholder="Selectionnez un adversaire" class="bg-focus form-control" ng-requided="true" data-type="text"  disabled>
                     </div>
                     <div ng-if="opponent">
-                    <label class="col-lg-4 control-label">Note Moyenne</label>
+                    <label class="control-label">Note Moyenne</label>
                     <input-stars  max="10" ng-model="opponent.noteMoyenne" readonly></input-stars><br/></div>
                 </div>
 
@@ -252,8 +271,10 @@
                 </div>
 
 
+                    <div align="center" class="alert alert-success" ng-if="createMatchSucess==true">Match crée avec succès. </div>
 
-                <div class="form-group">
+
+                    <div class="form-group">
                     <div class="col-lg-9 col-lg-offset-5">
                         <button type="submit"  class="btn btn-sm btn-info"> <i class="fa fa-fw fa-plus"></i> Défier </button>
                     </div>
@@ -262,81 +283,28 @@
 
 
             </form>
+            <div class="row md-col-12">
+
+                <p>Suggestions de joueurs</p>
+                <div id="MyPillbox" class="pillbox clearfix m-b">
+                    <ul>
+                        <li ng-repeat="player in suggestPlayers" class="label" ng-class="{'bg-danger': (Math.floor(Math.random() * player.id) + 1)<25  , 'bg-default': (Math.floor(Math.random() * player.id) + 1)>25 && (Math.floor(Math.random() * player.id) + 1)<50 , 'bg-success': (Math.floor(Math.random() * player.id) + 1)>50 && (Math.floor(Math.random() * player.id) + 1)<75  , 'bg-warning': (Math.floor(Math.random() * player.id) + 1)>75 }"><span ng-click="select(player.id);">{{player.nom}} {{player.prenom}}</span> &nbsp; <i ng-click="close(player.id);" class="fa fa-times"></i></li>
+                    </ul>
+                </div>
+            </div>
 
 
 
         </uib-tab>
 
 
+        <uib-tab heading="Graphiques">
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <uib-tab heading="Graphiques"> </uib-tab>
-        <uib-tab heading="Historique">
-                <ul class="list-group col-md-6">
-                    <div align="center"><h2>Historique</h2></div>
-
-                    <li class="list-group-item" ng-class="{bg:(histoMatches.indexOf(match)%2==1)}"  ng-repeat="match in histoMatches">
-                        <div class="media ">
-
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div><a href="#" class="h5">{{match.prenom}} {{match.nom}}</a></div>
-                                    <small class="text-muted">{{match.date}}</small>
-                                </div>
-
-                                <div  ng-if="match.resultat=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
-                                    <div class=" text-success m-t-small">
-                                        <small>{{match.resultat}}</small>
-                                        <i class="fa fa-circle"></i>
-                                        <small>({{match.recompense}})</small>
-                                    </div>
-                                </div>
-                                <div ng-if="match.resultat!=='userinfos.id'" class="col-md-2" ng-class="{'pull-right': (match.note==='true')}" >Resultat
-                                    <div class=" text-danger m-t-small">
-                                        <small>{{match.resultat}}</small>
-                                        <i class="fa fa-circle"></i>
-                                        <small>({{match.recompense}})</small>
-                                    </div>
-                                </div>
-
-                                <div ng-if="match.aNoter1===''" class="col-md-5">
-                                    <a ng-click="openNotes('lg',match);" class="btn btn-sm btn-success pull-right" ><i class="fa fa-fw fa-pencil"></i> Noter l'adversaire</a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-
-                    <a class="btn btn-sm btn-default center-block"><i class="fa fa-fw fa-plus"></i>Voir plus</a>
-                </ul>
+            <pie-chart data="pieChartData" options="pieOptions"></pie-chart>
 
         </uib-tab>
+
 
 
 
