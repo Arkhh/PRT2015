@@ -706,12 +706,13 @@ Matche.getBetween = function (props, callback) {
     var idJ2=parseInt(props.idJ2);
 
     var query = [
-        'MATCH (user:User)-[r:JOUE]',
-        '-(match:Match)',
-        '-[r2:JOUE]-(u:User)',
-        'WHERE id(user)={idJ1} AND id(u)={idJ2} ',
-        'RETURN match,r,r2',
-        'ORDER BY match.date desc',
+        'MATCH (user:User)-[r:JOUE]-(match:Match)-[r2:JOUE]-(u:User)',
+    'WHERE id(user)={idJ1} AND id(u)={idJ2}',
+    'OPTIONAL MATCH (user2:User)-[r12:JOUE]-(match2:Match)-[r22:JOUE]-(u2:User)',
+    'WHERE id(user2)={idJ1} AND id(u2)={idJ2} AND match2.resultat={idJ1}',
+    'OPTIONAL MATCH (user3:User)-[r3:JOUE]-(match3:Match)-[r23:JOUE]-(u3:User)',
+    'WHERE  id(user3)={idJ1} AND id(u3)={idJ2} AND match3.resultat={idJ2}',
+    'RETURN count(distinct(match))as nbMatch,count(distinct(match2))as nbVictoireJ1,count(distinct (match3))as nbVictoireJ2'
 
     ].join('\n');
 
@@ -728,20 +729,13 @@ Matche.getBetween = function (props, callback) {
         if (err) return callback(err);
         if (!results.length) {
             var err=[];
-            var error=new errors.PropertyError('No such player with ID: ' + id);
+            var error=new errors.PropertyError('No such player with ID: ' + idJ1 + 'or '+idJ2);
             err.push(error);
             return callback(err);
         }
-        var i=0;
-        var matches = [];
-        console.log(results);
-        while (i < results.length) {
-            matches.push(getUserJson(results[i]));
-            i++;
 
-        }
 
-        callback(null, matches);
+        callback(null, results);
     });
 };
 
