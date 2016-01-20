@@ -13,6 +13,7 @@ angular.module('BadminTown')
                 method         : 'POST',
                 url            : API_ENDPOINT + '/matches/',
                 data           : matchinfo
+
             });
         }
 
@@ -24,14 +25,61 @@ angular.module('BadminTown')
             });
         }
 
-        function getMatchUser(id){
+        function updateMatch(updatedInfos) {
             return RequestBuilder.getRequestPromise({
-                method         : 'GET',
-                url            : API_ENDPOINT + '/matches/users/'+id
+                method         : 'POST',
+                url            : API_ENDPOINT + '/matches/'+updatedInfos.id,
+                data           : updatedInfos
             });
         }
 
-         function deleteMatch(id){
+        function noterAdv(idNoteur,idm,noteInfos,idNote) {
+            return RequestBuilder.getRequestPromise({
+                method         : 'POST',
+                url            : API_ENDPOINT + '/notation/'+idNote,
+                data           : {
+                    idJ: idNoteur,
+                    idm: idm,
+                    note: noteInfos.note,
+                    nomSkill: noteInfos.nom
+                }
+            });
+        }
+
+        function getNextFive(idm,id) {
+            return RequestBuilder.getRequestPromise({
+                method         : 'POST',
+                url            : API_ENDPOINT + '/unvalid/usersnext/matches',
+                data           : {
+                    id: id,
+                    idm: idm
+                }
+            });
+        }
+
+        function getSuggestion(id){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/suggest/'+id
+            });
+        }
+
+        function getMatchUser(id){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/unvalid/matches/users/'+id
+            });
+        }
+
+        function getLastTen(id){
+            return RequestBuilder.getRequestPromise({
+                method         : 'GET',
+                url            : API_ENDPOINT + '/histo/users/'+id
+            });
+        }
+
+
+        function deleteMatch(id){
              return RequestBuilder.getRequestPromise({
                  method         : 'DELETE',
                  url            : API_ENDPOINT + '/matches/'+id
@@ -44,6 +92,11 @@ angular.module('BadminTown')
             'getMatchUser'		: getMatchUser,
             'createMatch'        : createMatch,
             'deleteMatch'		: deleteMatch,
+            'getLastTen'		: getLastTen,
+            'noterAdv'		    : noterAdv,
+            'getSuggestion'		: getSuggestion,
+            'getNextFive'		: getNextFive,
+            'updateMatch'		: updateMatch,
             'updateResult'      : updateResult
         };
 

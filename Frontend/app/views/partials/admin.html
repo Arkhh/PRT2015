@@ -1,0 +1,53 @@
+<section class="panel">
+    <div class="panel-body">
+
+        <uib-tabset>
+            <uib-tab heading="Créer / Modfier News">
+
+
+                <ng-quill-editor id="editor" ng-model="message" toolbar="true" link-tooltip="true"   editor-required="true" required="" error-class="input-error">
+                </ng-quill-editor>
+
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" ng-click="sendNews(editor.getHTML());" class="btn btn-primary">Creer news</button>
+                    </div>
+                </div>
+
+            </uib-tab>
+            <uib-tab heading="Créer et Supprimer Admins">
+
+                <div  class="table-responsive">
+                    <table class="table table-hover table-bordered" style="background-color: white">
+                        <thead>
+                        <tr>
+                            <th>Prenom</th>
+                            <th>Nom</th>
+                            <th>Admin</th>
+                            <th>Modifier Statut</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr ng-repeat="user in usersTab" >  <td>{{user.prenom}}</td><td>{{user.nom}}</td>
+                            <td ng-if="user.admin" class="warning">OUI</td>
+                            <td ng-if="!(user.admin)" class="success">NON</td>
+                            <td ng-if="user.id!=userInfos.id && !(user.admin)">
+                                <a ng-click="changeStatus(user.id,true);" class="btn btn-sm btn-info"><i class="fa fa-fw fa-plus"></i> Faire Admin </a>
+                            </td>
+                            <td ng-if="user.id!=userInfos.id && (user.admin)">
+                                <a ng-click="changeStatus(user.id,false);" class="btn btn-sm btn-danger"><i class="fa fa-fw fa-plus"></i> Supprimer Admin </a>
+                            </td>
+                            <td ng-class="{success: (user.id==userInfos.id) } " ng-if="user.id==userInfos.id">
+                                <div>VOUS</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </uib-tab>
+        </uib-tabset>
+
+    </div>
+</section>

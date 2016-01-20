@@ -35,13 +35,6 @@ angular.module('BadminTown')
                 url            : API_ENDPOINT + '/users/'+id
             });
         }
-        /*
-        function resetPassword(email){
-            return RequestBuilder.getRequestPromise({
-                method         : 'DELETE',
-                url            : USER_API_ENDPOINT + '/password/' + email
-            });
-        }*/
 
         function getRanking(){
             return RequestBuilder.getRequestPromise({

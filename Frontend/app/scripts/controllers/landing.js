@@ -69,6 +69,7 @@ angular.module('BadminTown')
                     onSucessRedirect(data);
 
                     },function(err){
+                    $scope.userinfos.password='';
                     $scope.errors=err;
 
                 });

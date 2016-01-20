@@ -7,13 +7,15 @@ angular.module('BadminTown')
         $scope.getMyInfos = function () {
             UserAPI.getUserInfo($scope.userInfos.id)
                 .then(function (data) {
-                    if (!data.error) {
+                    if (data) {
 
                         $scope.myInfos = data;
 
                         UserAPI.getUserPubInfos($scope.userInfos.id)
                             .then(function (data) {
                                 if (!data.error) {
+                                    $scope.myInfos.points=data.points;
+                                    $scope.myInfos.points=data.points;
                                     $scope.myInfos.moyenneVolee=data.moyenneVolee;
                                     $scope.myInfos.moyenneFrappe=data.moyenneFrappe;
                                     $scope.myInfos.moyenneEndurance=data.moyenneEndurance;
@@ -23,7 +25,9 @@ angular.module('BadminTown')
                                 }
                             });
                     }
-                })
+                }, function(){
+
+                });
         };
 
         $scope.getUserInfo = function(id){
@@ -81,8 +85,8 @@ angular.module('BadminTown')
 
                     $scope.player='';
 
-                    if (!(Array.isArray(data))) {
-                        $scope.getUserInfo(data.id);
+                    if (!(Array.isArray(data))||data.length==1) {
+                        $scope.getUserInfo(data[0].id);
                         $scope.searchProcessing=false;
                         $scope.ErrorSearch=undefined;
 
@@ -107,7 +111,6 @@ angular.module('BadminTown')
 
         function init() {
             $scope.getMyInfos();
-            console.log($scope.myInfos);
             $scope.player='';
             $scope.searchProcessing=false;
             $scope.ErrorSearch=undefined;

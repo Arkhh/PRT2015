@@ -690,7 +690,6 @@ User.pubList = function(callback){
         query: query
     }, function (err, results) {
         if (err) return callback(err);
-
         var users = createJson(results);
        /* var users = results.map(function (result) {
             console.log("users");
@@ -851,6 +850,7 @@ User.searchSkillLevel = function(id, nomSkill, noteCherchee, callback) {
         noteSup: noteSup,
         noteInf: noteInf
     };
+
     console.log ("CE QUE JE VEUX VOIR");
     console.log("query");
     console.log(query);
@@ -968,14 +968,11 @@ User.notation = function (note, rel, callback){
     }
 
     var newTotal = rel[0].r.properties.total + noteInt;
-    console.log("total");
-    console.log(newTotal);
+
     var newNbEval = rel[0].r.properties.nbEval + 1;
-    console.log("newNbEval");
-    console.log(newNbEval);
+
     var newMoyenne = (newTotal/newNbEval);
-    console.log("newMoyenne");
-    console.log(newMoyenne);
+
 
 
     var query = [
@@ -993,10 +990,7 @@ User.notation = function (note, rel, callback){
         newTotal: newTotal
     };
 
-    console.log("query");
-    console.log(query);
-    console.log("params");
-    console.log(params);
+
 
     db.cypher({
         query: query,
@@ -1029,7 +1023,7 @@ User.prototype.suggest = function (callback) {
 
     var params = {
         id: this.id
-    }
+    };
 
     db.cypher({
         query: query,
@@ -1064,7 +1058,7 @@ User.prototype.suggest = function (callback) {
                 controle.push(result);
                 result.forEach(function(ids){
                     tabId.push(ids);
-                })
+                });
                 itemsProcessed++;
                 if(itemsProcessed === tabSkills.length) {
                     //TODO trier tabID
@@ -1076,7 +1070,6 @@ User.prototype.suggest = function (callback) {
                     for (var i = 0; i < tabId.length; i++) {
                         if (tabId[i] != courant) {
                             if (cnt > 0) {
-                                console.log(courant + ' est present --> ' + cnt + ' fois');
                                 objetSoluce = {id: courant, nb: cnt};
                                 tableauRep.push(objetSoluce);
                             }
@@ -1087,7 +1080,6 @@ User.prototype.suggest = function (callback) {
                         }
                     }
                     if (cnt > 0) {
-                        console.log(courant + ' est present --> ' + cnt + ' fois');
                         objetSoluce = {id: courant, nb: cnt};
                         tableauRep.push(objetSoluce);
                     }
@@ -1096,13 +1088,13 @@ User.prototype.suggest = function (callback) {
                     console.log("newTabRep");
                     console.log(newTabRep);
                     var lastTabRep = [];
+
                     lastTabRep = newTabRep.slice(newTabRep.length - 8,newTabRep.length);
                     console.log("lastTab");
                     var tabFinal = [];
                     for(j=0; j<lastTabRep.length; j++){
                         tabFinal.push(lastTabRep[j].id);
                     }
-                    console.log(tabFinal);
                     return callback(null, tabFinal);
                 }
                 }
@@ -1154,6 +1146,9 @@ User.getAdv = function (id, callback) {
 
 //fonction permettant le tri du tableau
 User.setPoint=function(id,point){
+
+    console.log("point dans fonction");
+    console.log(point);
     var query = [
         'MATCH (user:User)',
         'WHERE id(user)={id}',
@@ -1235,27 +1230,28 @@ User.search = function (str, callback) {
         console.log("results.length");
         console.log(results.length);
         /*if (results.length === 1){
-            var user = new User(results[0]['user']);
-            console.log("results[0]['user']");
-            console.log(results[0].u);
-            var tabReponse = createJsonSearch(results);
-            console.log("tabReponse");
-            console.log(tabReponse[0]);
-            return callback(null, tabReponse[0]);
-        }*/
+         var user = new User(results[0]['user']);
+         console.log("results[0]['user']");
+         console.log(results[0].u);
+         var tabReponse = createJsonSearch(results);
+         console.log("tabReponse");
+         console.log(tabReponse[0]);
+         return callback(null, tabReponse[0]);
+         }*/
         console.log("results[0]['user']");
         console.log(results[0]['user']);
         var i = 0;
         var tabReponse = createJsonSearch(results);
         /*while (i<tabReponse.length){
-            tabReponse.push(results[i]['user']);
-            i++;
-        }*/
+         tabReponse.push(results[i]['user']);
+         i++;
+         }*/
         return callback(null, tabReponse);
     });
 };
 
 //SUGGESTION DE JOUEURS AVANCEE MOYENNE
+
 User.prototype.suggestAdvanced = function (props,callback) {
 
     //////CLAUSE INITIALE
@@ -1538,140 +1534,75 @@ User.prototype.suggestAdvanced = function (props,callback) {
     });
 };
 
-User.suggestSSMF = function (props, data, callback) {
-
-    console.log("je suis la");
-    tabId = [];
-    var i = 0;
-    while (i < data.length) {
-        //console.log("");
-        tabId.push(data[i].id);
-        i++;
-    }
-    console.log("et ici");
-
-    var loul = 0;
-    console.log("tabId");
-    while (loul<tabId.length){
-        console.log(tabId[loul]);
-        loul++;
-    }
-    if (props.mainForte != null && props.sexe != null) {
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.mainForte = {props}.mainForte AND u.sexe = {props}.sexe AND ("]
-    }
-    console.log("props.sexe");
-    console.log(props.sexe);
-    if (props.mainForte != null && props.sexe === undefined) {
-        console.log("je passe par la");
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.mainForte = {props}.mainForte AND ("
-        ].join('\n');
-    }
-    if (props.mainForte === undefined && props.sexe != null) {
-        console.log("je passe par hahahahaha");
-        var query = [
-            "MATCH (u:User) " +
-            "WHERE u.sexe = {props}.sexe AND ("
-        ].join('\n');
-    }
-
-    if (props.mainForte === undefined && props.sexe === undefined) {
-        var query = [
-            "MATCH (u:User) WHERE ("
-        ].join('\n');
-    }
-    var queryFinale = query;
-    console.log("queryFinale");
-    console.log(queryFinale);
-    var j = 0;
-    var jBis = 0;
-    while (j < tabId.length) {
-        if (j > 0) {
-            var queryTransition = [
-                "OR "
-            ]
-            queryFinale = queryFinale + queryTransition;
-        }
-
-        var queryMilieu = [
-            "id(u) = " + tabId[j] + " "
-        ]
-        queryFinale = queryFinale + queryMilieu;
-        j++;
-        jBis++;
-    }
-    var queryReturn = [
-        ") RETURN u"
+User.getStat=function(id,callback){
+    var idInt=parseInt(id);
+    var query = [
+        'MATCH (user:User)',
+        '-[r:RelationEvaluation]-()',
+        'WHERE id(user)={id}',
+        'RETURN sum(r.nbEval) as nbNote'
     ].join('\n');
-    queryFinale = queryFinale + queryReturn;
-    console.log("props");
-    console.log(props);
+
+
     var params = {
-        props: props
+        id: idInt
     };
 
-    console.log("LAFEMMEPIRATE");
-    console.log(queryFinale);
-    console.log("params");
-    console.log(params);
     db.cypher({
-        query: queryFinale,
+        query: query,
         params: params
     }, function (err, results) {
         if (err) return callback(err);
         if (!results.length) {
-            console.log("jentre ici");
             var err=[];
-            var error=new errors.PropertyError('Pas de correspondance a la recherche voulue');
+            var error=new errors.PropertyError('No such user with ID: ' + id);
             err.push(error);
             return callback(err);
         }
-        console.log("results");
-        console.log(results[0].u.properties);
-        var lastV = 0;
-        var tabReponse = [];
-        console.log("results.length");
-        console.log(results.length);
-
-        while (lastV<results.length){
-            tabReponse.push(results[lastV].u);
-            lastV++;
-        }
-        //var user = new User(results[0]['user']);
-        return callback(null, tabReponse);
-    })
+        var nbNote = results;
+        callback(null, nbNote);
+    });
 };
 
 
-    User.getStat=function(id,callback){
-        var idInt=parseInt(id);
-        var query = [
-            'MATCH (user:User)',
-            '-[r:RelationEvaluation]-()',
-            'WHERE id(user)={id}',
-            'RETURN sum(r.nbEval) as nbNote'
-        ].join('\n');
+User.prototype.suggestMatch = function (callback){
+    var tabInter = [];
+    var j=0;
+    var idTest = this.id;
 
+    var query = [
+        "MATCH (u:User)-[j:JOUE*..4]-(u1:User) " +
+        "WHERE id(u) = {id} AND id(u)<>id(u1) " +
+        "RETURN u1"
+    ].join('\n');
 
-        var params = {
-            id: idInt
-        };
-
-        db.cypher({
-            query: query,
-            params: params
-        }, function (err, results) {
-            if (err) return callback(err);
-            if (!results.length) {
-                var err=[];
-                var error=new errors.PropertyError('No such user with ID: ' + id);
-                err.push(error);
-                return callback(err);
-            }
-            var nbNote = results;
-            callback(null, nbNote);
-        });
+    var params = {
+        id: idTest
     };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err, results) {
+        if (err) return callback(err);
+        if (!results.length) {
+            console.log("results");
+            console.log(results);
+            return callback(null,[]);
+        }
+        console.log("results");
+        console.log(results);
+        var tabRes = [];
+        var i = 0;
+        while (i<results.length){
+            if(!tabRes.indexOf((results[i].u1._id)))
+            {
+                tabRes.push(results[i].u1._id);
+
+            }
+            i++;
+        }
+
+        return callback(null, tabRes);
+    });
+}
